@@ -25,6 +25,9 @@ def user_input():
         cmd_foldername = os.path.basename(folderPath)
         cmd_size = os.path
         cmd_volumepath = folder+os.sep+cmd_foldername+".hc"
+        cmd_encryption = input()
+        cmd_hash = input()
+        cmd_fileSystem = input()
         aux_size = get_folder_size(folder) 
         size = (1.25 * aux_size)
         if size >= 1024:
