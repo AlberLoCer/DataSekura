@@ -16,4 +16,5 @@ newPath = str.replace(os.sep, '/')
 pathObject = Path(newPath)
 VCpath = pathObject.parent.absolute()
 os.chdir(VCpath)
-os.popen("VeraCrypt.exe")
+# "C:\Program Files\VeraCrypt\VeraCrypt Format.exe" /create c:\Data\test.hc "/password test /hash sha512 /encryption serpent" /filesystem FAT /size 10M /force
+subprocess.call(["VeraCrypt Format.exe","/create", "C:/Users/alber/Desktop/pistacho.hc","/password", "test", "/hash", "sha512", "/encryption", "serpent", "/filesystem", "FAT", "/size", "10M", "/force"])
