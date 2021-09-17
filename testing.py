@@ -22,8 +22,9 @@ def user_input():
     if os.path.isdir("C:/Program Files/VeraCrypt") and os.path.isfile("C:/Program Files/VeraCrypt/VeraCrypt Format.exe"):       
         print("VeraCrypt is installed!") 
         folder = input("Enter the folder to encrypt: ")
-        folderPath = repr(folder)
-        foldername = extract_folder_name(folderPath)
+        folderPath = Path(folder)
+        os.chdir(folderPath)
+        foldername = os.path.basename(folderPath)
         print(foldername)
         base = "C:"+os.sep
         str = find("VeraCrypt.exe", base)
