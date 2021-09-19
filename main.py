@@ -90,6 +90,14 @@ class Main:
             self.folder_path = folder
             self.cmd_foldername = os.path.basename(folder)
             self.cmd_volumepath = folder+os.sep+self.cmd_foldername+".hc"
+   
+    def prepare_launch(self):
+        base = "C:"+os.sep
+        str = self.find("VeraCrypt.exe", base)
+        newPath = str.replace(os.sep, '/')
+        pathObject = Path(newPath)
+        VCpath = pathObject.parent.absolute()
+        os.chdir(VCpath)
 
     def user_input(self):
         veraCrypt_ok = self.check_VC_integrity()
@@ -118,12 +126,7 @@ class Main:
             else:
                 cmd_size = repr(math.ceil(size/1024))+"K"
             cmd_size = "10M"
-            base = "C:"+os.sep
-            str = self.find("VeraCrypt.exe", base)
-            newPath = str.replace(os.sep, '/')
-            pathObject = Path(newPath)
-            VCpath = pathObject.parent.absolute()
-            os.chdir(VCpath)
+            self.prepare_launch()
             subprocess.call(["VeraCrypt Format.exe","/create", self.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", cmd_size,"/silent"])
         # "C:\Program Files\VeraCrypt\VeraCrypt Format.exe" /create c:\Data\test.hc "/password test /hash sha512 /encryption serpent" /filesystem FAT /size 10M /force
 
