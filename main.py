@@ -61,9 +61,6 @@ class Main:
         print("3. Whirlpool")
         print("4. Ripemd160")
 
-       
-        
-
     def choose_hash(self, input):
         switcher = {
             1: "sha256",
@@ -72,6 +69,20 @@ class Main:
             4: "ripemd160",
         }
         self.cmd_hash = switcher.get(int(input))
+    
+    def print_fs_menu(self):
+        print("Choose a file-system for the partition: \n")
+        print("1. None")
+        print("2. FAT")
+        print("3. NTFS")
+
+    def choose_fs(self, input):
+        switcher = {
+            1: "none",
+            2: "fat",
+            3: "ntfs",
+        }
+        self.cmd_fs = switcher.get(int(input))
 
     def input_folder(self):
             folder = input("Enter the folder to encrypt: ")
@@ -95,6 +106,11 @@ class Main:
             hash = input()
             self.choose_hash(hash)
 
+            self.print_fs_menu()
+            fs = input()
+            self.choose_fs(fs)
+            print(self.cmd_fs)
+
             aux_size = self.get_folder_size(self.folder_path) 
             size = (1.25 * aux_size)
             if size >= 1024:
@@ -108,7 +124,7 @@ class Main:
             pathObject = Path(newPath)
             VCpath = pathObject.parent.absolute()
             os.chdir(VCpath)
-            subprocess.call(["VeraCrypt Format.exe","/create", self.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", "FAT", "/size", cmd_size, "/force"])
+            subprocess.call(["VeraCrypt Format.exe","/create", self.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", cmd_size, "/force"])
         # "C:\Program Files\VeraCrypt\VeraCrypt Format.exe" /create c:\Data\test.hc "/password test /hash sha512 /encryption serpent" /filesystem FAT /size 10M /force
 
 
