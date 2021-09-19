@@ -24,11 +24,20 @@ class Main:
 
     def print_encryption_menu(self):
         print("Choose an encryption algorithm: \n")
+        print("--ONE-LAYER ENCRYPTIONS--")
         print("1. AES")
         print("2. Serpent")
         print("3. Twofish")
         print("4. Camellia")
         print("5. Kuznyechik")
+        print()
+        print("--ENCRYPTIONS IN CASCADE--")
+        print("6. TwoFish + AES")
+        print("7. Serpent + TwoFish + AES")
+        print("8. AES + Serpent")
+        print("9. AES + TwoFish + Serpent")
+        print("10. Serpent + TwoFish")
+        
 
     def choose_encryption(self, input):
         switcher = {
@@ -36,7 +45,12 @@ class Main:
             2: "serpent",
             3: "twofish",
             4: "camellia",
-            5: "kuznyechik"
+            5: "kuznyechik",
+            6: "aes(twofish)",
+            7: "aes(twofish(serpent))",
+            8: "serpent(aes)",
+            9: "serpent(twofish(aes))",
+            10: "twofish(serpent)"
         }
         self.cmd_encryption = switcher.get(int(input))
 
