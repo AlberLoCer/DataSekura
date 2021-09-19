@@ -54,6 +54,25 @@ class Main:
         }
         self.cmd_encryption = switcher.get(int(input))
 
+    def print_hash_menu(self):
+        print("Choose a hash algorithm: \n")
+        print("1. SHA-256")
+        print("2. SHA-512")
+        print("3. Whirlpool")
+        print("4. Ripemd160")
+
+       
+        
+
+    def choose_hash(self, input):
+        switcher = {
+            1: "sha256",
+            2: "sha512",
+            3: "whirlpool",
+            4: "ripemd160",
+        }
+        self.cmd_hash = switcher.get(int(input))
+
     def input_folder(self):
             folder = input("Enter the folder to encrypt: ")
             os.chdir(folder)
@@ -67,12 +86,15 @@ class Main:
             print("VeraCrypt is not installed in your system")       
         else:
             self.input_folder()
-            self.print_encryption_menu()
-            option = input()
-            self.choose_encryption(option)
 
-            #cmd_hash = input()
-            #cmd_fileSystem = input()
+            self.print_encryption_menu()
+            encryption = input()
+            self.choose_encryption(encryption)
+
+            self.print_hash_menu()
+            hash = input()
+            self.choose_hash(hash)
+
             aux_size = self.get_folder_size(self.folder_path) 
             size = (1.25 * aux_size)
             if size >= 1024:
@@ -80,16 +102,13 @@ class Main:
             else:
                 cmd_size = repr(math.ceil(size/1024))+"K"
             cmd_size = "10M"
-
-            print(cmd_size)
             base = "C:"+os.sep
             str = self.find("VeraCrypt.exe", base)
             newPath = str.replace(os.sep, '/')
             pathObject = Path(newPath)
             VCpath = pathObject.parent.absolute()
             os.chdir(VCpath)
-            print(self.cmd_encryption)
-            subprocess.call(["VeraCrypt Format.exe","/create", self.cmd_volumepath,"/password", "test", "/hash", "sha512", "/encryption", self.cmd_encryption, "/filesystem", "FAT", "/size", cmd_size, "/force"])
+            subprocess.call(["VeraCrypt Format.exe","/create", self.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", "FAT", "/size", cmd_size, "/force"])
         # "C:\Program Files\VeraCrypt\VeraCrypt Format.exe" /create c:\Data\test.hc "/password test /hash sha512 /encryption serpent" /filesystem FAT /size 10M /force
 
 
