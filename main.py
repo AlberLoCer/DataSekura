@@ -2,25 +2,13 @@ import os
 import math
 from pathlib import Path
 import subprocess
+import file_system
 class Main:
     def __init__(self):
+        self.fs = file_system.File_System_Dealer()
         self.user_input()
         return
     
-
-    def find(self, name, path):
-        for root, dirs, files in os.walk(path):
-            if name in files:
-                return os.path.join(root, name)
-
-    def get_folder_size(self, path):
-        size = 0
-        for ele in os.scandir(path):
-            size+=os.path.getsize(ele)
-        return size
-
-    def check_VC_integrity(self):
-         return os.path.isdir("C:/Program Files/VeraCrypt") and os.path.isfile("C:/Program Files/VeraCrypt/VeraCrypt Format.exe")
 
     def print_encryption_menu(self):
         print("Choose an encryption algorithm: \n")
@@ -84,27 +72,13 @@ class Main:
         }
         self.cmd_fs = switcher.get(int(input))
 
-    def input_folder(self):
-            folder = input("Enter the folder to encrypt: ")
-            os.chdir(folder)
-            self.folder_path = folder
-            self.cmd_foldername = os.path.basename(folder)
-            self.cmd_volumepath = folder+os.sep+self.cmd_foldername+".hc"
-   
-    def prepare_launch(self):
-        base = "C:"+os.sep
-        str = self.find("VeraCrypt.exe", base)
-        newPath = str.replace(os.sep, '/')
-        pathObject = Path(newPath)
-        VCpath = pathObject.parent.absolute()
-        os.chdir(VCpath)
 
     def user_input(self):
-        veraCrypt_ok = self.check_VC_integrity()
+        veraCrypt_ok = self.fs.check_VC_integrity()
         if veraCrypt_ok == False:
             print("VeraCrypt is not installed in your system")       
         else:
-            self.input_folder()
+            self.fs.input_folder()
 
             self.print_encryption_menu()
             encryption = input()
@@ -117,17 +91,16 @@ class Main:
             self.print_fs_menu()
             fs = input()
             self.choose_fs(fs)
-            print(self.cmd_fs)
 
-            aux_size = self.get_folder_size(self.folder_path) 
+            aux_size = self.fs.get_folder_size(self.fs.folder_path) 
             size = (1.25 * aux_size)
             if size >= 1024:
                 cmd_size = "10M"
             else:
                 cmd_size = repr(math.ceil(size/1024))+"K"
             cmd_size = "10M"
-            self.prepare_launch()
-            subprocess.call(["VeraCrypt Format.exe","/create", self.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", cmd_size,"/silent"])
+            self.fs.prepare_launch()
+            subprocess.call(["VeraCrypt Format.exe","/create", self.fs.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", cmd_size,"/silent"])
         # "C:\Program Files\VeraCrypt\VeraCrypt Format.exe" /create c:\Data\test.hc "/password test /hash sha512 /encryption serpent" /filesystem FAT /size 10M /force
 
 
