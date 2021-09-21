@@ -60,15 +60,13 @@ class Main:
     
     def print_fs_menu(self):
         print("Choose a file-system for the partition: \n")
-        print("1. None")
-        print("2. FAT")
-        print("3. NTFS")
+        print("1. FAT")
+        print("2. NTFS")
 
     def choose_fs(self, input):
         switcher = {
-            1: "none",
-            2: "fat",
-            3: "ntfs",
+            1: "fat",
+            2: "ntfs",
         }
         self.cmd_fs = switcher.get(int(input))
 
@@ -92,15 +90,9 @@ class Main:
             fs = input()
             self.choose_fs(fs)
 
-            aux_size = self.fs.get_folder_size(self.fs.folder_path) 
-            size = (1.25 * aux_size)
-            if size >= 1024:
-                cmd_size = "10M"
-            else:
-                cmd_size = repr(math.ceil(size/1024))+"K"
-            cmd_size = "10M"
+            self.fs.fetch_size(self.cmd_fs)
             self.fs.prepare_launch()
-            subprocess.call(["VeraCrypt Format.exe","/create", self.fs.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", cmd_size,"/silent"])
+            subprocess.call(["VeraCrypt Format.exe","/create", self.fs.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", self.fs.cmd_volumesize,"/silent"])
         # "C:\Program Files\VeraCrypt\VeraCrypt Format.exe" /create c:\Data\test.hc "/password test /hash sha512 /encryption serpent" /filesystem FAT /size 10M /force
 
 

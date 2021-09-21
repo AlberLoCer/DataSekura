@@ -33,8 +33,13 @@ class File_System_Dealer:
       VCpath = pathObject.parent.absolute()
       os.chdir(VCpath)
 
-   def get_attributes(self):
-      packet = None
-      packet.volumepath = self.cmd_volumepath
-      packet.folder_path = self.folder_path
-      return packet
+   def fetch_size(self, fs):
+      aux_size = self.get_folder_size(self.folder_path) 
+      size = (1.25 * aux_size)/1024
+      print(size)
+      min_size_switcher = {
+         "fat": 292,
+         "ntfs": 3792,
+      }
+      size_threshold = max(size, min_size_switcher.get(fs))
+      self.cmd_volumesize = repr(size_threshold)+"K"
