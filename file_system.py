@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import pathlib
 class File_System_Dealer:
    def __init__(self):
       return
@@ -22,8 +23,13 @@ class File_System_Dealer:
             folder = input("Enter the folder to encrypt: ")
             os.chdir(folder)
             self.folder_path = folder
+            path = Path(folder)
+            parent_path = path.parent.absolute()
             self.cmd_foldername = os.path.basename(folder)
-            self.cmd_volumepath = folder+os.sep+self.cmd_foldername+".hc"
+            self.cmd_volumepath = parent_path.__str__()+os.sep+self.cmd_foldername+".hc"
+            print(parent_path)
+            print(self.cmd_volumepath)
+            
    
    def prepare_launch(self):
       base = "C:"+os.sep
@@ -36,7 +42,6 @@ class File_System_Dealer:
    def fetch_size(self, fs):
       aux_size = self.get_folder_size(self.folder_path) 
       size = (1.25 * aux_size)/1024
-      print(size)
       min_size_switcher = {
          "fat": 292,
          "ntfs": 3792,

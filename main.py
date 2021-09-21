@@ -71,6 +71,8 @@ class Main:
         self.cmd_fs = switcher.get(int(input))
 
 
+
+
     def user_input(self):
         veraCrypt_ok = self.fs.check_VC_integrity()
         if veraCrypt_ok == False:
@@ -91,9 +93,8 @@ class Main:
             self.choose_fs(fs)
 
             self.fs.fetch_size(self.cmd_fs)
+
             self.fs.prepare_launch()
             subprocess.call(["VeraCrypt Format.exe","/create", self.fs.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", self.fs.cmd_volumesize,"/silent"])
-        # "C:\Program Files\VeraCrypt\VeraCrypt Format.exe" /create c:\Data\test.hc "/password test /hash sha512 /encryption serpent" /filesystem FAT /size 10M /force
-
 
 launch = Main()
