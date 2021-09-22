@@ -7,6 +7,8 @@ class Main:
     def __init__(self):
         self.fs = file_system.File_System_Dealer()
         self.user_input()
+        self.fs.prepare_launch()
+        self.VC_Encryption()
         return
     
 
@@ -94,7 +96,9 @@ class Main:
 
             self.fs.fetch_size(self.cmd_fs)
 
-            self.fs.prepare_launch()
-            subprocess.call(["VeraCrypt Format.exe","/create", self.fs.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", self.fs.cmd_volumesize,"/silent"])
+    def VC_Encryption(self):
+        subprocess.call(["VeraCrypt Format.exe","/create", self.fs.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", self.fs.cmd_volumesize,"/silent"])
+        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", self.fs.cmd_volumepath, "/letter", "x", "/password", "test", "/quit", "/silent"])
 
+            
 launch = Main()

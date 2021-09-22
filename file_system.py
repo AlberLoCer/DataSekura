@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-import pathlib
+import math
 class File_System_Dealer:
    def __init__(self):
       return
@@ -41,7 +41,7 @@ class File_System_Dealer:
 
    def fetch_size(self, fs):
       aux_size = self.get_folder_size(self.folder_path) 
-      size = (1.25 * aux_size)/1024
+      size = math.ceil((1.25 * aux_size)/1024)
       min_size_switcher = {
          "fat": 292,
          "ntfs": 3792,
