@@ -99,6 +99,6 @@ class Main:
     def VC_Encryption(self):
         subprocess.call(["VeraCrypt Format.exe","/create", self.fs.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", self.fs.cmd_volumesize,"/silent"])
         subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", self.fs.cmd_volumepath, "/letter", "x", "/password", "test", "/quit", "/silent"])
-
+        self.fs.move_files(self.fs.folder_path, "X:"+os.sep)
             
 launch = Main()
