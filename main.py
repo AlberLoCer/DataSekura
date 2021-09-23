@@ -101,5 +101,5 @@ class Main:
         subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", self.fs.cmd_volumepath, "/letter", "x", "/password", "test", "/quit", "/silent"])
         self.fs.move_files(self.fs.folder_path, "X:"+os.sep)
         subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
-            
+        self.fs.removeFolder(self.fs.folder_path)
 launch = Main()

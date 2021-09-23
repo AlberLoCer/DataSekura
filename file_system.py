@@ -59,3 +59,6 @@ class File_System_Dealer:
          if os.path.isfile(source):
             shutil.move(source, destination)
             print('Moved:', file_name)
+
+   def removeFolder(self,path):
+      os.rmdir(path)
