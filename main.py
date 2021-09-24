@@ -6,6 +6,7 @@ import file_system
 class Main:
     def __init__(self):
         self.fs = file_system.File_System_Dealer()
+        self.fs.input_folder()
         self.user_input()
         self.fs.prepare_launch()
         self.VC_Encryption()
@@ -72,15 +73,34 @@ class Main:
         }
         self.cmd_fs = switcher.get(int(input))
 
-
-
-
+    def print_config_menu(self):
+        print("Encryption Settings: \n")
+        print("1. Automatic Configuration")
+        print("2. Custom Settings")
+    
     def user_input(self):
+        self.print_config_menu()
+        option = input()
+        if option == 1:
+            self.automatic_configuration()
+        
+        else:
+            self.custom_settings()
+
+
+    def automatic_configuration(self):
+        self.cmd_encryption = "aes"
+        self.cmd_hash = "sha512"
+        self.cmd_fs = "fat"
+        self.fs.fetch_size(self.cmd_fs)
+        return
+
+
+    def custom_settings(self):
         veraCrypt_ok = self.fs.check_VC_integrity()
         if veraCrypt_ok == False:
             print("VeraCrypt is not installed in your system")       
         else:
-            self.fs.input_folder()
 
             self.print_encryption_menu()
             encryption = input()
@@ -102,4 +122,6 @@ class Main:
         self.fs.move_files(self.fs.folder_path, "X:"+os.sep)
         subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
         self.fs.removeFolder(self.fs.folder_path)
+    
+
 launch = Main()
