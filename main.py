@@ -1,11 +1,13 @@
 import os
 import math
+from password_permutator import Password_permutator
 from pathlib import Path
 import subprocess
 import file_system
 class Main:
     def __init__(self):
         self.fs = file_system.File_System_Dealer()
+        self.pw = Password_permutator()
         if self.fs.check_VC_integrity():
             self.fs.input_folder()
             self.user_input()
@@ -92,12 +94,13 @@ class Main:
 
 
     def automatic_configuration(self):
-        self.cmd_initpassword = input ("Enter your password for encryption: ")
+        password = input ("Enter your password for encryption: ")
+        self.cmd_password = self.pw.padding_addition(password,self.fs.cmd_volumepath)
         self.cmd_encryption = "aes"
         self.cmd_hash = "sha512"
         self.cmd_fs = "fat"
         self.fs.fetch_size(self.cmd_fs)
-        return
+        
 
 
     def custom_settings(self):
@@ -116,8 +119,10 @@ class Main:
         self.fs.fetch_size(self.cmd_fs)
 
     def VC_Encryption(self):
-        subprocess.call(["VeraCrypt Format.exe","/create", self.fs.cmd_volumepath,"/password", self.cmd_initpassword, "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", self.fs.cmd_volumesize,"/silent"])
-        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", self.fs.cmd_volumepath, "/letter", "x", "/password", self.cmd_initpassword, "/quit", "/silent"])
+
+        subprocess.call(["VeraCrypt Format.exe","/create", self.fs.cmd_volumepath,"/password", self.cmd_password, "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", self.fs.cmd_volumesize,"/silent"])
+        print(self.cmd_password)
+        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", self.fs.cmd_volumepath, "/letter", "x", "/password", self.cmd_password, "/quit", "/silent"])
         self.fs.move_files(self.fs.folder_path, "X:"+os.sep)
         subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
         self.fs.removeFolder(self.fs.folder_path)
