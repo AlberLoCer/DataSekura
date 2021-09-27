@@ -6,10 +6,13 @@ import file_system
 class Main:
     def __init__(self):
         self.fs = file_system.File_System_Dealer()
-        self.fs.input_folder()
-        self.user_input()
-        self.fs.prepare_launch()
-        self.VC_Encryption()
+        if self.fs.check_VC_integrity():
+            self.fs.input_folder()
+            self.user_input()
+            self.fs.prepare_launch()
+            self.VC_Encryption()
+        else:
+            print("VeraCrypt could not be found in the system!")
         return
     
 
@@ -89,6 +92,7 @@ class Main:
 
 
     def automatic_configuration(self):
+        self.cmd_initpassword = input ("Enter your password for encryption: ")
         self.cmd_encryption = "aes"
         self.cmd_hash = "sha512"
         self.cmd_fs = "fat"
@@ -97,28 +101,23 @@ class Main:
 
 
     def custom_settings(self):
-        veraCrypt_ok = self.fs.check_VC_integrity()
-        if veraCrypt_ok == False:
-            print("VeraCrypt is not installed in your system")       
-        else:
+        self.print_encryption_menu()
+        encryption = input()
+        self.choose_encryption(encryption)
 
-            self.print_encryption_menu()
-            encryption = input()
-            self.choose_encryption(encryption)
+        self.print_hash_menu()
+        hash = input()
+        self.choose_hash(hash)
 
-            self.print_hash_menu()
-            hash = input()
-            self.choose_hash(hash)
+        self.print_fs_menu()
+        fs = input()
+        self.choose_fs(fs)
 
-            self.print_fs_menu()
-            fs = input()
-            self.choose_fs(fs)
-
-            self.fs.fetch_size(self.cmd_fs)
+        self.fs.fetch_size(self.cmd_fs)
 
     def VC_Encryption(self):
-        subprocess.call(["VeraCrypt Format.exe","/create", self.fs.cmd_volumepath,"/password", "test", "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", self.fs.cmd_volumesize,"/silent"])
-        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", self.fs.cmd_volumepath, "/letter", "x", "/password", "test", "/quit", "/silent"])
+        subprocess.call(["VeraCrypt Format.exe","/create", self.fs.cmd_volumepath,"/password", self.cmd_initpassword, "/hash", self.cmd_hash, "/encryption", self.cmd_encryption, "/filesystem", self.cmd_fs, "/size", self.fs.cmd_volumesize,"/silent"])
+        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", self.fs.cmd_volumepath, "/letter", "x", "/password", self.cmd_initpassword, "/quit", "/silent"])
         self.fs.move_files(self.fs.folder_path, "X:"+os.sep)
         subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
         self.fs.removeFolder(self.fs.folder_path)

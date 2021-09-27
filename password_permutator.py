@@ -1,5 +1,5 @@
 import binascii
-class Hidden_pwd:
+class Password_permutator:
     def __init__(self, password):
         self.pwd = password
         print("Received " + password + " as a parameter")
