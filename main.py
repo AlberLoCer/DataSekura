@@ -81,7 +81,7 @@ class Main:
     def user_input(self):
         self.print_config_menu()
         option = input()
-        if option == 1:
+        if option == '1':
             self.automatic_configuration()
         
         else:

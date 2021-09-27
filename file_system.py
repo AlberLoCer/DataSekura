@@ -1,4 +1,5 @@
 import os
+import pathlib
 import shutil
 from pathlib import Path
 import math
@@ -51,14 +52,15 @@ class File_System_Dealer:
       self.cmd_volumesize = repr(size_threshold)+"K"
 
    def move_files(self, source_folder, destination_folder):
-      for file_name in os.listdir(source_folder):
-         # construct full file path
-         source = source_folder+ os.sep + file_name
-         destination = destination_folder + os.sep + file_name
-         # move only files
-         if os.path.isfile(source):
-            shutil.move(source, destination)
-            print('Moved:', file_name)
+      os.chdir(source_folder)
+      for root, subdirectories, files in os.walk(source_folder):
+         for subdirectory in subdirectories:
+            shutil.move(subdirectory, destination_folder)
+
+         for file in files:
+            shutil.move(os.path.abspath(file), destination_folder)
+      path = Path(source_folder)
+      os.chdir(path.parent.absolute())
 
    def removeFolder(self,path):
       os.rmdir(path)
