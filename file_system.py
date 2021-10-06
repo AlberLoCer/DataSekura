@@ -18,9 +18,6 @@ class File_System_Dealer:
          size+=os.path.getsize(ele)
       return size
 
-   def check_VC_integrity(self):
-      return os.path.isdir("C:/Program Files/VeraCrypt") and os.path.isfile("C:/Program Files/VeraCrypt/VeraCrypt Format.exe")
-
    def input_folder(self):
             folder = input("Enter the folder to encrypt: ")
             os.chdir(folder)
