@@ -1,6 +1,5 @@
 import os
 from password_permutator import Password_permutator
-import subprocess
 import file_system
 from veracrypt import Veracrypt
 class Main:
