@@ -55,7 +55,8 @@ passBytes = bytes(password,"ascii")
 partC = hashlib.sha512(passBytes).hexdigest()
 
 new_pwd = partA + partB + partC
-print(new_pwd) #51*10^1080 years
+#print(new_pwd) 
+#51*10^1080 years
 
 
 

@@ -12,7 +12,7 @@ class Main:
             self.fs.input_folder()
             self.user_input()
             self.fs.prepare_launch()
-            self.vc.VC_Encryption()
+            self.vc.VC_Encryption(self.fs.cmd_volumepath, self.cmd_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.cmd_volumesize, self.fs.folder_path)
         else:
             print("VeraCrypt could not be found in the system!")
         return
