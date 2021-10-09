@@ -31,8 +31,11 @@ class File_System_Dealer:
    
    def delete_vol(self, path):
       path_obj = Path(path)
-      os.chdir(path_obj.parent.absolute)
+      os.chdir(path_obj.parent.absolute())
       os.remove(path)
+   
+   def removeFolder(self, path):
+      os.rmdir(path)
    
    
    def input_folder_decrypt(self):
@@ -70,16 +73,26 @@ class File_System_Dealer:
       os.chdir(source_folder)
       for root, subdirectories, files in os.walk(source_folder):
          for subdirectory in subdirectories:
-            print(subdirectory)
             shutil.move(subdirectory, destination_folder)
             
 
          for file in files:
-            print(file)
             shutil.move(os.path.abspath(file), destination_folder)
-            
+   
       path = Path(source_folder)
-      os.chdir(path.parent.absolute())
+      parent = path.parent.absolute()
+      os.chdir(parent)
 
-   def removeFolder(self,path):
-      os.rmdir(path)
+   def remove_file_ext(self,file):
+      name_noExt = os.path.splitext(file)[0]
+      return name_noExt
+
+   def remove_config(self, path):
+      conf_path = path + os.sep + "System Volume Information"
+      for filename in os.listdir(conf_path):
+         file_path = os.path.join(conf_path, filename)
+         os.remove(file_path)
+
+      os.chdir(path)
+      os.rmdir(conf_path)
+   
