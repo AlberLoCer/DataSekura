@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from password_permutator import Password_permutator
 import file_system
 from veracrypt import Veracrypt
@@ -8,13 +8,37 @@ class Main:
         self.pw = Password_permutator()
         self.vc = Veracrypt()
         if self.vc.check_VC_integrity():
-            self.fs.input_folder()
-            self.user_input()
-            self.fs.prepare_launch()
-            self.vc.VC_Encryption(self.fs.cmd_volumepath, self.cmd_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.cmd_volumesize, self.fs.folder_path)
+            self.encrypt_decrypt_menu()
+            option = input()
+            if option == '1':   #Encryption
+                self.fs.input_folder_encrypt()
+                self.user_input_encrypt()
+                self.fs.prepare_launch()
+                self.vc.VC_Encryption(self.fs.cmd_volumepath, self.cmd_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.cmd_volumesize, self.fs.folder_path)
+            else:
+                if option == '2':
+                    self.fs.input_folder_decrypt()
+                    passw = input("Enter the password to decrypt: ")
+                    self.cmd_password = self.pw.password_permutation(passw)
+                    self.fs.prepare_launch()
+                    volpath = self.fs.cmd_volumepath
+                    path_obj = Path(volpath)
+                    folderPath = path_obj.parent.absolute()
+                    self.vc.VC_Decryption(self.fs.cmd_volumepath, self.cmd_password,folderPath)
+
+                else:
+                    print("Goodbye, take care.")
+                    quit()
         else:
             print("VeraCrypt could not be found in the system!")
         return
+    
+    def encrypt_decrypt_menu(self):
+        print("Coose the operation to perform: \n")
+        print("1. Encrypt a folder")
+        print("2. Decrypt a folder")
+        print("0. Exit")
+    
     
 
     def print_encryption_menu(self):
@@ -82,7 +106,7 @@ class Main:
         print("1. Automatic Configuration")
         print("2. Custom Settings")
     
-    def user_input(self):
+    def user_input_encrypt(self):
         self.print_config_menu()
         option = input()
         if option == '1':
@@ -94,7 +118,7 @@ class Main:
 
     def automatic_configuration(self):
         password = input ("Enter your password for encryption: ")
-        self.cmd_password = self.pw.padding_addition(password,self.fs.cmd_volumepath)
+        self.cmd_password = self.pw.password_permutation(password)
         self.cmd_encryption = "aes"
         self.cmd_hash = "sha512"
         self.cmd_fs = "fat"

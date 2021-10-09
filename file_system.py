@@ -18,16 +18,34 @@ class File_System_Dealer:
          size+=os.path.getsize(ele)
       return size
 
-   def input_folder(self):
-            folder = input("Enter the folder to encrypt: ")
-            os.chdir(folder)
-            self.folder_path = folder
-            path = Path(folder)
-            parent_path = path.parent.absolute()
-            self.cmd_foldername = os.path.basename(folder)
-            self.cmd_volumepath = parent_path.__str__()+os.sep+self.cmd_foldername+".hc"
-            print(parent_path)
-            print(self.cmd_volumepath)
+   def input_folder_encrypt(self):
+      folder = input("Enter the folder to encrypt: ")
+      os.chdir(folder)
+      self.folder_path = folder
+      path = Path(folder)
+      parent_path = path.parent.absolute()
+      self.cmd_foldername = os.path.basename(folder)
+      self.cmd_volumepath = parent_path.__str__()+os.sep+self.cmd_foldername+".hc"
+      print(parent_path)
+      print(self.cmd_volumepath)
+   
+   def delete_vol(self, path):
+      path_obj = Path(path)
+      os.chdir(path_obj.parent.absolute)
+      os.remove(path)
+   
+   
+   def input_folder_decrypt(self):
+      self.cmd_volumepath = input("Enter the full path of the volume to decrypt: ")
+      path = Path(self.cmd_volumepath)
+      self.parent_path = path.parent.absolute()
+      os.chdir(self.parent_path)
+   
+   def restore_files(self, path, name):
+      os.chdir(path)
+      name_noExt = os.path.splitext(name)[0]
+      os.mkdir(name_noExt)
+      self.move_files("X:"+os.sep, path.__str__()+name_noExt)
             
    
    def prepare_launch(self):

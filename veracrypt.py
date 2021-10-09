@@ -15,3 +15,10 @@ class Veracrypt:
         self.fs.move_files(folderpath, "X:"+os.sep)
         subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
         self.fs.removeFolder(folderpath)
+
+    def VC_Decryption(self, volPath, password, folderpath):
+        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", volPath, "/letter", "x", "/password", password, "/quit", "/silent"])
+        self.fs.restore_files(folderpath, os.path.basename(volPath))
+        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
+        
+        

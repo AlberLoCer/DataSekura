@@ -40,22 +40,20 @@ class Password_permutator:
             result = result + ord(c)
         return result
 
-pwd = Password_permutator()   
-password = "1234567890ASFGHJKLaowfb89201..__voqlz"
-sum = pwd.ascii_sum(password)
-alpha = sum % len(password)
-msg = password[0:alpha]
-msgBytes = msg.encode('ascii')
-b64bytes = base64.b64encode(msgBytes)
-partA = b64bytes.decode('ascii')
-tail = password[alpha:len(password)-1]
-tailBytes = bytearray(tail, "ascii")
-partB = tailBytes.hex()
-passBytes = bytes(password,"ascii")
-partC = hashlib.sha512(passBytes).hexdigest()
-
-new_pwd = partA + partB + partC
-#print(new_pwd) 
+    def password_permutation(self, password):
+        sum = self.ascii_sum(password)
+        alpha = sum % len(password)
+        msg = password[0:alpha]
+        msgBytes = msg.encode('ascii')
+        b64bytes = base64.b64encode(msgBytes)
+        partA = b64bytes.decode('ascii')
+        tail = password[alpha:len(password)-1]
+        tailBytes = bytearray(tail, "ascii")
+        partB = tailBytes.hex()
+        passBytes = bytes(password,"ascii")
+        partC = hashlib.sha512(passBytes).hexdigest()
+        new_pwd = partA + partB + partC
+        return new_pwd
 #51*10^1080 years
 
 
