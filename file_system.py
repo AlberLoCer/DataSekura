@@ -45,7 +45,7 @@ class File_System_Dealer:
       os.chdir(path)
       name_noExt = os.path.splitext(name)[0]
       os.mkdir(name_noExt)
-      self.move_files("X:"+os.sep, path.__str__()+name_noExt)
+      self.move_files("X:"+os.sep, path.__str__()+os.sep+name_noExt)
             
    
    def prepare_launch(self):
@@ -70,10 +70,14 @@ class File_System_Dealer:
       os.chdir(source_folder)
       for root, subdirectories, files in os.walk(source_folder):
          for subdirectory in subdirectories:
+            print(subdirectory)
             shutil.move(subdirectory, destination_folder)
+            
 
          for file in files:
+            print(file)
             shutil.move(os.path.abspath(file), destination_folder)
+            
       path = Path(source_folder)
       os.chdir(path.parent.absolute())
 
