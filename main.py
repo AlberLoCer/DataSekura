@@ -1,19 +1,21 @@
 from pathlib import Path
 from password_permutator import Password_permutator
 import file_system
+from user_experience import User_experience
 from veracrypt import Veracrypt
 class Main:
     def __init__(self):
         self.fs = file_system.File_System_Dealer()
         self.pw = Password_permutator()
         self.vc = Veracrypt()
+        self.ux = User_experience()
         if self.vc.check_VC_integrity():
-            self.encrypt_decrypt_menu()
-            option = input()
-            if option == '1':   #Encryption
+            self.ux.encrypt_decrypt_menu()
+            encrypt_or_decrypt = self.ux.choice()
+            if encrypt_or_decrypt == '1':   #Encryption
                 self.encrypt()
             else:
-                if option == '2':
+                if encrypt_or_decrypt == '2': #Decryption
                     self.decrypt()
 
                 else:
@@ -39,85 +41,12 @@ class Main:
         folderPath = path_obj.parent.absolute()
         self.vc.VC_Decryption(self.fs.cmd_volumepath, self.cmd_password,folderPath)
 
-    def encrypt_decrypt_menu(self):
-        print("Coose the operation to perform: \n")
-        print("1. Encrypt a folder")
-        print("2. Decrypt a folder")
-        print("0. Exit")
-    
-    
 
-    def print_encryption_menu(self):
-        print("Choose an encryption algorithm: \n")
-        print("--ONE-LAYER ENCRYPTIONS--")
-        print("1. AES")
-        print("2. Serpent")
-        print("3. Twofish")
-        print("4. Camellia")
-        print("5. Kuznyechik")
-        print()
-        print("--ENCRYPTIONS IN CASCADE--")
-        print("6. TwoFish + AES")
-        print("7. Serpent + TwoFish + AES")
-        print("8. AES + Serpent")
-        print("9. AES + TwoFish + Serpent")
-        print("10. Serpent + TwoFish")
-        
-
-    def choose_encryption(self, input):
-        switcher = {
-            1: "aes",
-            2: "serpent",
-            3: "twofish",
-            4: "camellia",
-            5: "kuznyechik",
-            6: "aes(twofish)",
-            7: "aes(twofish(serpent))",
-            8: "serpent(aes)",
-            9: "serpent(twofish(aes))",
-            10: "twofish(serpent)"
-        }
-        self.cmd_encryption = switcher.get(int(input))
-
-    def print_hash_menu(self):
-        print("Choose a hash algorithm: \n")
-        print("1. SHA-256")
-        print("2. SHA-512")
-        print("3. Whirlpool")
-        print("4. Ripemd160")
-
-    def choose_hash(self, input):
-        switcher = {
-            1: "sha256",
-            2: "sha512",
-            3: "whirlpool",
-            4: "ripemd160",
-        }
-        self.cmd_hash = switcher.get(int(input))
-    
-    def print_fs_menu(self):
-        print("Choose a file-system for the partition: \n")
-        print("1. FAT")
-        print("2. NTFS")
-
-    def choose_fs(self, input):
-        switcher = {
-            1: "fat",
-            2: "ntfs",
-        }
-        self.cmd_fs = switcher.get(int(input))
-
-    def print_config_menu(self):
-        print("Encryption Settings: \n")
-        print("1. Automatic Configuration")
-        print("2. Custom Settings")
-    
     def user_input_encrypt(self):
-        self.print_config_menu()
-        option = input()
+        self.ux.print_config_menu()
+        option = self.ux.choice()
         if option == '1':
             self.automatic_configuration()
-        
         else:
             self.custom_settings()
 
@@ -133,17 +62,17 @@ class Main:
 
 
     def custom_settings(self):
-        self.print_encryption_menu()
-        encryption = input()
-        self.choose_encryption(encryption)
+        self.ux.print_encryption_menu()
+        encryption = self.ux.choice()
+        self.cmd_encryption = self.ux.choose_encryption(encryption)
 
-        self.print_hash_menu()
-        hash = input()
-        self.choose_hash(hash)
+        self.ux.print_hash_menu()
+        hash = self.ux.choice()
+        self.cmd_hash = self.ux.choose_hash(hash)
 
-        self.print_fs_menu()
-        fs = input()
-        self.choose_fs(fs)
+        self.ux.print_fs_menu()
+        fs = self.ux.choice()
+        self.cmd_fs = self.ux.choose_fs(fs)
 
         self.fs.fetch_size(self.cmd_fs)
 
