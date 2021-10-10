@@ -20,7 +20,6 @@ class File_System_Dealer:
 
    def input_folder_encrypt(self):
       folder = input("Enter the folder to encrypt: ")
-      os.chdir(folder)
       self.folder_path = folder
       path = Path(folder)
       parent_path = path.parent.absolute()
@@ -44,20 +43,15 @@ class File_System_Dealer:
       self.parent_path = path.parent.absolute()
       os.chdir(self.parent_path)
    
+   def remove_file_extension(self, name):
+      return os.path.splitext(name)[0]
+   
    def restore_files(self, path, name):
       os.chdir(path)
-      name_noExt = os.path.splitext(name)[0]
+      name_noExt = self.remove_file_extension(name)
       os.mkdir(name_noExt)
       self.move_files("X:"+os.sep, path.__str__()+os.sep+name_noExt)
             
-   
-   def prepare_launch(self):
-      base = "C:"+os.sep
-      str = self.find("VeraCrypt.exe", base)
-      newPath = str.replace(os.sep, '/')
-      pathObject = Path(newPath)
-      VCpath = pathObject.parent.absolute()
-      os.chdir(VCpath)
 
    def fetch_size(self, fs):
       aux_size = self.get_folder_size(self.folder_path) 
@@ -83,9 +77,6 @@ class File_System_Dealer:
       parent = path.parent.absolute()
       os.chdir(parent)
 
-   def remove_file_ext(self,file):
-      name_noExt = os.path.splitext(file)[0]
-      return name_noExt
 
    def remove_config(self, path):
       conf_path = path + os.sep + "System Volume Information"

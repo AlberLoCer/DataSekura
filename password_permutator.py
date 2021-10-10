@@ -42,18 +42,28 @@ class Password_permutator:
 
     def password_permutation(self, password):
         sum = self.ascii_sum(password)
-        alpha = sum % len(password)
-        msg = password[0:alpha]
-        msgBytes = msg.encode('ascii')
-        b64bytes = base64.b64encode(msgBytes)
-        partA = b64bytes.decode('ascii')
-        tail = password[alpha:len(password)-1]
-        tailBytes = bytearray(tail, "ascii")
-        partB = tailBytes.hex()
-        passBytes = bytes(password,"ascii")
-        partC = hashlib.sha512(passBytes).hexdigest()
+        self.alpha = sum % len(password)
+        partA = self.pwd_part_A(password)
+        partB = self.pwd_part_B(password)
+        partC = self.pwd_part_C(password)
         new_pwd = partA + partB + partC
         return new_pwd
+    
+    def pwd_part_A(self,password):
+        msg = password[0:self.alpha]
+        msgBytes = msg.encode('ascii')
+        b64bytes = base64.b64encode(msgBytes)
+        return b64bytes.decode('ascii')
+    
+    def pwd_part_B(self, password):
+        tail = password[self.alpha:len(password)-1]
+        tailBytes = bytearray(tail, "ascii")
+        return tailBytes.hex()
+    
+    def pwd_part_C(self,password):
+        passBytes = bytes(password,"ascii")
+        return hashlib.sha512(passBytes).hexdigest()
+
 #51*10^1080 years
 
 

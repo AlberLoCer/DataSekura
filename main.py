@@ -11,20 +11,10 @@ class Main:
             self.encrypt_decrypt_menu()
             option = input()
             if option == '1':   #Encryption
-                self.fs.input_folder_encrypt()
-                self.user_input_encrypt()
-                self.fs.prepare_launch()
-                self.vc.VC_Encryption(self.fs.cmd_volumepath, self.cmd_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.cmd_volumesize, self.fs.folder_path)
+                self.encrypt()
             else:
                 if option == '2':
-                    self.fs.input_folder_decrypt()
-                    passw = input("Enter the password to decrypt: ")
-                    self.cmd_password = self.pw.password_permutation(passw)
-                    self.fs.prepare_launch()
-                    volpath = self.fs.cmd_volumepath
-                    path_obj = Path(volpath)
-                    folderPath = path_obj.parent.absolute()
-                    self.vc.VC_Decryption(self.fs.cmd_volumepath, self.cmd_password,folderPath)
+                    self.decrypt()
 
                 else:
                     print("Goodbye, take care.")
@@ -33,6 +23,22 @@ class Main:
             print("VeraCrypt could not be found in the system!")
         return
     
+    def encrypt(self):
+        self.fs.input_folder_encrypt()
+        self.user_input_encrypt()
+        self.vc.prepare_VC_launch()
+        self.vc.VC_Encryption(self.fs.cmd_volumepath, self.cmd_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.cmd_volumesize, self.fs.folder_path)
+    
+    def decrypt(self):
+        self.fs.input_folder_decrypt()
+        passw = input("Enter the password to decrypt: ")
+        self.cmd_password = self.pw.password_permutation(passw)
+        self.vc.prepare_VC_launch()
+        volpath = self.fs.cmd_volumepath
+        path_obj = Path(volpath)
+        folderPath = path_obj.parent.absolute()
+        self.vc.VC_Decryption(self.fs.cmd_volumepath, self.cmd_password,folderPath)
+
     def encrypt_decrypt_menu(self):
         print("Coose the operation to perform: \n")
         print("1. Encrypt a folder")

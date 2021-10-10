@@ -1,6 +1,7 @@
 class File_alterator:
     def __init__(self):
         return
+    
     def split_file(self, path, volName):
         CHUNK_SIZE = 1024
         file_number = 1
