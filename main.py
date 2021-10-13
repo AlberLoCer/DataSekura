@@ -1,11 +1,14 @@
 from pathlib import Path
+from file_dealing import File_alterator
 from password_permutator import Password_permutator
 import file_system
 from user_experience import User_experience
 from veracrypt import Veracrypt
+
 class Main:
     def __init__(self):
         self.fs = file_system.File_System_Dealer()
+        self.fd = File_alterator()
         self.pw = Password_permutator()
         self.vc = Veracrypt()
         self.ux = User_experience()
@@ -30,7 +33,8 @@ class Main:
         self.user_input_encrypt()
         self.vc.prepare_VC_launch()
         self.vc.VC_Encryption(self.fs.cmd_volumepath, self.cmd_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.cmd_volumesize, self.fs.folder_path)
-    
+        #self.fd.split_file(self.fs.cmd_volumepath, self.fs.cmd_foldername)
+
     def decrypt(self):
         self.fs.input_folder_decrypt()
         passw = input("Enter the password to decrypt: ")

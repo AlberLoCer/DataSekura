@@ -1,3 +1,4 @@
+import os
 class User_experience:
     def __init__(self):
         return
@@ -68,8 +69,7 @@ class User_experience:
             4: "ripemd160",
         }
         return switcher.get(int(input))
-    
-
+          
 
     def choose_fs(self, input):
         switcher = {

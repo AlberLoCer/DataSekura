@@ -1,5 +1,6 @@
 import os
 import pathlib
+from tkinter import filedialog
 import shutil
 from pathlib import Path
 import math
@@ -19,7 +20,7 @@ class File_System_Dealer:
       return size
 
    def input_folder_encrypt(self):
-      folder = input("Enter the folder to encrypt: ")
+      folder = filedialog.askdirectory(title="Select a folder to encrypt")
       self.folder_path = folder
       path = Path(folder)
       parent_path = path.parent.absolute()
