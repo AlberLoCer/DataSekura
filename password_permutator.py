@@ -63,6 +63,9 @@ class Password_permutator:
     def pwd_part_C(self,password):
         passBytes = bytes(password,"ascii")
         return hashlib.sha512(passBytes).hexdigest()
+    
+    def get_alpha(self):
+        return self.alpha
 
 #51*10^1080 years
 

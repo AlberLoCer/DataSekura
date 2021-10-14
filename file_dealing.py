@@ -1,9 +1,14 @@
+import os
+import math
+from password_permutator import Password_permutator
+
 class File_alterator:
-    def __init__(self):
+    def __init__(self, pwdperm):
+        self.pwdperm = pwdperm
         return
     
     def split_file(self, path, volName):
-        CHUNK_SIZE = 1024
+        CHUNK_SIZE = math.floor(os.path.getsize(path) / (self.pwdperm.get_alpha() + 2))
         file_number = 1
         with open(path, 'rb') as f:
             chunk = f.read(CHUNK_SIZE)

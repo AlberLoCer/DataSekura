@@ -39,7 +39,7 @@ class File_System_Dealer:
    
    
    def input_folder_decrypt(self):
-      self.cmd_volumepath = input("Enter the full path of the volume to decrypt: ")
+      self.cmd_volumepath = filedialog.askopenfilename(title="Select the volume to decrypt: ")
       path = Path(self.cmd_volumepath)
       self.parent_path = path.parent.absolute()
       os.chdir(self.parent_path)
