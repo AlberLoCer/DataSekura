@@ -67,6 +67,8 @@ class Password_permutator:
     def get_alpha(self):
         return self.alpha
 
+pwd = Password_permutator()
+print(pwd.password_permutation("patatas"))
 #51*10^1080 years
 
 
