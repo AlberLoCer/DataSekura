@@ -28,4 +28,6 @@ class File_alterator:
                 chunk_file_name = volname+"_"+repr(i)+".bin"
                 file = open(chunk_file_name, "rb")
                 myfile.write(file.read())
+                file.close()
+                os.remove(chunk_file_name)
                 i = i +1
