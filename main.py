@@ -33,8 +33,8 @@ class Main:
         self.user_input_encrypt()
         self.vc.prepare_VC_launch()
         self.vc.VC_Encryption(self.fs.cmd_volumepath, self.cmd_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.cmd_volumesize, self.fs.folder_path)
-        self.fd.split_file(self.fs.cmd_volumepath, self.fs.cmd_foldername)
-        self.fd.restore_file(self.fs.cmd_volumepath,self.fs.cmd_foldername)
+        self.fd.split_file(self.fs.cmd_volumepath, self.fs.cmd_foldername) #SSEFENC GOES ALSO HERE BY MERGE
+        self.fd.restore_file(self.fs.cmd_volumepath,self.fs.cmd_foldername) #JUST FOR TESTING!!!
 
     def decrypt(self):
         self.fs.input_folder_decrypt()
