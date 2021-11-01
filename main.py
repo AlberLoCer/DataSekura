@@ -50,6 +50,8 @@ class Main:
     def user_input_encrypt(self):
         self.ux.print_config_menu()
         option = self.ux.choice()
+        password = input ("Enter your password for encryption: ")
+        self.cmd_password = self.pw.password_permutation(password)
         if option == '1':
             self.automatic_configuration()
         else:
@@ -57,8 +59,6 @@ class Main:
 
 
     def automatic_configuration(self):
-        password = input ("Enter your password for encryption: ")
-        self.cmd_password = self.pw.password_permutation(password)
         self.cmd_encryption = "aes"
         self.cmd_hash = "sha512"
         self.cmd_fs = "fat"

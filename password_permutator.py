@@ -5,7 +5,7 @@ import binascii
 import codecs
 
 class Password_permutator:
-    def __init__(self,pwd):
+    def __init__(self):
         return
     
     def rot13(self,pwd):

@@ -5,8 +5,7 @@ from password_permutator import Password_permutator
 
 class File_alterator:
     def __init__(self, pwd):
-        self.pwdperm = Password_permutator()
-        self.pwd = pwd
+        self.pwdperm = pwd
         self.pwdDict = dict()
         return
     
