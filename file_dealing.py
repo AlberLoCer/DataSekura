@@ -10,13 +10,14 @@ class File_alterator:
         return
     
     def populateDict(self):
-        self.pwdDict[0] = self.pwdperm.password_permutation(self.pwd)
+        self.pwdDict[0] = self.pwdperm.basePwd
         self.pwdDict[1] = self.pwdperm.rot13(self.pwdDict[0])
         i = 2
         while (i <= self.file_number):
-            bin1 = self.pwdperm.to_bin(self.pwdDict[i-1])
-            bin2 = self.pwdperm.to_bin(self.pwdDict[i-2])
-            passw = xor(bin1, bin2)
+            ord1 = self.pwdperm.to_bin(self.pwdDict[i-1])
+            print(type(ord1))
+            ord2 = self.pwdperm.to_bin(self.pwdDict[i-2])
+            passw = bytes(a ^ b for (a, b) in zip(ord1, ord2))
             self.pwdDict[i] = self.pwdperm.to_ascii(passw)
             i = i+1
         
