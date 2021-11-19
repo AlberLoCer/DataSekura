@@ -15,13 +15,17 @@ class File_alterator:
         length = len(self.pwdperm.permutedPwd)
         basePos = (alpha + (length*beta)) % length
         for i in range(self.file_number):
-            pos = basePos+i
+            pos = ((basePos^i)*(alpha + beta))%length
             pwd = self.pwdperm.intermediate_permutation(i)
             index = pos + len(pwd)
             whole_length = (len(pwd) + len(self.pwdperm.permutedPwd))
-            self.pwdDict[i] = self.pwdperm.permutedPwd[0:pos] + pwd + self.pwdperm.permutedPwd[index:whole_length]
+            aux = self.pwdperm.permutedPwd[0:pos] + pwd + self.pwdperm.permutedPwd[index:whole_length]
+            self.pwdDict[i] = self.pwdperm.rot_files(aux,i)
         
-        print(self.pwdDict)
+        for i in self.pwdDict:
+            print(repr(i) + ": "+ self.pwdDict[i])
+        
+
 
     def split_file(self, path, volName):
         CHUNK_SIZE = math.floor(os.path.getsize(path) / (self.pwdperm.get_alpha() + 2))
