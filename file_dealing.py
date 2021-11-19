@@ -10,18 +10,18 @@ class File_alterator:
         return
     
     def populateDict(self):
-        self.pwdDict[0] = self.pwdperm.basePwd
-        self.pwdDict[1] = self.pwdperm.rot13(self.pwdDict[0])
-        i = 2
-        while (i <= self.file_number):
-            ord1 = self.pwdperm.to_bin(self.pwdDict[i-1])
-            print(type(ord1))
-            ord2 = self.pwdperm.to_bin(self.pwdDict[i-2])
-            passw = bytes(a ^ b for (a, b) in zip(ord1, ord2))
-            self.pwdDict[i] = self.pwdperm.to_ascii(passw)
-            i = i+1
+        beta = self.pwdperm.get_beta()
+        alpha = self.pwdperm.get_alpha()
+        length = len(self.pwdperm.permutedPwd)
+        basePos = (alpha + (length*beta)) % length
+        for i in range(self.file_number):
+            pos = basePos+i
+            pwd = self.pwdperm.intermediate_permutation(i)
+            index = pos + len(pwd)
+            whole_length = (len(pwd) + len(self.pwdperm.permutedPwd))
+            self.pwdDict[i] = self.pwdperm.permutedPwd[0:pos] + pwd + self.pwdperm.permutedPwd[index:whole_length]
         
-
+        print(self.pwdDict)
 
     def split_file(self, path, volName):
         CHUNK_SIZE = math.floor(os.path.getsize(path) / (self.pwdperm.get_alpha() + 2))

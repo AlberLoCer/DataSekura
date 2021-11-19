@@ -16,26 +16,14 @@ class Password_permutator:
         self.rot_pwd = aux
         return aux
     
-    def toOrd(self,pwd):
-        ord_list=[]
-        pwdStr = repr(pwd)
-        for i in pwdStr:
-            ord_list.append(ord(i))
-        return ord_list
-    
-    def xor(self, a, b):
-        res = []
-        smallest = min(len(a),len(b))
-        for i in range(smallest):
-            res.append(a[i]^b[i])
-        return res
-    
-    def toString(self, ord_list):
-        ascii_result = ""
-        for i in ord_list:
-            ascii_result = ascii_result + chr(int(i))
-        return ascii_result
-    
+    def merge(self, pwd, rot):
+        merged = ""
+        for i in range (len(pwd)):
+            if i % 2 == 0:
+                merged = merged + pwd[i]
+            else:
+                merged = merged + rot[i]
+        return merged
 
     def ascii_sum(self, str):
         result = 0
@@ -44,15 +32,21 @@ class Password_permutator:
         return result
 
     def password_permutation(self, password):
+        self.basePwd = password
         sum = self.ascii_sum(password)
         self.alpha = sum % len(password)
         self.beta = len(password)-self.alpha
         partA = self.pwd_part_A(password)
         partB = self.pwd_part_B(password)
         new_pwd = partA + partB
-        self.basePwd = new_pwd
+        self.permutedPwd = new_pwd
         return new_pwd
     
+    def intermediate_permutation(self, index):
+        rot_passw = pwd.rot_files(self.basePwd, index)
+        final_pass = pwd.merge(self.basePwd,rot_passw)
+        return final_pass
+
     def pwd_part_A(self,password):
         msg = password[0:self.alpha]
         msgBytes = msg.encode('ascii')
@@ -65,14 +59,16 @@ class Password_permutator:
     
     def get_alpha(self):
         return self.alpha
+    
+    def get_beta(self):
+        return (len(self.basePwd) - self.alpha)
+    
 
 pwd = Password_permutator()
 passw = "patatas"
 rot_passw = pwd.rot_files(passw, 2)
-ord_passw = pwd.toOrd(passw)
-ord_rot = pwd.toOrd(rot_passw)
-xor_passw = pwd.xor(ord_passw,ord_rot)
-final_passw = pwd.toString(xor_passw)
+final_pass = pwd.merge(passw,rot_passw)
+print(final_pass)
 
 
     
