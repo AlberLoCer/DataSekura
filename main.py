@@ -36,9 +36,9 @@ class Main:
         self.fd.split_file(self.fs.cmd_volumepath, self.fs.cmd_foldername) #SSEFENC GOES ALSO HERE BY MERGE
         self.fd.populateDict()
         self.fd.intermediate_encryption()
-        self.fd.intermediate_decryption()
-        self.fd.restore_file(self.fs.cmd_foldername)
-
+        self.fs.folder_aggregation(self.fs.get_parent(self.fs.folder_path), self.fs.cmd_foldername, self.fd.file_number)
+        self.fs.folder_decompossition(self.fs.get_parent(self.fs.folder_path), self.fs.cmd_foldername, self.fd.file_number)
+        
     def decrypt(self):
         self.fs.input_folder_decrypt()
         passw = input("Enter the password to decrypt: ")

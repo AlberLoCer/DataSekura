@@ -19,6 +19,11 @@ class File_System_Dealer:
          size+=os.path.getsize(ele)
       return size
 
+   def get_parent(self,folder):
+      path = Path(folder)
+      parent_path = path.parent.absolute()
+      return parent_path
+
    def input_folder_encrypt(self):
       folder = filedialog.askdirectory(title="Select a folder to encrypt")
       self.folder_path = folder
@@ -87,4 +92,24 @@ class File_System_Dealer:
 
       os.chdir(path)
       os.rmdir(conf_path)
+   
+   def folder_aggregation(self,path,volname,file_number):
+      os.chdir(path)
+      name = path.__str__()+os.sep+volname
+      os.mkdir(volname)
+      for i in range(1,file_number):
+            chunk_file_name = volname+"_"+repr(i)+".bin.enc"
+            shutil.move(os.path.abspath(chunk_file_name), name)  
+      return
+
+   def folder_decompossition(self,path,volname,file_number):
+      name = path.__str__()+os.sep+volname
+      os.chdir(name)
+      for i in range(1,file_number):
+            chunk_file_name = volname+"_"+repr(i)+".bin.enc"
+            shutil.move(chunk_file_name,path)  
+      os.chdir(path)
+      os.rmdir(volname)
+      return
+
    
