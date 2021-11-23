@@ -32,13 +32,22 @@ class Main:
         self.fs.input_folder_encrypt()
         self.user_input_encrypt()
         self.vc.prepare_VC_launch()
+        print("Encrypting base volume...")
         self.vc.VC_Encryption(self.fs.cmd_volumepath, self.cmd_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.cmd_volumesize, self.fs.folder_path)
+        print("Splitting and permutating the volume...")
         self.fd.split_file(self.fs.cmd_volumepath, self.fs.cmd_foldername) #SSEFENC GOES ALSO HERE BY MERGE
         self.fd.populateDict()
+        print("Encrypting milestone files...")
         self.fd.intermediate_encryption()
+        print("Aggregating files...")
         self.fs.folder_aggregation(self.fs.get_parent(self.fs.folder_path), self.fs.cmd_foldername, self.fd.file_number)
-        self.fs.folder_decompossition(self.fs.get_parent(self.fs.folder_path), self.fs.cmd_foldername, self.fd.file_number)
-        
+        print("Preparing last layer of encryption for launch...")
+        self.vc.prepare_VC_launch()
+        print("Encrypting last layer...")
+        self.vc.VC_Outer_Encryption(self.fs.cmd_volumepath, self.pw.password_permutation(self.cmd_password), self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.folder_path)
+        print("Encryption complete!")
+        print("Good luck!")
+
     def decrypt(self):
         self.fs.input_folder_decrypt()
         passw = input("Enter the password to decrypt: ")
@@ -65,7 +74,7 @@ class Main:
         self.cmd_encryption = "aes"
         self.cmd_hash = "sha512"
         self.cmd_fs = "fat"
-        self.fs.fetch_size(self.cmd_fs)
+        self.fs.fetch_size(self.fs.folder_path,self.cmd_fs)
         
 
 

@@ -30,7 +30,7 @@ class File_System_Dealer:
       path = Path(folder)
       parent_path = path.parent.absolute()
       self.cmd_foldername = os.path.basename(folder)
-      self.cmd_volumepath = parent_path.__str__()+os.sep+self.cmd_foldername+".hc"
+      self.cmd_volumepath = parent_path.__str__()+os.sep+self.cmd_foldername+".bin"
       print(parent_path)
       print(self.cmd_volumepath)
    
@@ -59,15 +59,16 @@ class File_System_Dealer:
       self.move_files("X:"+os.sep, path.__str__()+os.sep+name_noExt)
             
 
-   def fetch_size(self, fs):
-      aux_size = self.get_folder_size(self.folder_path) 
-      size = math.ceil((1.25 * aux_size)/1024)
+   def fetch_size(self, path, fs):
+      aux_size = self.get_folder_size(path) 
+      size = (math.ceil((1.25 * aux_size)/1024))
       min_size_switcher = {
          "fat": 292,
          "ntfs": 3792,
       }
       size_threshold = max(size, min_size_switcher.get(fs))
       self.cmd_volumesize = repr(size_threshold)+"K"
+      return self.cmd_volumesize
 
    def move_files(self, source_folder, destination_folder):
       os.chdir(source_folder)
