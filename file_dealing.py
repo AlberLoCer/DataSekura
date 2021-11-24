@@ -10,29 +10,29 @@ class File_alterator:
         self.pwdDict = dict()
         return
     
-    def populateDict(self):
-        beta = self.pwdperm.get_beta()
-        alpha = self.pwdperm.get_alpha()
-        length = len(self.pwdperm.permutedPwd)
+    def populateDict(self, alpha, beta, length,base):
         basePos = (alpha + (length*beta)) % length
+        print(self.file_number)
         for i in range(1, self.file_number):
             pos = ((basePos^i)*(alpha + beta))%length
             pwd = self.pwdperm.intermediate_permutation(i)
             index = pos + len(pwd)
-            whole_length = (len(pwd) + len(self.pwdperm.permutedPwd))
+            whole_length = (len(pwd) + len(base))
             print("Intermediate password " + repr(i) + " inserted at " + repr(pos))
-            aux = self.pwdperm.permutedPwd[0:pos] + pwd + self.pwdperm.permutedPwd[index:whole_length]
+            aux = base[0:pos] + pwd + base[index:whole_length]
             self.pwdDict[i] = self.pwdperm.rot_files(aux,i)
         
         for i in self.pwdDict:
             print(repr(i) + ": "+ self.pwdDict[i])
+    
+    
     
     def intermediate_encryption(self):
         for i in range(1,self.file_number):
             chunk_file_name = self.base_file_name+"_"+repr(i)+".bin"
             subprocess.call(['java', '-Xmx1g', '-jar', 'ssefenc.jar', chunk_file_name, self.pwdDict[i], 'aes'])
             os.remove(chunk_file_name)
-            print("File: "+ repr(i)+ " encrypted!")
+            print("File: "+ repr(i)+ " encrypted with pass: " + self.pwdDict[i])
         return
     
     def intermediate_decryption(self):
@@ -40,7 +40,7 @@ class File_alterator:
             chunk_file_name = self.base_file_name+"_"+repr(i)+".bin.enc"
             subprocess.call(['java', '-Xmx1g', '-jar', 'ssefenc.jar', chunk_file_name, self.pwdDict[i], 'aes'])
             os.remove(chunk_file_name)
-            print("File: "+ repr(i)+ " decrypted!")
+            print("File: "+ repr(i)+ " decrypted with pass: " + self.pwdDict[i])
         return
     
         

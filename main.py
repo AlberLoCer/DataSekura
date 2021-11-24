@@ -36,7 +36,7 @@ class Main:
         self.vc.VC_Encryption(self.fs.cmd_volumepath, self.cmd_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.cmd_volumesize, self.fs.folder_path)
         print("Splitting and permutating the volume...")
         self.fd.split_file(self.fs.cmd_volumepath, self.fs.cmd_foldername) #SSEFENC GOES ALSO HERE BY MERGE
-        self.fd.populateDict()
+        self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.pw.permutedPwd),self.pw.permutedPwd)
         print("Encrypting milestone files...")
         self.fd.intermediate_encryption()
         print("Aggregating files...")
@@ -51,12 +51,23 @@ class Main:
     def decrypt(self):
         self.fs.input_folder_decrypt()
         passw = input("Enter the password to decrypt: ")
-        self.cmd_password = self.pw.password_permutation(passw)
+        base = self.pw.password_permutation(passw)
         self.vc.prepare_VC_launch()
         volpath = self.fs.cmd_volumepath
         path_obj = Path(volpath)
         folderPath = path_obj.parent.absolute()
-        self.vc.VC_Decryption(self.fs.cmd_volumepath, self.cmd_password,folderPath)
+        self.fd.base_file_name = path_obj.stem
+        alpha = self.pw.get_alpha()
+        beta = self.pw.get_beta()
+        length = len(self.pw.permutedPwd)
+        outer_pass = self.pw.password_permutation(base)
+        self.vc.VC_Decryption(self.fs.cmd_volumepath,outer_pass ,folderPath)
+        self.fd.file_number = self.fs.retake_file_number(self.fs.remove_file_extension(self.fs.cmd_volumepath))
+        self.fd.populateDict(alpha,beta,length,base)
+        self.fs.folder_decompossition(folderPath,self.fd.base_file_name,self.fd.file_number)
+        self.fd.intermediate_decryption()
+        self.fd.restore_file(self.fs.cmd_foldername)
+        self.vc.VC_Decryption(self.fs.cmd_volumepath, base,folderPath)
 
 
     def user_input_encrypt(self):

@@ -18,6 +18,12 @@ class File_System_Dealer:
       for ele in os.scandir(path):
          size+=os.path.getsize(ele)
       return size
+   
+   def retake_file_number(self, path):
+      elems = 1
+      for ele in os.scandir(path):
+         elems+=1
+      return elems
 
    def get_parent(self,folder):
       path = Path(folder)
