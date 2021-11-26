@@ -42,9 +42,9 @@ class Password_permutator:
         self.permutedPwd = new_pwd
         return new_pwd
     
-    def intermediate_permutation(self, index):
-        rot_passw = pwd.rot_files(self.basePwd, index)
-        final_pass = pwd.merge(self.basePwd,rot_passw)
+    def intermediate_permutation(self, index,passw):
+        rot_passw = pwd.rot_files(passw, index)
+        final_pass = pwd.merge(passw,rot_passw)
         return final_pass
 
     def pwd_part_A(self,password):

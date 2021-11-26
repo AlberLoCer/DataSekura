@@ -15,7 +15,7 @@ class File_alterator:
         print(self.file_number)
         for i in range(1, self.file_number):
             pos = ((basePos^i)*(alpha + beta))%length
-            pwd = self.pwdperm.intermediate_permutation(i)
+            pwd = self.pwdperm.intermediate_permutation(i,base)
             index = pos + len(pwd)
             whole_length = (len(pwd) + len(base))
             print("Intermediate password " + repr(i) + " inserted at " + repr(pos))
@@ -61,7 +61,7 @@ class File_alterator:
         os.remove(path)
     
     def restore_file(self,volname):
-        fname = volname + ".hc"
+        fname = volname + ".bin"
         with open(fname, "wb") as myfile:
             i = 1
             while i < self.file_number:

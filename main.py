@@ -52,7 +52,9 @@ class Main:
         self.fs.input_folder_decrypt()
         passw = input("Enter the password to decrypt: ")
         base = self.pw.password_permutation(passw)
+        print("Preparing decryption environment...")
         self.vc.prepare_VC_launch()
+        print("Fetching parameters...")
         volpath = self.fs.cmd_volumepath
         path_obj = Path(volpath)
         folderPath = path_obj.parent.absolute()
@@ -61,13 +63,20 @@ class Main:
         beta = self.pw.get_beta()
         length = len(self.pw.permutedPwd)
         outer_pass = self.pw.password_permutation(base)
+        print("Decrypting outer layer...")
         self.vc.VC_Decryption(self.fs.cmd_volumepath,outer_pass ,folderPath)
+        print("Fetching inner fragments...")
         self.fd.file_number = self.fs.retake_file_number(self.fs.remove_file_extension(self.fs.cmd_volumepath))
         self.fd.populateDict(alpha,beta,length,base)
         self.fs.folder_decompossition(folderPath,self.fd.base_file_name,self.fd.file_number)
+        print("Decrypting milestone layers...")
         self.fd.intermediate_decryption()
-        self.fd.restore_file(self.fs.cmd_foldername)
+        print("Restoring file...")
+        self.fd.restore_file(self.fd.base_file_name)
+        print("Decrypting inner layer...")
         self.vc.VC_Decryption(self.fs.cmd_volumepath, base,folderPath)
+        print("Decryption Complete!")
+        print("Stay safe!")
 
 
     def user_input_encrypt(self):
