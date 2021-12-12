@@ -13,7 +13,8 @@ class Main:
         self.fd = File_alterator(self.pw)
         self.vc = Veracrypt()
         self.ux = User_experience()
-        if self.vc.check_VC_integrity():
+        self.VCpath = self.vc.check_VC_integrity()
+        if self.VCpath != '':
             self.ux.encrypt_decrypt_menu()
             encrypt_or_decrypt = self.ux.choice()
             if encrypt_or_decrypt == '1':   #Encryption
@@ -27,6 +28,8 @@ class Main:
                     quit()
         else:
             print("VeraCrypt could not be found in the system!")
+            print("VeraCrypt is an essential component in DataSekura.")
+            print("Please visit https://www.veracrypt.fr/en/Downloads.html for downloading it,")
         return
     
     def encrypt(self):
