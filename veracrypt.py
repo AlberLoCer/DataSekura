@@ -2,6 +2,7 @@ import os
 import subprocess
 from pathlib import Path
 import file_system
+from tkinter import filedialog
 class Veracrypt:
     def __init__(self):
         self.fs = file_system.File_System_Dealer()
@@ -16,7 +17,21 @@ class Veracrypt:
         os.chdir(VCpath)
 
     def check_VC_integrity(self):
-        return os.path.isdir("C:/Program Files/VeraCrypt") and os.path.isfile("C:/Program Files/VeraCrypt/VeraCrypt Format.exe")
+        if os.path.isdir("C:/Program Files/VeraCrypt") and os.path.isfile("C:/Program Files/VeraCrypt/VeraCrypt Format.exe"):
+            return "C:/Program Files/VeraCrypt"
+        else:
+            print("VeraCrypt could not be found in your system.")
+            print("Please select the container folder of VeraCrypt in your system:")
+            path = filedialog.askdirectory()
+            if os.path.isdir(path):
+                os.chdir(path)
+                if os.path.isfile("VeraCrypt Format.exe") and os.path.isfile("VeraCrypt.exe"):
+                    return path
+                else:
+                    return ''
+            else:
+                return ''
+        
 
     def VC_Encryption(self, volPath, password, hash, encryption, fs, size, folderpath):
         subprocess.call(["VeraCrypt Format.exe","/create", volPath,"/password", password, "/hash", hash, "/encryption", encryption, "/filesystem", fs, "/size", size])
