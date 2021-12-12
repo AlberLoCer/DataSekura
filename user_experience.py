@@ -1,7 +1,12 @@
 import os
+from tkinter import filedialog
 class User_experience:
     def __init__(self):
         return
+    
+    def choose_folder(self, text):
+        path = filedialog.askdirectory(text)
+        return path
 
     def encrypt_decrypt_menu(self):
         print("Coose the operation to perform: \n")

@@ -1,11 +1,13 @@
 import os
 import pathlib
-from tkinter import filedialog
+from tkinter import *
 import shutil
 from pathlib import Path
 import math
+from tkinter import filedialog
 class File_System_Dealer:
    def __init__(self):
+      self.root = Tk()
       return
    
    def find(self, name, path):
@@ -119,4 +121,4 @@ class File_System_Dealer:
       os.rmdir(volname)
       return
 
-   
+
