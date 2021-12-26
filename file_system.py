@@ -88,12 +88,10 @@ class File_System_Dealer:
    def fetch_size(self, path, fs):
       aux_size = self.get_folder_size(path) 
       size = (math.ceil((1.75 * aux_size)/1024))
-      min_size_switcher = {
-         "fat": 292,
-         "ntfs": 3792,
-      }
-      size_threshold = max(size, min_size_switcher.get(fs))
-      self.cmd_volumesize = repr(size_threshold)+"K"
+      size = size/1024 #MB
+      threshold = 4
+      size_exported = max(size, threshold)
+      self.cmd_volumesize = repr(size_exported)+"M"
       return self.cmd_volumesize
 
    def move_files(self, source_folder, destination_folder):
