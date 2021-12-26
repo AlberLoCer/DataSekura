@@ -4,41 +4,36 @@ from pathlib import Path
 import file_system
 from tkinter import filedialog
 class Veracrypt:
-    def __init__(self):
+    def __init__(self, path):
         self.fs = file_system.File_System_Dealer()
+        self.VCpath = path
         return
-        
-    def prepare_VC_launch(self):
-        base = "C:"+os.sep
-        str = self.fs.find("VeraCrypt.exe", base)
-        newPath = str.replace(os.sep, '/')
-        pathObject = Path(newPath)
-        VCpath = pathObject.parent.absolute()
-        os.chdir(VCpath)
 
-    def check_VC_integrity(self):
-        if os.path.isdir("C:/Program Files/VeraCrypt") and os.path.isfile("C:/Program Files/VeraCrypt/VeraCrypt Format.exe"):
-            return "C:/Program Files/VeraCrypt"
-        else:
-            print("VeraCrypt could not be found in your system.")
-            print("Please select the container folder of VeraCrypt in your system:")
-            path = filedialog.askdirectory()
-            if os.path.isdir(path):
-                os.chdir(path)
-                if os.path.isfile("VeraCrypt Format.exe") and os.path.isfile("VeraCrypt.exe"):
-                    return path
-                else:
-                    return ''
-            else:
-                return ''
-        
 
     def VC_Encryption(self, volPath, password, hash, encryption, fs, size, folderpath):
-        subprocess.call(["VeraCrypt Format.exe","/create", volPath,"/password", password, "/hash", hash, "/encryption", encryption, "/filesystem", fs, "/size", size])
-        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", volPath, "/letter", "x", "/password", password, "/quit", "/silent"])
-        self.fs.move_files(folderpath, "X:"+os.sep)
-        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
+        os.chdir(self.VCpath)
+        try:
+            subprocess.call(["VeraCrypt Format.exe","/create", volPath,"/password", password, "/hash", hash, "/encryption", encryption, "/filesystem", fs, "/size", "1223K"])
+            subprocess.call(["VeraCrypt.exe", "/volume", volPath, "/letter", "x", "/password", password, "/quit", "/silent"])
+        except Exception as e:
+            print("Failed while creating encrypted volume: " + e.__str__())
+            if(os.path.isfile(volPath)):
+                os.remove(volPath)
+            return -1
+        try:
+            self.fs.move_files(folderpath, "X:"+os.sep)
+            raise Exception("")
+        except Exception as e:
+            print("Could not move files to encrypted container" + e.__str__())
+            if(os.path.isdir("X:"+os.sep)):
+                os.chdir(self.VCpath)
+                subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
+                os.remove(volPath)
+            return -1
+        subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
         self.fs.removeFolder(folderpath)
+
+
     
     def VC_Outer_Encryption(self, volPath, password, hash, encryption, fs, folderpath):
         print(folderpath)

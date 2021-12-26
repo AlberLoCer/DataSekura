@@ -10,6 +10,24 @@ class File_System_Dealer:
       self.root = Tk()
       return
    
+   def check_VC_integrity(self):
+      #Now the checking is more exhaustive
+      if os.path.isdir("C:/Program Files/VeraCrypt") and os.path.isfile("C:/Program Files/VeraCrypt/VeraCrypt Format.exe"):
+         return "C:/Program Files/VeraCrypt"
+      else:
+         print("VeraCrypt could not be found in your system.")
+         print("Please select the container folder of VeraCrypt in your system:")
+         path = filedialog.askdirectory()
+         if os.path.isdir(path):
+               os.chdir(path)
+               if os.path.isfile("VeraCrypt Format.exe") and os.path.isfile("VeraCrypt.exe"):
+                  return path
+               else:
+                  return ''
+         else:
+               return ''
+
+
    def find(self, name, path):
       for root, dirs, files in os.walk(path):
          if name in files:
@@ -33,14 +51,14 @@ class File_System_Dealer:
       return parent_path
 
    def input_folder_encrypt(self):
+      folderDict = dict()
       folder = filedialog.askdirectory(title="Select a folder to encrypt")
-      self.folder_path = folder
-      path = Path(folder)
-      parent_path = path.parent.absolute()
-      self.cmd_foldername = os.path.basename(folder)
-      self.cmd_volumepath = parent_path.__str__()+os.sep+self.cmd_foldername+".bin"
-      print(parent_path)
-      print(self.cmd_volumepath)
+      folderDict["folder_path"] = folder
+      folderDict["folder_path_obj"] = Path(folder)
+      folderDict["folder_parent"] = folderDict["folder_path_obj"].parent.absolute()
+      folderDict["folder_name"] = os.path.basename(folder)
+      folderDict["volume_path"] = folderDict["folder_parent"].__str__()+os.sep+folderDict["folder_name"]+".bin"
+      return folderDict
    
    def delete_vol(self, path):
       path_obj = Path(path)
@@ -69,7 +87,7 @@ class File_System_Dealer:
 
    def fetch_size(self, path, fs):
       aux_size = self.get_folder_size(path) 
-      size = (math.ceil((1.25 * aux_size)/1024))
+      size = (math.ceil((1.75 * aux_size)/1024))
       min_size_switcher = {
          "fat": 292,
          "ntfs": 3792,

@@ -11,10 +11,10 @@ class Main:
         self.fs = file_system.File_System_Dealer()
         self.pw = Password_permutator()
         self.fd = File_alterator(self.pw)
-        self.vc = Veracrypt()
         self.ux = User_experience()
-        self.VCpath = self.vc.check_VC_integrity()
+        self.VCpath = self.fs.check_VC_integrity()
         if self.VCpath != '':
+            self.vc = Veracrypt(self.VCpath)
             self.ux.encrypt_decrypt_menu()
             encrypt_or_decrypt = self.ux.choice()
             if encrypt_or_decrypt == '1':   #Encryption
@@ -29,18 +29,22 @@ class Main:
         else:
             print("VeraCrypt could not be found in the system!")
             print("VeraCrypt is an essential component in DataSekura.")
-            print("Please visit https://www.veracrypt.fr/en/Downloads.html for downloading it,")
+            print("Please visit https://www.veracrypt.fr/en/Downloads.html for downloading it.")
         return
     
     def encrypt(self):
-        self.fs.input_folder_encrypt()
+        self.folderDict = self.fs.input_folder_encrypt()
         self.user_input_encrypt()
-        self.vc.prepare_VC_launch()
+        self.password_input()
         print("Encrypting base volume...")
-        self.vc.VC_Encryption(self.fs.cmd_volumepath, self.cmd_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.cmd_volumesize, self.fs.folder_path)
+        if self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
+            return
+        else:
+            print("First layer of encryption successfully created!")
         print("Splitting and permutating the volume...")
-        self.fd.split_file(self.fs.cmd_volumepath, self.fs.cmd_foldername) #SSEFENC GOES ALSO HERE BY MERGE
-        self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.pw.permutedPwd),self.pw.permutedPwd)
+        self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) #SSEFENC GOES ALSO HERE BY MERGE
+        self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
+        #TODO from here
         print("Encrypting milestone files...")
         self.fd.intermediate_encryption()
         print("Aggregating files...")
@@ -82,12 +86,14 @@ class Main:
         print("Decryption Complete!")
         print("Stay safe!")
 
+    def password_input(self):
+        self.base_password = input ("Enter your password for encryption: ")
+        self.permuted_password = self.pw.password_permutation(self.base_password)
+
 
     def user_input_encrypt(self):
         self.ux.print_config_menu()
         option = self.ux.choice()
-        password = input ("Enter your password for encryption: ")
-        self.cmd_password = self.pw.password_permutation(password)
         if option == '1':
             self.automatic_configuration()
         else:
@@ -98,7 +104,7 @@ class Main:
         self.cmd_encryption = "aes"
         self.cmd_hash = "sha512"
         self.cmd_fs = "fat"
-        self.fs.fetch_size(self.fs.folder_path,self.cmd_fs)
+        self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"],self.cmd_fs)
         
 
 
@@ -115,7 +121,7 @@ class Main:
         fs = self.ux.choice()
         self.cmd_fs = self.ux.choose_fs(fs)
 
-        self.fs.fetch_size(self.cmd_fs)
+        self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"], self.cmd_fs)
 
     
 
