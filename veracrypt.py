@@ -13,7 +13,7 @@ class Veracrypt:
     def VC_Encryption(self, volPath, password, hash, encryption, fs, size, folderpath):
         os.chdir(self.VCpath)
         try:
-            subprocess.call(["VeraCrypt Format.exe","/create", volPath,"/password", password, "/hash", hash, "/encryption", encryption, "/filesystem", fs, "/size", size])
+            subprocess.call(["VeraCrypt Format.exe","/create", volPath,"/password", password, "/hash", hash, "/encryption", encryption, "/filesystem", fs, "/size", size,"/silent"])
             subprocess.call(["VeraCrypt.exe", "/volume", volPath, "/letter", "x", "/password", password, "/quit", "/silent"])
         except Exception as e:
             print("Failed while creating encrypted volume: " + e.__str__())
@@ -22,7 +22,6 @@ class Veracrypt:
             return -1
         try:
             self.fs.move_files(folderpath, "X:"+os.sep)
-            raise Exception("")
         except Exception as e:
             print("Could not move files to encrypted container" + e.__str__())
             if(os.path.isdir("X:"+os.sep)):
@@ -31,10 +30,12 @@ class Veracrypt:
                 os.chdir(self.VCpath)
                 subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
                 os.remove(volPath)
-
             return -1
+        os.chdir(self.VCpath)
         subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
         self.fs.removeFolder(folderpath)
+
+        
 
 
     

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from file_dealing import File_alterator
 from password_permutator import Password_permutator
@@ -42,7 +43,13 @@ class Main:
         else:
             print("First layer of encryption successfully created!")
         print("Splitting and permutating the volume...")
-        self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) #SSEFENC GOES ALSO HERE BY MERGE
+
+        if  self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) == -1: 
+            print("Could not split encrypted file")
+            return
+        else:
+            print("Encrypted file succesfully splitted")
+
         self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
         #TODO from here
         print("Encrypting milestone files...")

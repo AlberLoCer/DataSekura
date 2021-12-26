@@ -1,5 +1,7 @@
 import os
+import pathlib
 import math
+import shutil
 from operator import xor
 from password_permutator import Password_permutator
 import subprocess
@@ -47,18 +49,28 @@ class File_alterator:
 
 
     def split_file(self, path, volName):
+        pathObj = pathlib.Path(path)
+        os.chdir(pathObj.parent.absolute())
         CHUNK_SIZE = math.floor(os.path.getsize(path) / (self.pwdperm.get_alpha() + 2))
-        self.file_number = 1
-        with open(path, 'rb') as f:
-            chunk = f.read(CHUNK_SIZE)
-            while chunk:
-                self.base_file_name = volName
-                chunk_file_name = volName+"_"+repr(self.file_number)+".bin"
-                chunk_file = open(chunk_file_name,'wb')
-                chunk_file.write(chunk)
-                self.file_number += 1
+        total, used, free = shutil.disk_usage(path)
+        free_space_MB = free // (2**20)
+        if ((CHUNK_SIZE*(self.pwdperm.get_alpha() + 2))/1024)/1024 < free_space_MB:
+            self.file_number = 1
+            with open(path, 'rb') as f:
                 chunk = f.read(CHUNK_SIZE)
-        os.remove(path)
+                while chunk:
+                    self.base_file_name = volName
+                    chunk_file_name = volName+"_"+repr(self.file_number)+".bin"
+                    chunk_file = open(chunk_file_name,'wb')
+                    chunk_file.write(chunk)
+                    self.file_number += 1
+                    chunk = f.read(CHUNK_SIZE)
+            f.close()
+            os.remove(path)
+        else:
+            return -1
+        
+    
     
     def restore_file(self,volname):
         fname = volname + ".bin"
