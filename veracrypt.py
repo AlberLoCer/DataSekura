@@ -49,11 +49,12 @@ class Veracrypt:
         self.fs.removeFolder(folderpath)
 
     def VC_Decryption(self, volPath, password, folderpath):
+        os.chdir(self.VCpath)
         subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", volPath, "/letter", "x", "/password", password, "/quit", "/silent"])
         self.fs.restore_files(folderpath, os.path.basename(volPath))
+        os.chdir(self.VCpath)
         subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
-        folder = folderpath.__str__() + os.sep + self.fs.remove_file_extension(os.path.basename(volPath))
-        self.fs.remove_config(folder)
+        self.fs.remove_config(folderpath)
         self.fs.delete_vol(volPath)
         
         

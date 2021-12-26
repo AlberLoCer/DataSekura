@@ -45,7 +45,8 @@ class Main:
         print("Splitting and permutating the volume...")
 
         if  self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) == -1: 
-            print("Could not split encrypted file")
+            print("Could not split encrypted file: Not enough space on device for performing the operation")
+            self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
             return
         else:
             print("Encrypted file succesfully splitted")

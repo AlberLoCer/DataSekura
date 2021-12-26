@@ -79,10 +79,12 @@ class File_System_Dealer:
       return os.path.splitext(name)[0]
    
    def restore_files(self, path, name):
-      os.chdir(path)
+      pathObj = pathlib.Path(path)
+      parent = pathObj.parent.absolute()
+      os.chdir(parent)
       name_noExt = self.remove_file_extension(name)
       os.mkdir(name_noExt)
-      self.move_files("X:"+os.sep, path.__str__()+os.sep+name_noExt)
+      self.move_files("X:"+os.sep, path)
             
 
    def fetch_size(self, path, fs):
@@ -111,12 +113,13 @@ class File_System_Dealer:
 
    def remove_config(self, path):
       conf_path = path + os.sep + "System Volume Information"
-      for filename in os.listdir(conf_path):
-         file_path = os.path.join(conf_path, filename)
-         os.remove(file_path)
+      if os.path.isdir(conf_path):
+         for filename in os.listdir(conf_path):
+            file_path = os.path.join(conf_path, filename)
+            os.remove(file_path)
 
-      os.chdir(path)
-      os.rmdir(conf_path)
+         os.chdir(path)
+         os.rmdir(conf_path)
    
    def folder_aggregation(self,path,volname,file_number):
       os.chdir(path)

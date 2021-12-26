@@ -54,7 +54,8 @@ class File_alterator:
         CHUNK_SIZE = math.floor(os.path.getsize(path) / (self.pwdperm.get_alpha() + 2))
         total, used, free = shutil.disk_usage(path)
         free_space_MB = free // (2**20)
-        if ((CHUNK_SIZE*(self.pwdperm.get_alpha() + 2))/1024)/1024 < free_space_MB:
+        space_required = (os.path.getsize(path)/1024)/1024
+        if space_required > free_space_MB:
             self.file_number = 1
             with open(path, 'rb') as f:
                 chunk = f.read(CHUNK_SIZE)
