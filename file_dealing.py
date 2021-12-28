@@ -15,14 +15,25 @@ class File_alterator:
     def populateDict(self, alpha, beta, length,base):
         basePos = (alpha + (length*beta)) % length
         print(self.file_number)
-        for i in range(1, self.file_number):
-            pos = ((basePos^i)*(alpha + beta))%length
-            pwd = self.pwdperm.intermediate_permutation(i,base)
-            index = pos + len(pwd)
-            whole_length = (len(pwd) + len(base))
-            print("Intermediate password " + repr(i) + " inserted at " + repr(pos))
-            aux = base[0:pos] + pwd + base[index:whole_length]
-            self.pwdDict[i] = self.pwdperm.rot_files(aux,i)
+
+        self.pwdDict[1] = self.pwdperm.password_permutation(base)
+        self.pwdDict[2] = self.pwdperm.password_permutation(base[::-1])
+        for i in range(3, self.file_number):
+            aux = self.pwdperm.merge(self.pwdDict[i-1], self.pwdDict[i-2])
+            index = (basePos^i)%length
+            if index % 2 == 0:
+                reversed_pwd = aux[::-1]
+                aux_perm = self.pwdperm.pwd_part_B(reversed_pwd)
+                aux = self.pwdperm.merge(reversed_pwd, aux_perm)
+
+            else:
+                reversed_pwd = reversed(aux[0::index]).__str__()
+                partA = self.pwdperm.pwd_part_A(reversed_pwd)
+                partB = aux[index::]
+                aux = partA[0::] + partB
+            
+            
+            self.pwdDict[i] = self.pwdperm.intermediate_permutation(index,aux)
         
         for i in self.pwdDict:
             print(repr(i) + ": "+ self.pwdDict[i])
@@ -55,7 +66,7 @@ class File_alterator:
         total, used, free = shutil.disk_usage(path)
         free_space_MB = free // (2**20)
         space_required = (os.path.getsize(path)/1024)/1024
-        if space_required > free_space_MB:
+        if space_required < free_space_MB:
             self.file_number = 1
             with open(path, 'rb') as f:
                 chunk = f.read(CHUNK_SIZE)

@@ -16,13 +16,14 @@ class Password_permutator:
         self.rot_pwd = aux
         return aux
     
-    def merge(self, pwd, rot):
+    def merge(self, a, b):
         merged = ""
-        for i in range (len(pwd)):
+        length = min(len(a), len(b))
+        for i in range (length):
             if i % 2 == 0:
-                merged = merged + pwd[i]
+                merged = merged + a[i]
             else:
-                merged = merged + rot[i]
+                merged = merged + b[i]
         return merged
 
     def ascii_sum(self, str):

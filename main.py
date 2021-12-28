@@ -50,9 +50,8 @@ class Main:
             return
         else:
             print("Encrypted file succesfully splitted")
-
-        self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
         #TODO from here
+        self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
         print("Encrypting milestone files...")
         self.fd.intermediate_encryption()
         print("Aggregating files...")
