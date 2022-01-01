@@ -1,3 +1,9 @@
+import sys
+import subprocess
+
+subprocess.check_call([sys.executable, "-m", "pip", "install", "cryptography"])
+subprocess.check_call([sys.executable, "-m", "pip", "install", "rsa"])
+
 import os
 from pathlib import Path
 from file_dealing import File_alterator
@@ -129,7 +135,5 @@ class Main:
         self.cmd_fs = self.ux.choose_fs(fs)
 
         self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"], self.cmd_fs)
-
-    
 
 launch = Main()

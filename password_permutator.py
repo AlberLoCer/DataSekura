@@ -1,21 +1,18 @@
 import hashlib
 import base64
 import codecs
+import rsa
+
 
 class Password_permutator:
     def __init__(self):
         return
     
-    def rot13(self,pwd):
-        return codecs.encode(pwd,"rot13")
-    
-    def rot_files(self, pwd, numFile):
-        aux = self.rot13(pwd)
-        for i in range(numFile):
-            aux = self.rot13(aux)
-        self.rot_pwd = aux
-        return aux
-    
+    def rsa_encrypt(self, index, pwd):
+        pubkey, privkey = rsa.newkeys(index)
+        enc_pwd = rsa.encrypt(pwd.encode(),pubkey)
+
+
     def merge(self, a, b):
         merged = ""
         length = min(len(a), len(b))
@@ -66,10 +63,7 @@ class Password_permutator:
     
 
 pwd = Password_permutator()
-passw = "patatas"
-rot_passw = pwd.rot_files(passw, 2)
-final_pass = pwd.merge(passw,rot_passw)
-print(final_pass)
+
 
 
     

@@ -6,6 +6,7 @@ from operator import xor
 from password_permutator import Password_permutator
 import subprocess
 
+
 class File_alterator:
     def __init__(self, pwd):
         self.pwdperm = pwd
@@ -19,22 +20,21 @@ class File_alterator:
         self.pwdDict[1] = self.pwdperm.password_permutation(base)
         self.pwdDict[2] = self.pwdperm.password_permutation(base[::-1])
         for i in range(3, self.file_number):
-            aux = self.pwdperm.merge(self.pwdDict[i-1], self.pwdDict[i-2])
-            index = (basePos^i)%length
-            if index % 2 == 0:
-                reversed_pwd = aux[::-1]
-                aux_perm = self.pwdperm.pwd_part_B(reversed_pwd)
-                aux = self.pwdperm.merge(reversed_pwd, aux_perm)
+            index = ((basePos^i)+alpha)%length
+            aux1 = self.pwdDict[i-1]
+            aux2 = self.pwdDict[i-2]
+            init_aux1 = aux1[0:index]
+            end_aux1 =  aux1[index:(length-1)]
+            aux1 = (self.pwdperm.pwd_part_A(init_aux1)) + end_aux1
 
-            else:
-                reversed_pwd = reversed(aux[0::index]).__str__()
-                partA = self.pwdperm.pwd_part_A(reversed_pwd)
-                partB = aux[index::]
-                aux = partA[0::] + partB
-            
-            
-            self.pwdDict[i] = self.pwdperm.intermediate_permutation(index,aux)
-        
+            index = ((index^i)+alpha)%length
+            init_aux2 = aux2[0:index]
+            end_aux2 =  aux2[index:(length-1)]
+            aux2 = init_aux2 + self.pwdperm.pwd_part_B(end_aux2)
+            comb = self.pwdperm.merge(aux1,aux2)
+            if(comb[0] == aux1[0] or comb[0] == aux2[0]):
+                comb = comb[::-1]
+            self.pwdDict[i] = comb
         for i in self.pwdDict:
             print(repr(i) + ": "+ self.pwdDict[i])
     

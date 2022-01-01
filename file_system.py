@@ -1,4 +1,6 @@
 import os
+import sys
+import subprocess
 import pathlib
 from tkinter import *
 import shutil
@@ -9,6 +11,7 @@ class File_System_Dealer:
    def __init__(self):
       self.root = Tk()
       return
+   
    
    def check_VC_integrity(self):
       #Now the checking is more exhaustive
