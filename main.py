@@ -1,9 +1,5 @@
 import sys
 import subprocess
-
-subprocess.check_call([sys.executable, "-m", "pip", "install", "cryptography"])
-subprocess.check_call([sys.executable, "-m", "pip", "install", "rsa"])
-
 import os
 from pathlib import Path
 from file_dealing import File_alterator
@@ -11,9 +7,7 @@ from password_permutator import Password_permutator
 import file_system
 from user_experience import User_experience
 from veracrypt import Veracrypt
-#asaaaaa
 class Main:
-    
     def __init__(self):
         self.fs = file_system.File_System_Dealer()
         self.pw = Password_permutator()
@@ -66,7 +60,11 @@ class Main:
         #TODO from here
         self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
         print("Encrypting milestone files...")
-        self.fd.intermediate_encryption()
+        if self.fd.intermediate_encryption() == -1:
+            self.fd.intermediate_decryption()
+            self.fd.restore_file(self.folderDict["folder_name"])
+            self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
+            return
         print("Aggregating files...")
         self.fs.folder_aggregation(self.fs.get_parent(self.fs.folder_path), self.fs.cmd_foldername, self.fd.file_number)
         print("Preparing last layer of encryption for launch...")
