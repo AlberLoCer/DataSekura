@@ -8,9 +8,10 @@ import subprocess
 
 
 class File_alterator:
-    def __init__(self, pwd):
+    def __init__(self, pwd, path):
         self.pwdperm = pwd
         self.pwdDict = dict()
+        self.ssepath = path
         return
     
     def populateDict(self, alpha, beta, length,base):
@@ -42,8 +43,10 @@ class File_alterator:
     
     def intermediate_encryption(self):
         for i in range(1,self.file_number):
-            chunk_file_name = self.base_file_name+"_"+repr(i)+".bin"
+            chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin"
+            os.chdir(self.ssepath)
             subprocess.call(['java', '-Xmx1g', '-jar', 'ssefenc.jar', chunk_file_name, self.pwdDict[i], 'aes'])
+            os.chdir(self.parentPath)
             os.remove(chunk_file_name)
             print("File: "+ repr(i)+ " encrypted with pass: " + self.pwdDict[i])
         return
@@ -61,7 +64,8 @@ class File_alterator:
 
     def split_file(self, path, volName):
         pathObj = pathlib.Path(path)
-        os.chdir(pathObj.parent.absolute())
+        self.parentPath = pathObj.parent.absolute()
+        os.chdir(self.parentPath)
         CHUNK_SIZE = math.floor(os.path.getsize(path) / (self.pwdperm.get_alpha() + 2))
         total, used, free = shutil.disk_usage(path)
         free_space_MB = free // (2**20)

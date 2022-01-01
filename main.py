@@ -17,22 +17,29 @@ class Main:
     def __init__(self):
         self.fs = file_system.File_System_Dealer()
         self.pw = Password_permutator()
-        self.fd = File_alterator(self.pw)
+
         self.ux = User_experience()
         self.VCpath = self.fs.check_VC_integrity()
+        self.SSEpath = self.fs.check_SSFEnc_integrity()
         if self.VCpath != '':
-            self.vc = Veracrypt(self.VCpath)
-            self.ux.encrypt_decrypt_menu()
-            encrypt_or_decrypt = self.ux.choice()
-            if encrypt_or_decrypt == '1':   #Encryption
-                self.encrypt()
-            else:
-                if encrypt_or_decrypt == '2': #Decryption
-                    self.decrypt()
-
+            if self.SSEpath != '':
+                self.vc = Veracrypt(self.VCpath)
+                self.fd = File_alterator(self.pw, self.SSEpath)
+                self.ux.encrypt_decrypt_menu()
+                encrypt_or_decrypt = self.ux.choice()
+                if encrypt_or_decrypt == '1':   #Encryption
+                    self.encrypt()
                 else:
-                    print("Goodbye, take care.")
-                    quit()
+                    if encrypt_or_decrypt == '2': #Decryption
+                        self.decrypt()
+
+                    else:
+                        print("Goodbye, take care.")
+                        quit()
+            else:
+                print("SSE File Encryptor could not be found in the system!")
+                print("SSE File Encryptor is an essential component in DataSekura.")
+                print("Please visit https://paranoiaworks.mobi/download/ for downloading it.")
         else:
             print("VeraCrypt could not be found in the system!")
             print("VeraCrypt is an essential component in DataSekura.")

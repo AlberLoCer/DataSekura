@@ -29,6 +29,23 @@ class File_System_Dealer:
                   return ''
          else:
                return ''
+   
+   def check_SSFEnc_integrity(self):
+      #Now the checking is more exhaustive
+      if os.path.isfile("ssefenc.jar"):
+         return os.getcwd()
+      else:
+         print("SSE could not be found in your system.")
+         print("Please select the folder where SSE is located:")
+         path = filedialog.askdirectory(title="Select SSE Containing Folder")
+         if os.path.isdir(path):
+            os.chdir(path)
+            if os.path.isfile("ssefenc.jar"):
+               return path
+            else:
+               return ''
+         else:
+               return ''
 
 
    def find(self, name, path):
