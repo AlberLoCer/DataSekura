@@ -35,19 +35,6 @@ class Veracrypt:
         subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
         self.fs.removeFolder(folderpath)
 
-        
-
-
-    
-    def VC_Outer_Encryption(self, volPath, password, hash, encryption, fs, folderpath):
-        print(folderpath)
-        size = self.fs.fetch_size(folderpath,fs)
-        subprocess.call(["VeraCrypt Format.exe","/create", volPath,"/password", password, "/hash", hash, "/encryption", encryption, "/filesystem", fs, "/size", size,"/silent"])
-        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", volPath, "/letter", "x", "/password", password, "/quit", "/silent"])
-        self.fs.move_files(folderpath, "X:"+os.sep)
-        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
-        self.fs.removeFolder(folderpath)
-
     def VC_Decryption(self, volPath, password, folderpath):
         os.chdir(self.VCpath)
         subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", volPath, "/letter", "x", "/password", password, "/quit", "/silent"])

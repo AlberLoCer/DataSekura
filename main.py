@@ -11,7 +11,6 @@ class Main:
     def __init__(self):
         self.fs = file_system.File_System_Dealer()
         self.pw = Password_permutator()
-
         self.ux = User_experience()
         self.VCpath = self.fs.check_VC_integrity()
         self.SSEpath = self.fs.check_SSFEnc_integrity()
@@ -57,7 +56,6 @@ class Main:
             return
         else:
             print("Encrypted file succesfully splitted")
-        #TODO from here
         self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
         print("Encrypting milestone files...")
         if self.fd.intermediate_encryption() == -1:
@@ -65,12 +63,26 @@ class Main:
             self.fd.restore_file(self.folderDict["folder_name"])
             self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
             return
+        else:
+            print("Milestone files successfully encrypted!")
+
         print("Aggregating files...")
-        self.fs.folder_aggregation(self.fs.get_parent(self.fs.folder_path), self.fs.cmd_foldername, self.fd.file_number)
-        print("Preparing last layer of encryption for launch...")
-        self.vc.prepare_VC_launch()
+        if self.fs.folder_aggregation(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number) == -1:
+            self.fs.folder_decompossition(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
+            self.fd.intermediate_decryption()
+            self.fd.restore_file(self.folderDict["folder_name"])
+            self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
+            return
         print("Encrypting last layer...")
-        self.vc.VC_Outer_Encryption(self.fs.cmd_volumepath, self.pw.password_permutation(self.cmd_password), self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.fs.folder_path)
+        self.final_pass = self.pw.password_permutation(self.fd.pwdDict[self.fd.file_number-1])
+        self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"], self.fs)
+        if self.vc.VC_Encryption(self.folderDict["volume_path"], self.final_pass, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
+            self.vc.VC_Decryption(self.folderDict["volume_path"],self.final_pass, self.folderDict["folder_path"])
+            self.fs.folder_decompossition(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
+            self.fd.intermediate_decryption()
+            self.fd.restore_file(self.folderDict["folder_name"])
+            self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
+            return
         print("Encryption complete!")
         print("Good luck!")
 

@@ -109,8 +109,7 @@ class File_System_Dealer:
 
    def fetch_size(self, path, fs):
       aux_size = self.get_folder_size(path) 
-      size = (math.ceil((1.75 * aux_size)/1024))
-      size = size/1024 #MB
+      size = math.ceil(((1.75 * aux_size)/1024)/1024)
       threshold = 4
       size_exported = max(size, threshold)
       self.cmd_volumesize = repr(size_exported)+"M"
@@ -142,20 +141,28 @@ class File_System_Dealer:
          os.rmdir(conf_path)
    
    def folder_aggregation(self,path,volname,file_number):
-      os.chdir(path)
-      name = path.__str__()+os.sep+volname
-      os.mkdir(volname)
-      for i in range(1,file_number):
+      try:
+         os.chdir(path)
+         name = path.__str__()+os.sep+volname
+         os.mkdir(volname)
+         for i in range(1,file_number):
             chunk_file_name = volname+"_"+repr(i)+".bin.enc"
-            shutil.move(os.path.abspath(chunk_file_name), name)  
-      return
+            if os.path.isfile(chunk_file_name):
+               shutil.move(os.path.abspath(chunk_file_name), name)  
+         return 0
+      except Exception as e:
+         print("There was an error while aggregating the milestone files: " + e.__str__())
+         return -1
+
+      
 
    def folder_decompossition(self,path,volname,file_number):
       name = path.__str__()+os.sep+volname
       os.chdir(name)
       for i in range(1,file_number):
             chunk_file_name = volname+"_"+repr(i)+".bin.enc"
-            shutil.move(chunk_file_name,path)  
+            if os.path.isfile(chunk_file_name):
+               shutil.move(chunk_file_name,path)  
       os.chdir(path)
       os.rmdir(volname)
       return
