@@ -8,6 +8,7 @@ import shutil
 from pathlib import Path
 import math
 from tkinter import filedialog
+from turtle import back
 class File_System_Dealer:
    def __init__(self):
       self.root = Tk()
@@ -48,6 +49,22 @@ class File_System_Dealer:
                return ''
          else:
                return ''
+   
+   def file_backup_creation(self, path):
+      try: 
+         dest = self.remove_file_extension(path)
+         str_ext = "(AUX).bin"
+         dest = dest + str_ext
+         shutil.copyfile(path,dest)
+         return dest
+      except Exception as e:
+         print("Could not create auxiliary backup of file to decrypt: "+ e.__str__())
+         return -1
+   
+   def backup_rename(self, backup, original):
+      os.rename(backup, original)
+
+
 
 
    def find(self, name, path):

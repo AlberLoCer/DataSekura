@@ -1,5 +1,7 @@
 from email.mime import base
 import os
+import shutil
+import subprocess
 from pathlib import Path
 from file_dealing import File_alterator
 from password_permutator import Password_permutator
@@ -86,7 +88,6 @@ class Main:
         print("Good luck!")
 
     def decrypt(self):
-        #test
         self.folderDict = self.fs.input_folder_decrypt()
         self.password_input()
         print("Preparing decryption environment...")
@@ -95,7 +96,26 @@ class Main:
         os.chdir(self.folderDict["folder_parent"])
         base_vol = os.path.basename(self.folderDict["volume_path"])
         vol_path = self.folderDict["folder_parent"].__str__() + os.sep + base_vol
+        self.backup = self.fs.file_backup_creation(vol_path)
+        if self.backup == -1:
+            return
+        
         if self.vc.VC_Decryption(vol_path,self.final_pass, self.folderDict["folder_path"]) == -1:
+            if os.path.isdir("X:"+os.sep):
+                os.chdir(self.VCpath)
+                subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
+            os.chdir(self.folderDict["folder_parent"])
+            if os.path.isdir(self.folderDict["folder_path"]):
+                self.fs.remove_config(self.folderDict["folder_path"])
+                for filename in os.listdir(self.folderDict["folder_path"]):
+                    file_path = os.path.join(self.folderDict["folder_path"], filename)
+                    os.remove(file_path)
+                os.chdir(self.folderDict["folder_parent"])
+                os.chmod(self.folderDict["folder_path"], 0o777)
+                shutil.rmtree(self.folderDict["folder_path"])
+            if os.path.isfile(vol_path):
+                os.remove(vol_path)
+            self.fs.backup_rename(self.backup, vol_path)
             return
         print("Outer layer successfully decrypted!")
         print("Fetching milestone file parameters...")
