@@ -1,5 +1,4 @@
-import sys
-import subprocess
+from email.mime import base
 import os
 from pathlib import Path
 from file_dealing import File_alterator
@@ -59,7 +58,7 @@ class Main:
         self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
         print("Encrypting milestone files...")
         if self.fd.intermediate_encryption() == -1:
-            self.fd.intermediate_decryption()
+            self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"])
             self.fd.restore_file(self.folderDict["folder_name"])
             self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
             return
@@ -69,17 +68,17 @@ class Main:
         print("Aggregating files...")
         if self.fs.folder_aggregation(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number) == -1:
             self.fs.folder_decompossition(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
-            self.fd.intermediate_decryption()
+            self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"])
             self.fd.restore_file(self.folderDict["folder_name"])
             self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
             return
         print("Encrypting last layer...")
-        self.final_pass = self.pw.password_permutation(self.fd.pwdDict[self.fd.file_number-1])
+        self.final_pass = self.pw.password_permutation(self.permuted_password)
         self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"], self.fs)
         if self.vc.VC_Encryption(self.folderDict["volume_path"], self.final_pass, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
             self.vc.VC_Decryption(self.folderDict["volume_path"],self.final_pass, self.folderDict["folder_path"])
             self.fs.folder_decompossition(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
-            self.fd.intermediate_decryption()
+            self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"])
             self.fd.restore_file(self.folderDict["folder_name"])
             self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
             return
@@ -87,38 +86,42 @@ class Main:
         print("Good luck!")
 
     def decrypt(self):
-        self.fs.input_folder_decrypt()
-        passw = input("Enter the password to decrypt: ")
-        base = self.pw.password_permutation(passw)
+        self.folderDict = self.fs.input_folder_decrypt()
+        self.password_input()
         print("Preparing decryption environment...")
-        self.vc.prepare_VC_launch()
-        print("Fetching parameters...")
-        volpath = self.fs.cmd_volumepath
-        path_obj = Path(volpath)
-        folderPath = path_obj.parent.absolute()
-        self.fd.base_file_name = path_obj.stem
-        alpha = self.pw.get_alpha()
-        beta = self.pw.get_beta()
-        length = len(self.pw.permutedPwd)
-        outer_pass = self.pw.password_permutation(base)
+        self.final_pass = self.pw.password_permutation(self.permuted_password)
         print("Decrypting outer layer...")
-        self.vc.VC_Decryption(self.fs.cmd_volumepath,outer_pass ,folderPath)
-        print("Fetching inner fragments...")
-        self.fd.file_number = self.fs.retake_file_number(self.fs.remove_file_extension(self.fs.cmd_volumepath))
-        self.fd.populateDict(alpha,beta,length,base)
-        self.fs.folder_decompossition(folderPath,self.fd.base_file_name,self.fd.file_number)
-        print("Decrypting milestone layers...")
-        self.fd.intermediate_decryption()
+        os.chdir(self.folderDict["folder_parent"])
+        base_vol = os.path.basename(self.folderDict["volume_path"])
+        vol_path = self.folderDict["folder_parent"].__str__() + os.sep + base_vol
+        if self.vc.VC_Decryption(vol_path,self.final_pass, self.folderDict["folder_path"]) == -1:
+            return
+        print("Outer layer successfully decrypted!")
+        print("Fetching milestone file parameters...")
+        self.fd.file_number = self.fs.retake_file_number(self.fs.remove_file_extension(vol_path))
+        self.fd.populateDict(self.alpha_base,self.beta_base, len(self.permuted_password),self.permuted_password)
+        print("Parameters fetched!")
+        if self.fs.folder_decompossition(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number) == -1:
+            return
+        print("Decrypting milestone files...")
+        if self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"]):
+            print("Could not finishing intermediate decryption. Exiting...")
+            return
+        print("Milestone files successfully decrypted!")
         print("Restoring file...")
-        self.fd.restore_file(self.fd.base_file_name)
-        print("Decrypting inner layer...")
-        self.vc.VC_Decryption(self.fs.cmd_volumepath, base,folderPath)
+        self.fd.restore_file(self.folderDict["folder_name"])
+        print("Originial file successfully restored!")
+        print("Decrypting deep layer...")
+        if self.vc.VC_Decryption(vol_path,self.permuted_password, self.folderDict["folder_path"]) == -1:
+            return
         print("Decryption Complete!")
         print("Stay safe!")
 
     def password_input(self):
         self.base_password = input ("Enter your password for encryption: ")
         self.permuted_password = self.pw.password_permutation(self.base_password)
+        self.alpha_base = self.pw.get_alpha()
+        self.beta_base = self.pw.get_beta()
 
 
     def user_input_encrypt(self):

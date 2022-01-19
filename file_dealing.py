@@ -51,23 +51,30 @@ class File_alterator:
                 os.remove(chunk_file_name)
                 print("File: "+ repr(i)+ " encrypted with pass: " + self.pwdDict[i])
             return 0
+
         except Exception as e:
             print("An error occured while trying to encrypt the milestone files: " + e.__str__())
             return -1
 
-    def intermediate_decryption(self):
-        for i in range(1,self.file_number):
-            chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
-            if(os.path.isfile(chunk_file_name)):
-                os.chdir(self.ssepath) 
-                subprocess.call(['java', '-Xmx1g', '-jar', 'ssefenc.jar', chunk_file_name, self.pwdDict[i], 'aes'])
-                os.chdir(self.parentPath)
-                os.remove(chunk_file_name)
-                print("File: "+ repr(i)+ " decrypted with pass: " + self.pwdDict[i])
-        return
+    def intermediate_decryption(self, parentPath, basename):
+        self.parentPath = parentPath
+        self.base_file_name = basename
+        try:
+            for i in range(1,self.file_number):
+                chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
+                if(os.path.isfile(chunk_file_name)):
+                    os.chdir(self.ssepath)
+                    subprocess.call(['java', '-Xmx1g', '-jar', 'ssefenc.jar', chunk_file_name, self.pwdDict[i], 'aes'])
+                    os.chdir(self.parentPath)
+                    os.remove(chunk_file_name)
+                    print("File: "+ repr(i)+ " decrypted with pass: " + self.pwdDict[i])
+                else:
+                    return -1
+            return 0
+        except Exception as e:
+            print("An error occured while trying to decrypt the milestone files: " + e.__str__())
+            return -1
     
-        
-
 
     def split_file(self, path, volName):
         pathObj = pathlib.Path(path)
@@ -96,14 +103,19 @@ class File_alterator:
     
     
     def restore_file(self,basename):
-        os.chdir(self.parentPath)
-        fname = basename + ".bin"
-        with open(fname, "wb") as myfile:
-            i = 1
-            while i < self.file_number:
-                chunk_file_name = basename+"_"+repr(i)+".bin"
-                file = open(chunk_file_name, "rb")
-                myfile.write(file.read())
-                file.close()
-                os.remove(chunk_file_name)
-                i = i +1
+        try:
+            os.chdir(self.parentPath)
+            fname = basename + ".bin"
+            with open(fname, "wb") as myfile:
+                i = 1
+                while i < self.file_number:
+                    chunk_file_name = basename+"_"+repr(i)+".bin"
+                    file = open(chunk_file_name, "rb")
+                    myfile.write(file.read())
+                    file.close()
+                    os.remove(chunk_file_name)
+                    i = i +1
+            return 0
+        except Exception as e:
+            print("An error occurred while decrypting the deep layer: " + e.__str__())
+            return -1

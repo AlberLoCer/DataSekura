@@ -20,10 +20,7 @@ class Veracrypt:
             if(os.path.isfile(volPath)):
                 os.remove(volPath)
             return -1
-        try:
-            self.fs.move_files(folderpath, "X:"+os.sep)
-        except Exception as e:
-            print("Could not move files to encrypted container" + e.__str__())
+        if self.fs.move_files(folderpath, "X:"+os.sep) == -1:
             if(os.path.isdir("X:"+os.sep)):
                 self.fs.move_files("X:"+os.sep, folderpath)
                 self.fs.remove_config(folderpath)
@@ -36,12 +33,17 @@ class Veracrypt:
         self.fs.removeFolder(folderpath)
 
     def VC_Decryption(self, volPath, password, folderpath):
-        os.chdir(self.VCpath)
-        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/volume", volPath, "/letter", "x", "/password", password, "/quit", "/silent"])
-        self.fs.restore_files(folderpath, os.path.basename(volPath))
-        os.chdir(self.VCpath)
-        subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
-        self.fs.remove_config(folderpath)
-        self.fs.delete_vol(volPath)
+        try:
+            os.chdir(self.VCpath)
+            subprocess.call(["VeraCrypt.exe", "/volume", volPath, "/letter", "X", "/password", password, "/quit", "/silent"])
+            self.fs.restore_files(folderpath, os.path.basename(volPath))
+            os.chdir(self.VCpath)
+            subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
+            self.fs.remove_config(folderpath)
+            self.fs.delete_vol(volPath)
+            return 0
+        except Exception as e:
+            print("Could not decrypt outer layer...")
+            return -1
         
         

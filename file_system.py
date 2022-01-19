@@ -1,3 +1,4 @@
+from csv import excel
 import os
 import sys
 import subprocess
@@ -10,6 +11,7 @@ from tkinter import filedialog
 class File_System_Dealer:
    def __init__(self):
       self.root = Tk()
+      self.root.withdraw
       return
    
    
@@ -90,10 +92,16 @@ class File_System_Dealer:
    
    
    def input_folder_decrypt(self):
-      self.cmd_volumepath = input("Select the volume to decrypt: ")
-      path = Path(self.cmd_volumepath)
-      self.parent_path = path.parent.absolute()
-      os.chdir(self.parent_path)
+      folderDict = dict()
+      folderDict["volume_path"] = filedialog.askopenfilename()
+      path = Path(folderDict["volume_path"])
+      folderDict["folder_parent"] = path.parent.absolute()
+      os.chdir(folderDict["folder_parent"])
+      folderDict["folder_path"] = self.remove_file_extension(folderDict["volume_path"])
+      folderDict["folder_path_obj"] = Path(folderDict["folder_path"])
+      folderDict["folder_name"] = os.path.basename(folderDict["folder_path_obj"])
+      return folderDict
+      
    
    def remove_file_extension(self, name):
       return os.path.splitext(name)[0]
@@ -110,24 +118,28 @@ class File_System_Dealer:
    def fetch_size(self, path, fs):
       aux_size = self.get_folder_size(path) 
       size = math.ceil(((1.75 * aux_size)/1024)/1024)
-      threshold = 4
+      threshold = 20
       size_exported = max(size, threshold)
       self.cmd_volumesize = repr(size_exported)+"M"
       return self.cmd_volumesize
 
    def move_files(self, source_folder, destination_folder):
-      os.chdir(source_folder)
-      for root, subdirectories, files in os.walk(source_folder):
-         for subdirectory in subdirectories:
-            shutil.move(subdirectory, destination_folder)
-            
+      try:
+         os.chdir(source_folder)
+         for root, subdirectories, files in os.walk(source_folder):
+            for subdirectory in subdirectories:
+               shutil.move(subdirectory, destination_folder)
+               
 
-         for file in files:
-            shutil.move(os.path.abspath(file), destination_folder)
-   
-      path = Path(source_folder)
-      parent = path.parent.absolute()
-      os.chdir(parent)
+            for file in files:
+               shutil.move(os.path.abspath(file), destination_folder)
+      
+         path = Path(source_folder)
+         parent = path.parent.absolute()
+         os.chdir(parent)
+      except Exception as e:
+         print("Could not move files while encrypting: " + e.__str__())
+         return -1
 
 
    def remove_config(self, path):
@@ -157,14 +169,18 @@ class File_System_Dealer:
       
 
    def folder_decompossition(self,path,volname,file_number):
-      name = path.__str__()+os.sep+volname
-      os.chdir(name)
-      for i in range(1,file_number):
-            chunk_file_name = volname+"_"+repr(i)+".bin.enc"
-            if os.path.isfile(chunk_file_name):
-               shutil.move(chunk_file_name,path)  
-      os.chdir(path)
-      os.rmdir(volname)
-      return
+      try:
+         name = path.__str__()+os.sep+volname
+         os.chdir(name)
+         for i in range(1,file_number):
+               chunk_file_name = volname+"_"+repr(i)+".bin.enc"
+               if os.path.isfile(chunk_file_name):
+                  shutil.move(chunk_file_name,path)  
+         os.chdir(path)
+         os.rmdir(volname)
+         return 0
+      except Exception as e:
+         print("There was an error while decomposing the folder: " + e.__str__())
+         return -1
 
 
