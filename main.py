@@ -168,6 +168,7 @@ class Main:
                 os.remove(vol_path)
             self.fs.backup_rename(self.backup, vol_path)
             return
+        os.remove(self.backup)
         print("Decryption Complete!")
         print("Stay safe!")
 
