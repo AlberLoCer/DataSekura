@@ -86,6 +86,7 @@ class Main:
         print("Good luck!")
 
     def decrypt(self):
+        #test
         self.folderDict = self.fs.input_folder_decrypt()
         self.password_input()
         print("Preparing decryption environment...")
