@@ -145,11 +145,13 @@ class File_System_Dealer:
          os.chdir(source_folder)
          for root, subdirectories, files in os.walk(source_folder):
             for subdirectory in subdirectories:
-               shutil.move(subdirectory, destination_folder)
-               
-
+               if os.path.basename(subdirectory) != "System Volume Information":
+                  shutil.move(subdirectory, destination_folder)
+            
             for file in files:
                shutil.move(os.path.abspath(file), destination_folder)
+               
+
       
          path = Path(source_folder)
          parent = path.parent.absolute()
