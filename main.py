@@ -1,15 +1,18 @@
-from email.mime import base
+import sys
 import os
 import shutil
 import subprocess
 from pathlib import Path
 from file_dealing import File_alterator
+from gd_module import Gd_object
 from password_permutator import Password_permutator
 import file_system
 from user_experience import User_experience
 from veracrypt import Veracrypt
 class Main:
     def __init__(self):
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "PyDrive2"])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "setuptools-rust"])
         self.fs = file_system.File_System_Dealer()
         self.pw = Password_permutator()
         self.ux = User_experience()
@@ -19,6 +22,8 @@ class Main:
             if self.SSEpath != '':
                 self.vc = Veracrypt(self.VCpath)
                 self.fd = File_alterator(self.pw, self.SSEpath)
+                self.gd = Gd_object()
+                self.gd.download_folder()
                 self.ux.encrypt_decrypt_menu()
                 encrypt_or_decrypt = self.ux.choice()
                 if encrypt_or_decrypt == '1':   #Encryption
