@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 import sys
 from pydrive2.auth import GoogleAuth
@@ -21,11 +22,21 @@ class Gd_object:
 
       return GoogleDrive(auth)
 
+   def criteria(self,e):
+      return e['title']
+
    def list_folders(self, creds):
-      file_list = creds.ListFile({"q": "mimeType='application/vnd.google-apps.folder' and trashed=false"}).GetList()
+      file_list = creds.ListFile({"q":"'me' in owners and visibility='limited' and trashed=false and mimeType='application/vnd.google-apps.folder'"}).GetList()
+      file_list.sort(key=self.criteria)
       for f in file_list:
-         print("Name: " + f['title'])
+         is_shared = f['shared']
+         if f['shared'] == False:
+            print("Name: " + f['title'])
+         else:
+            file_list.remove(f)
       return file_list
+   
+
 
    def download_file(self, creds, id_file, download_path):
       file = creds.CreateFile({"id": id_file})
@@ -38,23 +49,46 @@ class Gd_object:
       self.list_folders(creds)
       folder_str = input("Select a folder: ")
       file_output = self.check_folder_exists(creds,folder_str)
-      if file_output != -1 and file_output != 0:
+      if file_output != -1:
+         while file_output == 0:
+            print("Folder could not be found... Try again.")
+            folder_str = input("Select a folder: ")
+            file_output = self.check_folder_exists(creds,folder_str)
+
          path = os.getcwd() + os.sep + file_output['title']
          self.download_folder_rec(creds,path,file_output)
+         
       ########################################################## 
       return
    
    def download_folder_rec(self,creds,path,file_output):
+      try:
          os.mkdir(path)
          folder_list = creds.ListFile({'q': "'"+file_output['id']+"' in parents and trashed=false and mimeType='application/vnd.google-apps.folder'"}).GetList()
          file_list = creds.ListFile({'q': "'"+file_output['id']+"' in parents and trashed=false"}).GetList()
          if(folder_list != []):
             for f in folder_list:
                file_list.remove(f)
+               print("Processing folder: " + f['title'])
                self.download_folder_rec(creds,path+os.sep+f['title'],f)
          for f in file_list:
+            print("Processing file: " + f['title'])
             self.download_file(creds,f['id'],path)
-
+      except Exception as e:
+         if os.path.isdir(path):
+            self.hard_reset(path)
+            shutil.rmtree(path)
+            
+   
+   def hard_reset(self,path):
+      for root, subdirectories, files in os.walk(path):
+         for subdirectory in subdirectories:
+            self.hard_reset(subdirectory)
+            shutil.rmtree(subdirectory)
+            
+         for file in files:
+            os.remove(file)
+   
 
    def check_folder_exists(self, creds, name):
       try:
