@@ -23,7 +23,7 @@ class Main:
                 self.vc = Veracrypt(self.VCpath)
                 self.fd = File_alterator(self.pw, self.SSEpath)
                 self.gd = Gd_object()
-                self.gd.download_folder()
+                self.gd.download_folder_launch()
                 self.ux.encrypt_decrypt_menu()
                 encrypt_or_decrypt = self.ux.choice()
                 if encrypt_or_decrypt == '1':   #Encryption

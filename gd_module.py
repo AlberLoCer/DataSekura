@@ -32,7 +32,7 @@ class Gd_object:
       filename= file['title']
       file.GetContentFile(download_path+os.sep+filename)
 
-   def download_folder(self):
+   def download_folder_launch(self):
       creds = self.login()
       print("Fetching drive directories...")
       self.list_folders(creds)
@@ -40,14 +40,21 @@ class Gd_object:
       file_output = self.check_folder_exists(creds,folder_str)
       if file_output != -1 and file_output != 0:
          path = os.getcwd() + os.sep + file_output['title']
+         self.download_folder_rec(creds,path,file_output)
+      ########################################################## 
+      return
+   
+   def download_folder_rec(self,creds,path,file_output):
          os.mkdir(path)
          folder_list = creds.ListFile({'q': "'"+file_output['id']+"' in parents and trashed=false and mimeType='application/vnd.google-apps.folder'"}).GetList()
          file_list = creds.ListFile({'q': "'"+file_output['id']+"' in parents and trashed=false"}).GetList()
+         if(folder_list != []):
+            for f in folder_list:
+               file_list.remove(f)
+               self.download_folder_rec(creds,path+os.sep+f['title'],f)
          for f in file_list:
             self.download_file(creds,f['id'],path)
 
-      
-      return
 
    def check_folder_exists(self, creds, name):
       try:
