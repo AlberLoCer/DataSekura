@@ -11,9 +11,16 @@ class User_experience:
         return path
 
     def encrypt_decrypt_menu(self):
-        print("Coose the operation to perform: \n")
+        print("Choose the operation to perform: \n")
         print("1. Encrypt a folder")
         print("2. Decrypt a folder")
+        print("0. Exit")
+    
+    def local_or_cloud(self):
+        print("Select a platform: \n")
+        print("1. Local File System")
+        print("2. Google Drive")
+        print("3. Dropbox")
         print("0. Exit")
 
 

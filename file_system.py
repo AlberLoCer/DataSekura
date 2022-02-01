@@ -90,8 +90,13 @@ class File_System_Dealer:
       return parent_path
 
    def input_folder_encrypt(self):
-      folderDict = dict()
       folder = filedialog.askdirectory(title="Select a folder to encrypt")
+      aux_dict = self.create_dict(folder)
+      return aux_dict
+      
+
+   def create_dict(self, folder):
+      folderDict = dict()
       folderDict["folder_path"] = folder
       folderDict["folder_path_obj"] = Path(folder)
       folderDict["folder_parent"] = folderDict["folder_path_obj"].parent.absolute()
