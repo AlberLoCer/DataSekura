@@ -57,7 +57,7 @@ class Gd_object:
 
          path = os.getcwd() + os.sep + file_output['title']
          self.download_folder_rec(creds,path,file_output)
-      return
+      return path
    
    def download_folder_rec(self,creds,path,file_output):
       try:
@@ -79,17 +79,17 @@ class Gd_object:
 
 
    
-   def upload(self, path,id):
+   def upload(self, path, id, name):
       creds = self.login()
-      file = creds.CreateFile({'parents':[{'kind': 'drivefileLink', 'id':id}]})
-      file['title'] = path.split('/')[-1]
+      if name != "root":
+         file = creds.CreateFile({'parents':[{'kind': 'drivefileLink', 'id':id}]})
+         file['title'] = path.split('/')[-1]
+      else:
+         file = creds.CreateFile({'title':name})
       file.SetContentFile(path)
       file.Upload()
 
-   def encrypt_gd_folder(self):
-      self.download_folder_launch() #Descargamos carpeta
-      #Ciframos
-      #Subimos archivo cifrado
+
 
    def decrypt_gd_folder(self):
       #Descargamos archivo
@@ -122,7 +122,7 @@ class Gd_object:
          print(e.__str__())
          return -1
 
-   def upload_file(self):
+   def search_parent(self, folder, searched):
       return
-   
+
 

@@ -24,7 +24,7 @@ class Main:
                 self.fd = File_alterator(self.pw, self.SSEpath)
                 self.ux.local_or_cloud()
                 local_or_cloud = self.ux.choice()
-                if local_or_cloud == 1:
+                if local_or_cloud == '1':
                     self.ux.encrypt_decrypt_menu()
                     encrypt_or_decrypt = self.ux.choice()
                     if encrypt_or_decrypt == '1':   #Encryption
@@ -36,12 +36,14 @@ class Main:
                         else:
                             print("Goodbye, take care.")
                             quit()
-                elif local_or_cloud == 2:
+
+                #GOOGLE DRIVE
+                elif local_or_cloud == '2':
                     self.gd = Gd_object()
                     self.ux.encrypt_decrypt_menu()
                     encrypt_or_decrypt = self.ux.choice()
                     if encrypt_or_decrypt == '1':   #Encryption
-                        self.gd.encrypt_gd_folder()
+                        self.gd.search_parent("root", "Almendras")
                     else:
                         if encrypt_or_decrypt == '2': #Decryption
                             self.gd.decrypt_gd_folder()
@@ -50,7 +52,7 @@ class Main:
                             print("Goodbye, take care.")
                             quit()
                 
-                elif local_or_cloud == 3:
+                elif local_or_cloud == '3':
                     #Dropbox goes here
                     return
                 else:
@@ -67,6 +69,9 @@ class Main:
             print("VeraCrypt is an essential component in DataSekura.")
             print("Please visit https://www.veracrypt.fr/en/Downloads.html for downloading it.")
         return
+
+    ###################################################################################################
+    ###################################################################################################
     
     def encrypt_local(self):
         self.folderDict = self.fs.input_folder_encrypt()
@@ -115,7 +120,9 @@ class Main:
         print("Encryption complete!")
         print("Good luck!")
 
-
+    ###################################################################################################
+    ###################################################################################################
+    
     def encrypt_gd(self, path):
         self.folderDict = self.fs.create_dict(path)
         self.user_input_encrypt()
@@ -162,6 +169,10 @@ class Main:
             return
         print("Encryption complete!")
         print("Good luck!")
+        return self.folderDict["volume_path"]
+    
+    ###################################################################################################
+    ###################################################################################################
 
     def decrypt_local(self):
         self.folderDict = self.fs.input_folder_decrypt()
@@ -248,6 +259,10 @@ class Main:
         print("Decryption Complete!")
         print("Stay safe!")
 
+    ###################################################################################################
+    ###################################################################################################
+
+
     def decrypt_gd(self, path):
         self.folderDict = self.fs.create_dict(path)
         self.password_input()
@@ -332,6 +347,15 @@ class Main:
         os.remove(self.backup)
         print("Decryption Complete!")
         print("Stay safe!")
+
+    ###################################################################################################
+    ###################################################################################################
+    
+
+    def encrypt_gd_folder(self):
+      path = self.gd.download_folder_launch() 
+      volPath = self.encrypt_gd(path)
+      self.gd.upload(volPath,)
 
 
     def password_input(self):
