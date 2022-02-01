@@ -1,6 +1,7 @@
 import shutil
 import subprocess
 import sys
+from typing import Dict
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from pydrive2.files import FileNotUploadedError
@@ -122,7 +123,34 @@ class Gd_object:
          print(e.__str__())
          return -1
 
-   def search_parent(self, folder, searched):
-      return
+   def search_parent(self, folder, searched, f, found):
+      if found == 0:
+         query_dict = dict()
+         found = 0
+         if found == 0:
+            if folder == "root":
+               query_dict['id'] = 0
+               query_dict['title'] = "root"
+               query = "'root' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false"
+            else:
+               query_dict['id'] = f['id']
+               query_dict['title'] = f['title']
+               query = "'"+f['id']+"' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false"
+            
+            creds = self.login()
+            f_list = creds.ListFile({"q":query}).GetList()
+            for f in f_list:
+               if f['title'] == searched:
+                  found = 1
+                  break
+               
+               if found == 0:
+                  for f in f_list:
+                     self.search_parent(f['title'], searched, f, found)
+            return query_dict
+               
+      
+               
+      
 
 

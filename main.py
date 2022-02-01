@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import sys
 import os
 import shutil
@@ -43,7 +44,7 @@ class Main:
                     self.ux.encrypt_decrypt_menu()
                     encrypt_or_decrypt = self.ux.choice()
                     if encrypt_or_decrypt == '1':   #Encryption
-                        self.gd.search_parent("root", "Almendras")
+                        self.gd.search_parent("root","Almendras", NULL, 0)
                     else:
                         if encrypt_or_decrypt == '2': #Decryption
                             self.gd.decrypt_gd_folder()
