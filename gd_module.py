@@ -1,6 +1,8 @@
+from asyncio.windows_events import NULL
 import shutil
 import subprocess
 import sys
+from turtle import title
 from typing import Dict
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
@@ -10,6 +12,7 @@ class Gd_object:
 
    def __init__(self):
       self.credentials_directory = "credentials_module.json"
+      self.creds = self.login()
       return
 
    def login(self):
@@ -80,11 +83,10 @@ class Gd_object:
 
 
    
-   def upload(self, path, id, name):
-      creds = self.login()
+   def upload(self, path, id, name, creds):
       if name != "root":
          file = creds.CreateFile({'parents':[{'kind': 'drivefileLink', 'id':id}]})
-         file['title'] = path.split('/')[-1]
+         file['title'] = name
       else:
          file = creds.CreateFile({'title':name})
       file.SetContentFile(path)
@@ -123,33 +125,36 @@ class Gd_object:
          print(e.__str__())
          return -1
 
-   def search_parent(self, folder, searched, f, found):
-      if found == 0:
-         query_dict = dict()
-         found = 0
-         if found == 0:
-            if folder == "root":
-               query_dict['id'] = 0
-               query_dict['title'] = "root"
-               query = "'root' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false"
+   def search_parent(self, source, searched):
+      creds = self.login()
+      queue = []
+      node_dict = dict()
+      s = dict()
+      s['id'] = "root"
+      s['title'] = "root"
+      queue.append(s)    
+      while queue:
+         s = queue.pop(0)
+         node_dict['parent_id'] = s['id']
+         node_dict['parent_name'] = s['title']
+         f_list = creds.ListFile({'q': "'"+s['id']+"' in parents and trashed=false and mimeType='application/vnd.google-apps.folder'"}).GetList()
+         node_dict['subfolders'] = f_list
+         for f in f_list:
+            if f['title'] == searched:
+               return node_dict
             else:
-               query_dict['id'] = f['id']
-               query_dict['title'] = f['title']
-               query = "'"+f['id']+"' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false"
+               s = dict()
+               s['id'] = f['id']
+               s['title'] = f['title']
+               queue.append(s)
+         
+
             
-            creds = self.login()
-            f_list = creds.ListFile({"q":query}).GetList()
-            for f in f_list:
-               if f['title'] == searched:
-                  found = 1
-                  break
                
-               if found == 0:
-                  for f in f_list:
-                     self.search_parent(f['title'], searched, f, found)
-            return query_dict
-               
-      
+
+
+
+   
                
       
 
