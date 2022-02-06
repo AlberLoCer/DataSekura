@@ -47,7 +47,7 @@ class Main:
                         self.encrypt_gd_folder()
                     else:
                         if encrypt_or_decrypt == '2': #Decryption
-                            self.gd.decrypt_gd_folder()
+                            self.decrypt_gd_folder()
 
                         else:
                             print("Goodbye, take care.")
@@ -229,6 +229,14 @@ class Main:
         self.gd.delete_file(file)
         self.gd.hard_reset(folderpath)
         self.fs.delete_vol(self.folderDict["volume_path"])
+
+    def decrypt_gd_folder(self):
+        #Get drive files with .bin extension
+        #Download the file selected
+        #Decrypt it
+        #Upload folder
+        #Delete residual files
+        return
 
     def password_input(self):
         self.base_password = input ("Enter your password for encryption: ")

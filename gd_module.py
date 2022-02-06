@@ -44,9 +44,14 @@ class Gd_object:
 
 
    def download_file(self, creds, id_file, download_path):
+      if creds == NULL:
+         creds = self.login()
       file = creds.CreateFile({"id": id_file})
       filename= file['title']
-      file.GetContentFile(download_path+os.sep+filename)
+      path = download_path+os.sep+filename
+      file.GetContentFile(path)
+      return path
+
    
    def fetch_folder(self):
       creds = self.login()
@@ -100,15 +105,6 @@ class Gd_object:
       file.Delete()
 
    
-
-
-
-   def decrypt_gd_folder(self):
-      #Descargamos archivo
-      #Desciframos
-      #Subimos carpeta
-      return
-   
    def hard_reset(self,path):
       for root, subdirectories, files in os.walk(path):
          for subdirectory in subdirectories:
@@ -146,7 +142,7 @@ class Gd_object:
          s = queue.pop(0)
          node_dict['parent_id'] = s['id']
          node_dict['parent_name'] = s['title']
-         f_list = creds.ListFile({'q': "'"+s['id']+"' in parents and trashed=false and mimeType='application/vnd.google-apps.folder'"}).GetList()
+         f_list = creds.ListFile({'q': "'"+s['id']+"' in parents and trashed=false"}).GetList()
          node_dict['subfolders'] = f_list
          for f in f_list:
             if f['title'] == searched:
