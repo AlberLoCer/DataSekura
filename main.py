@@ -221,11 +221,14 @@ class Main:
     
 
     def encrypt_gd_folder(self):
-      folderpath = self.gd.download_folder_launch() 
-      parent_dict = self.gd.search_parent("root",os.path.basename(folderpath))
-      self.encrypt(folderpath)
-      self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["folder_name"]), self.gd.creds)
-
+        file = self.gd.fetch_folder()
+        folderpath = self.gd.download_folder_launch(file) 
+        parent_dict = self.gd.search_parent("root",os.path.basename(folderpath))
+        self.encrypt(folderpath)
+        self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["folder_name"]), self.gd.creds)
+        self.gd.delete_file(file)
+        self.gd.hard_reset(folderpath)
+        self.fs.delete_vol(self.folderDict["volume_path"])
 
     def password_input(self):
         self.base_password = input ("Enter your password for encryption: ")

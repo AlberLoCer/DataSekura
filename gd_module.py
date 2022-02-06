@@ -1,4 +1,5 @@
 from asyncio.windows_events import NULL
+import logging
 import shutil
 import subprocess
 import sys
@@ -46,8 +47,8 @@ class Gd_object:
       file = creds.CreateFile({"id": id_file})
       filename= file['title']
       file.GetContentFile(download_path+os.sep+filename)
-
-   def download_folder_launch(self):
+   
+   def fetch_folder(self):
       creds = self.login()
       print("Fetching drive directories...")
       self.list_folders(creds)
@@ -58,9 +59,12 @@ class Gd_object:
             print("Folder could not be found... Try again.")
             folder_str = input("Select a folder: ")
             file_output = self.check_folder_exists(creds,folder_str)
+         return file_output
 
-         path = os.getcwd() + os.sep + file_output['title']
-         self.download_folder_rec(creds,path,file_output)
+   def download_folder_launch(self, file_output):
+      creds = self.login()
+      path = os.getcwd() + os.sep + file_output['title']
+      self.download_folder_rec(creds,path,file_output)
       return path
    
    def download_folder_rec(self,creds,path,file_output):
@@ -91,6 +95,11 @@ class Gd_object:
          file = creds.CreateFile({'title':name})
       file.SetContentFile(path)
       file.Upload()
+
+   def delete_file(self, file):
+      file.Delete()
+
+   
 
 
 
