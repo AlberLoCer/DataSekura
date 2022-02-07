@@ -120,7 +120,8 @@ class Gd_object:
       query = "'me' in owners and visibility='limited' and trashed=false"
       f_list = creds.ListFile({"q":query}).GetList()
       for f in f_list:
-         if f['mimeType'] == "application/octet-stream" and f['fileExtension'] == '':
+         ext = os.path.splitext(f['title'])
+         if ext[1] == ".bin":
             output_list.append(f)
       return output_list
          

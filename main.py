@@ -225,15 +225,32 @@ class Main:
         folderpath = self.gd.download_folder_launch(file) 
         parent_dict = self.gd.search_parent("root",os.path.basename(folderpath))
         self.encrypt(folderpath)
-        self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["folder_name"]), self.gd.creds)
+        self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["volume_path"]), self.gd.creds)
         self.gd.delete_file(file)
         self.gd.hard_reset(folderpath)
         self.fs.delete_vol(self.folderDict["volume_path"])
 
     def decrypt_gd_folder(self):
+        print("Fetching Drive resources...")
         bin_list = self.gd.fetch_bin_files()
-        #Download the file selected
-        #Decrypt it
+        file_to_decrypt = NULL
+        print(".bin file list:")
+        for f in bin_list:
+            print(f['title'])
+        searched = input("Select a file to decrypt: ")
+        for f in bin_list:
+            if f['title'] == searched:
+                file_to_decrypt = f
+        if file_to_decrypt == NULL:
+            print("File could not be found in your drive...")
+            return
+        else:
+            print("Processing the file...")
+        curr_path = os.getcwd()
+        
+        folder_path = self.gd.download_file(NULL,file_to_decrypt['id'], curr_path)
+        print("Decrypting the file...")
+        self.decrypt(self.fs.remove_file_extension(folder_path))
         #Upload folder
         #Delete residual files
         return
