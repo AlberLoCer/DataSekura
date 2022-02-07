@@ -231,7 +231,7 @@ class Main:
         self.fs.delete_vol(self.folderDict["volume_path"])
 
     def decrypt_gd_folder(self):
-        #Get drive files with .bin extension
+        bin_list = self.gd.fetch_bin_files()
         #Download the file selected
         #Decrypt it
         #Upload folder

@@ -114,6 +114,18 @@ class Gd_object:
          for file in files:
             os.remove(file)
    
+   def fetch_bin_files(self):
+      output_list = []
+      creds = self.login()
+      query = "'me' in owners and visibility='limited' and trashed=false"
+      f_list = creds.ListFile({"q":query}).GetList()
+      for f in f_list:
+         if f['mimeType'] == "application/octet-stream" and f['fileExtension'] == '':
+            output_list.append(f)
+      return output_list
+         
+         
+   
 
    def check_folder_exists(self, creds, name):
       try:
