@@ -248,11 +248,13 @@ class Main:
             print("Processing the file...")
         curr_path = os.getcwd()
         
-        folder_path = self.gd.download_file(NULL,file_to_decrypt['id'], curr_path)
+        folderpath = self.gd.download_file(NULL,file_to_decrypt['id'], curr_path)
+        parent_dict = self.gd.search_parent("root",os.path.basename(folderpath))
         print("Decrypting the file...")
-        self.decrypt(self.fs.remove_file_extension(folder_path))
-        #Upload folder
-        #Delete residual files
+        self.decrypt(self.fs.remove_file_extension(folderpath))
+        self.gd.upload_folder(self.folderDict["folder_path"], parent_dict['parent_id'], self.folderDict["folder_name"])
+        self.gd.delete_file(file_to_decrypt)
+        self.gd.hard_reset(self.folderDict["folder_path"])
         return
 
     def password_input(self):

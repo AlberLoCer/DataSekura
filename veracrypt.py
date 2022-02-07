@@ -11,9 +11,6 @@ class Veracrypt:
 
 
     def VC_Encryption(self, volPath, password, hash, encryption, fs, size, folderpath):
-        print(volPath)
-        print(type(encryption))
-        print(type(hash))
         os.chdir(self.VCpath)
         try:
             subprocess.call(["VeraCrypt Format.exe","/create", volPath,"/password", password, "/hash", hash, "/encryption", encryption, "/filesystem", fs, "/size", size,"/silent"])

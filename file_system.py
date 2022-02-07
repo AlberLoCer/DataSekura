@@ -4,7 +4,7 @@ import sys
 import subprocess
 import pathlib
 from tkinter import *
-import shutil
+import shutil as sh
 from pathlib import Path
 import math
 from tkinter import filedialog
@@ -55,7 +55,7 @@ class File_System_Dealer:
          dest = self.remove_file_extension(path)
          str_ext = "(AUX).bin"
          dest = dest + str_ext
-         shutil.copyfile(path,dest)
+         sh.copyfile(path,dest)
          return dest
       except Exception as e:
          print("Could not create auxiliary backup of file to decrypt: "+ e.__str__())
@@ -153,10 +153,11 @@ class File_System_Dealer:
          for root, subdirectories, files in os.walk(source_folder):
             for subdirectory in subdirectories:
                if os.path.basename(subdirectory) != "System Volume Information":
-                  shutil.move(subdirectory, destination_folder)
+                  sh.move(subdirectory, destination_folder)
             
             for file in files:
-               shutil.move(os.path.abspath(file), destination_folder)
+               if os.path.isfile(file):
+                  sh.move(os.path.abspath(file), destination_folder)
                
 
       
@@ -186,7 +187,7 @@ class File_System_Dealer:
          for i in range(1,file_number):
             chunk_file_name = volname+"_"+repr(i)+".bin.enc"
             if os.path.isfile(chunk_file_name):
-               shutil.move(os.path.abspath(chunk_file_name), name)  
+               sh.move(os.path.abspath(chunk_file_name), name)  
          return 0
       except Exception as e:
          print("There was an error while aggregating the milestone files: " + e.__str__())
@@ -201,7 +202,7 @@ class File_System_Dealer:
          for i in range(1,file_number):
                chunk_file_name = volname+"_"+repr(i)+".bin.enc"
                if os.path.isfile(chunk_file_name):
-                  shutil.move(chunk_file_name,path)  
+                  sh.move(chunk_file_name,path)  
          os.chdir(path)
          os.rmdir(volname)
          return 0

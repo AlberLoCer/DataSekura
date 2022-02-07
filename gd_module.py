@@ -93,16 +93,43 @@ class Gd_object:
 
    
    def upload(self, path, id, name, creds):
-      if name != "root":
-         file = creds.CreateFile({'parents':[{'kind': 'drivefileLink', 'id':id}]})
-         file['title'] = name
-      else:
-         file = creds.CreateFile({'title':name})
-      file.SetContentFile(path)
-      file.Upload()
+      if(os.path.isfile(path)):
+         if name != "root":
+            file = creds.CreateFile({'parents':[{'kind': 'drivefileLink', 'id':id}]})
+            file['title'] = name
+         else:
+            file = creds.CreateFile({'title':name})
+         file.SetContentFile(path)
+         file.Upload()
+
+   def create_folder(self, id, name):
+      creds = self.login()
+      file_metadata = {
+         'name': name,
+         'parents':[{'id':id}],
+         'mimeType': 'application/vnd.google-apps.folder',
+         'title': name
+      }
+
+      folder = creds.CreateFile(file_metadata)
+      folder.Upload()
+      return folder
+
+   def upload_folder(self, path, id, name):
+      folder = self.create_folder(id,name)
+      for root, subdirectories, files in os.walk(path):
+         for file in files:
+            id = folder['id']
+            self.upload(path + os.sep + file, id, os.path.basename(file), self.creds)
+
+         for subdirectory in subdirectories:
+            id = folder['id']
+            self.upload_folder(path + os.sep + subdirectory, id, os.path.basename(subdirectory))
+            
 
    def delete_file(self, file):
       file.Delete()
+      
 
    
    def hard_reset(self,path):
@@ -113,6 +140,8 @@ class Gd_object:
             
          for file in files:
             os.remove(file)
+      if os.path.isdir(path):
+         shutil.rmtree(path)
    
    def fetch_bin_files(self):
       output_list = []
