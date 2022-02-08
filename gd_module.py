@@ -133,15 +133,7 @@ class Gd_object:
 
    
    def hard_reset(self,path):
-      for root, subdirectories, files in os.walk(path):
-         for subdirectory in subdirectories:
-            self.hard_reset(subdirectory)
-            shutil.rmtree(subdirectory)
-            
-         for file in files:
-            os.remove(file)
-      if os.path.isdir(path):
-         shutil.rmtree(path)
+      shutil.rmtree(path)
    
    def fetch_bin_files(self):
       output_list = []

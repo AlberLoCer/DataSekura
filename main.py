@@ -227,8 +227,11 @@ class Main:
         self.encrypt(folderpath)
         self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["volume_path"]), self.gd.creds)
         self.gd.delete_file(file)
-        self.gd.hard_reset(folderpath)
+        if os.path.isdir(folderpath):
+            self.gd.hard_reset(folderpath)
         self.fs.delete_vol(self.folderDict["volume_path"])
+
+        ##TRABAJO FUTURO MALWARE
 
     def decrypt_gd_folder(self):
         print("Fetching Drive resources...")
@@ -253,8 +256,8 @@ class Main:
         print("Decrypting the file...")
         self.decrypt(self.fs.remove_file_extension(folderpath))
         self.gd.upload_folder(self.folderDict["folder_path"], parent_dict['parent_id'], self.folderDict["folder_name"])
-        self.gd.delete_file(file_to_decrypt)
         self.gd.hard_reset(self.folderDict["folder_path"])
+        self.gd.delete_file(file_to_decrypt)
         return
 
     def password_input(self):
