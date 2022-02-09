@@ -119,13 +119,16 @@ class Gd_object:
       folder = self.create_folder(id,name)
       for root, subdirectories, files in os.walk(path):
          for file in files:
-            id = folder['id']
-            self.upload(path + os.sep + file, id, os.path.basename(file), self.creds)
+            if os.path.isfile(path + os.sep + file):
+               id = folder['id']
+               self.upload(path + os.sep + file, id, os.path.basename(file), self.creds)
+               os.remove(path + os.sep + file)
 
          for subdirectory in subdirectories:
-            id = folder['id']
-            self.upload_folder(path + os.sep + subdirectory, id, os.path.basename(subdirectory))
-            
+            if os.path.isdir(path + os.sep + subdirectory):
+               id = folder['id']
+               self.upload_folder(path + os.sep + subdirectory, id, os.path.basename(subdirectory))
+               os.rmdir(path + os.sep + subdirectory) 
 
    def delete_file(self, file):
       file.Delete()
