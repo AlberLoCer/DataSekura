@@ -122,12 +122,14 @@ class Gd_object:
             if os.path.isfile(path + os.sep + file):
                id = folder['id']
                self.upload(path + os.sep + file, id, os.path.basename(file), self.creds)
+               print("File: "+os.path.basename(file)+" OK")
                os.remove(path + os.sep + file)
 
          for subdirectory in subdirectories:
             if os.path.isdir(path + os.sep + subdirectory):
                id = folder['id']
                self.upload_folder(path + os.sep + subdirectory, id, os.path.basename(subdirectory))
+               print("Folder: "+os.path.basename(folder)+" OK")
                os.rmdir(path + os.sep + subdirectory) 
 
    def delete_file(self, file):
