@@ -73,10 +73,16 @@ class File_System_Dealer:
                return os.path.join(root, name)
 
    def get_folder_size(self, path):
-      size = 0
-      for ele in os.scandir(path):
-         size+=os.path.getsize(ele)
-      return size
+      total_size = 0
+      for dirpath, dirnames, filenames in os.walk(path):
+         for f in filenames:
+               fp = os.path.join(dirpath, f)
+               # skip if it is symbolic link
+               if not os.path.islink(fp):
+                  total_size += os.path.getsize(fp)
+
+      return total_size
+
    
    def retake_file_number(self, path):
       elems = 1

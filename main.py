@@ -221,13 +221,14 @@ class Main:
     
 
     def encrypt_gd_folder(self):
+        creds = self.gd.login()
         file = self.gd.fetch_folder()
         print("Processing resources inside the folder...")
         folderpath = self.gd.download_folder_launch(file) 
         parent_dict = self.gd.search_parent("root",os.path.basename(folderpath))
         print("Encrypting folder...")
         self.encrypt(folderpath)
-        self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["volume_path"]), self.gd.creds)
+        self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["volume_path"]), creds)
         print("Cleaning up residual files...")
         self.gd.delete_file(file)
         if os.path.isdir(folderpath):
