@@ -19,6 +19,8 @@ class Gd_object:
    def login(self):
       auth = GoogleAuth()
       auth.LoadCredentialsFile(self.credentials_directory)
+      if auth.credentials is None:
+         auth.LocalWebserverAuth()
       if(auth.access_token_expired):
          auth.Refresh()
          auth.SaveCredentialsFile(self.credentials_directory)
@@ -138,7 +140,9 @@ class Gd_object:
 
    
    def hard_reset(self,path):
-      shutil.rmtree(path)
+      os.remove("credentials_module.json")
+      if os.path.isdir(path):
+         shutil.rmtree(path)
    
    def fetch_bin_files(self):
       output_list = []

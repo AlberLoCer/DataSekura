@@ -231,9 +231,10 @@ class Main:
         self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["volume_path"]), creds)
         print("Cleaning up residual files...")
         self.gd.delete_file(file)
-        if os.path.isdir(folderpath):
-            self.gd.hard_reset(folderpath)
         self.fs.delete_vol(self.folderDict["volume_path"])
+        self.gd.hard_reset(folderpath)
+        
+        
 
         ##TRABAJO FUTURO MALWARE
 
