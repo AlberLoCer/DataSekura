@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
+from db_module import Db_object
 from file_dealing import File_alterator
 from gd_module import Gd_object
 from password_permutator import Password_permutator
@@ -55,7 +56,7 @@ class Main:
                             quit()
                 
                 elif local_or_cloud == '3':
-                    #Dropbox goes here
+                    self.db = Db_object()
                     return
                 else:
                     print("Goodbye, take care.")
