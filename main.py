@@ -13,6 +13,7 @@ from veracrypt import Veracrypt
 class Main:
     def __init__(self):
         subprocess.check_call([sys.executable, "-m", "pip", "install", "PyDrive2"])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "dropbox"])
         subprocess.check_call([sys.executable, "-m", "pip", "install", "setuptools-rust"])
         self.fs = file_system.File_System_Dealer()
         self.pw = Password_permutator()
