@@ -1,10 +1,25 @@
 from asyncio.windows_events import NULL
-import shutil
+import webbrowser
 import dropbox
+import requests
 import os
 class Db_object:
     def __init__(self):
-        self.log_in()
+        self.set_up()
+        return
+
+    def set_up(self):
+        self.access_key = "t8h0obtq24jyxf7"
+        self.secret_key = "t8h0obtq24jyxf7"
+        auth_flow = dropbox.DropboxOAuth2FlowNoRedirect(self.access_key, self.secret_key) 
+        url = auth_flow.start()
+        webbrowser.open(url)
+        access_token = input("Insert the access token provided")
+        try:
+            auth_end = auth_flow.finish(access_token)
+        except Exception as e:
+            print("Could not finish set up of dropbox environment: "+e.__str__())
+            return auth_end
         return
 
     def log_in(self):
