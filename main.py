@@ -132,7 +132,7 @@ class Main:
 
     def decrypt(self, folder):
         if folder == NULL:
-            self.folderDict = self.fs.input_folder_encrypt()
+            self.folderDict = self.fs.input_folder_decrypt()
         else:
             self.folderDict = self.fs.create_dict(folder)
         self.password_input()

@@ -39,14 +39,18 @@ class Veracrypt:
         try:
             os.chdir(self.VCpath)
             subprocess.call(["VeraCrypt.exe", "/volume", volPath, "/letter", "X", "/password", password, "/quit", "/silent"])
-            self.fs.restore_files(folderpath, os.path.basename(volPath))
-            os.chdir(self.VCpath)
-            subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/force", "/silent"])
-            self.fs.remove_config(folderpath)
-            self.fs.delete_vol(volPath)
-            return 0
+            if os.path.isdir("X:"+os.sep):
+                self.fs.restore_files(folderpath, os.path.basename(volPath))
+                os.chdir(self.VCpath)
+                subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/force", "/silent"])
+                self.fs.remove_config(folderpath)
+                self.fs.delete_vol(volPath)
+                return 0
+            else:
+                print("Incorrect Password!")
+                return -1
         except Exception as e:
-            print("Could not decrypt outer layer...")
+            print("Could not decrypt outer layer..." + e.__str__())
             return -1
         
         

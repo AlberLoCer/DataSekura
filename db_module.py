@@ -14,7 +14,7 @@ class Db_object:
         auth_flow = dropbox.DropboxOAuth2FlowNoRedirect(self.access_key, self.secret_key) 
         url = auth_flow.start()
         webbrowser.open(url)
-        access_token = input("Insert the access token provided")
+        access_token = input("Insert the access token provided: ").strip()
         try:
             auth_end = auth_flow.finish(access_token)
         except Exception as e:
