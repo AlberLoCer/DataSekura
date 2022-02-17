@@ -9,12 +9,13 @@ class Db_object:
         return
 
     def set_up(self):
-        self.access_key = "t8h0obtq24jyxf7"
-        self.secret_key = "t8h0obtq24jyxf7"
+        self.access_key = "rv4ri95l6577oih"
+        self.secret_key = "9h77gzhcvi8hl1d"
         auth_flow = dropbox.DropboxOAuth2FlowNoRedirect(self.access_key, self.secret_key) 
         url = auth_flow.start()
         webbrowser.open(url)
         access_token = input("Insert the access token provided: ").strip()
+        self.db = dropbox.Dropbox(access_token)
         try:
             auth_end = auth_flow.finish(access_token)
         except Exception as e:
