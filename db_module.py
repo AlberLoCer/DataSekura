@@ -1,11 +1,14 @@
 from asyncio.windows_events import NULL
 import webbrowser
 import dropbox
+from dropbox import auth
+from dropbox import dropbox_client 
 import requests
 import os
 class Db_object:
     def __init__(self):
         self.set_up()
+        self.list_folders()
         return
 
     def set_up(self):
@@ -14,23 +17,15 @@ class Db_object:
         auth_flow = dropbox.DropboxOAuth2FlowNoRedirect(self.access_key, self.secret_key) 
         url = auth_flow.start()
         webbrowser.open(url)
-        access_token = input("Insert the access token provided: ").strip()
-        self.db = dropbox.Dropbox(access_token)
+        self.access_token = input("Insert the access token provided: ").strip()
         try:
-            auth_end = auth_flow.finish(access_token)
+            oauth_result = auth_flow.finish(self.access_token)
+            self.db = dropbox_client.Dropbox(oauth_result)
         except Exception as e:
-            print("Could not finish set up of dropbox environment: "+e.__str__())
-            return auth_end
+            print('Error: %s' % (e,))
+            exit(1)
         return
-
-    def log_in(self):
-        access_token = "tu_token"
-        try:
-            dbx = dropbox.Dropbox(access_token)
-            dbx.users_get_current_account()
-            # print(dbx.users_get_current_account())
-            self.dropbox_user_name = dbx.users_get_current_account().name.display_name
-            self.dropbox_email = dbx.users_get_current_account().email
-        except Exception as e:
-            print("Could not log in to DropBox: "+ e.__str__())
-            return -1
+    
+    def list_folders(self):
+        self.db.check_and_refresh_access_token()
+        self.db.files_create_folder("/patatas")
