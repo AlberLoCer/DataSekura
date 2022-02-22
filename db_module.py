@@ -29,5 +29,6 @@ class Db_object:
         return
     
     def list_folders(self):
-        self.db.check_and_refresh_access_token()
-        self.db.files_create_folder("/patatas")
+        entries = self.dbx.files_list_folder('')
+        return
+
