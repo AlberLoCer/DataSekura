@@ -14,16 +14,18 @@ class Db_object:
     def set_up(self):
         self.access_key = "rv4ri95l6577oih"
         self.secret_key = "9h77gzhcvi8hl1d"
-        auth_flow = dropbox.DropboxOAuth2FlowNoRedirect(self.access_key, self.secret_key) 
+        auth_flow = dropbox.DropboxOAuth2FlowNoRedirect(self.access_key, use_pkce=True, token_access_type='offline')
         url = auth_flow.start()
         webbrowser.open(url)
-        self.access_token = input("Insert the access token provided: ").strip()
+        token = input("Insert the access token provided: ").strip()
         try:
-            oauth_result = auth_flow.finish(self.access_token)
-            self.db = dropbox_client.Dropbox(oauth_result)
+            auth_result = auth_flow.finish(token)
         except Exception as e:
             print('Error: %s' % (e,))
             exit(1)
+        self.dbx = dropbox.Dropbox(oauth2_refresh_token=auth_result.refresh_token, app_key=self.access_key)
+        acc = self.dbx.users_get_current_account()
+        print("Successfully set up client!")
         return
     
     def list_folders(self):
