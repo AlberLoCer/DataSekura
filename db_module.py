@@ -29,6 +29,8 @@ class Db_object:
         return
     
     def list_folders(self):
-        entries = self.dbx.files_list_folder('')
+        folder_list = self.dbx.files_list_folder('')
+        for entry in folder_list.entries:
+            print(entry.name)
         return
 
