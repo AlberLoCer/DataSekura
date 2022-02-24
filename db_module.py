@@ -9,7 +9,7 @@ import os
 class Db_object:
     def __init__(self):
         self.set_up()
-        self.search_folder("SER")
+        self.search_folder("FLI")
         return
 
     def set_up(self):
@@ -63,7 +63,7 @@ class Db_object:
                     return folder_list[selection_num]
 
             else:
-                single_entry = found.get(0)
+                single_entry = found.matches[0]
                 if single_entry and isinstance(single_entry.metadata,dropbox.files.FolderMetadata):
                     print("Folder Found!")
                     return single_entry
