@@ -9,7 +9,8 @@ import os
 class Db_object:
     def __init__(self):
         self.set_up()
-        self.search_folder("FLI")
+        folder = self.search_folder("SER")
+        self.download_folder(folder)
         return
 
     def set_up(self):
@@ -29,11 +30,9 @@ class Db_object:
         print("Successfully set up client!")
         return
     
-    def list_folders(self,folder):
+    def list_folder_content(self,folder):
         folder_list = self.dbx.files_list_folder("/"+folder)
-        for entry in folder_list.entries:
-            print(entry.name)
-        return
+        return folder_list
 
     def search_folder(self,folder):
         found = self.dbx.files_search('',"/"+folder)
@@ -70,4 +69,18 @@ class Db_object:
                 else:
                     print("No matching folders found!")
                     return -1
+    
+    def download_folder(self, folder):
+        meta = folder.metadata #TODO Try to pass directly metadata to this function
+        os.mkdir(meta.name)
+        os.chdir(meta.name)
+        file_list = self.list_folder_content("/" + meta.name)
+        for entry in file_list._entries_value:
+            if isinstance(entry, dropbox.files.FileMetadata):
+                self.dbx.files_download_to_file(entry.path_display, "/"+entry.path_display)
+            else:
+                self.download_folder(entry)
+            
+                    
+
 
