@@ -9,7 +9,8 @@ import os
 class Db_object:
     def __init__(self):
         self.set_up()
-        folder = self.search_folder("SER")
+        foldername = input("Input the folder to encrypt: ")
+        folder = self.search_folder(foldername)
         self.download_folder_launch(folder)
         return
 
@@ -89,7 +90,7 @@ class Db_object:
         os.mkdir(meta.name)
         os.chdir(meta.name)
         path = os.path.abspath(os.getcwd())
-        file_list = self.list_folder_content("/" + meta.name)
+        file_list = self.list_folder_content(meta.path_display)
         for entry in file_list._entries_value:#TODO Revise recursive folder download
             if isinstance(entry, dropbox.files.FileMetadata):
                 with open(entry.name, "wb") as f:
