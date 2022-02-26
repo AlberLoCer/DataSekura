@@ -4,13 +4,13 @@ import webbrowser
 import dropbox
 from dropbox import auth
 from dropbox import dropbox_client 
-import requests
+from pathlib import Path
 import os
 class Db_object:
     def __init__(self):
         self.set_up()
         folder = self.search_folder("SER")
-        self.download_folder(folder)
+        self.download_folder_launch(folder)
         return
 
     def set_up(self):
@@ -70,16 +70,34 @@ class Db_object:
                     print("No matching folders found!")
                     return -1
     
-    def download_folder(self, folder):
-        meta = folder.metadata #TODO Try to pass directly metadata to this function
+    def download_folder_launch(self, folder):
+        meta = folder.metadata 
         os.mkdir(meta.name)
         os.chdir(meta.name)
+        path = os.path.abspath(os.getcwd())
         file_list = self.list_folder_content("/" + meta.name)
         for entry in file_list._entries_value:
             if isinstance(entry, dropbox.files.FileMetadata):
-                self.dbx.files_download_to_file(entry.path_display, "/"+entry.path_display)
+                with open(entry.name, "wb") as f:
+                    metadata, res = self.dbx.files_download(path=entry.path_display)
+                    f.write(res.content)
             else:
-                self.download_folder(entry)
+                self.download_folder_rec(entry)
+                os.chdir(path)
+                
+    def download_folder_rec(self,meta):
+        os.mkdir(meta.name)
+        os.chdir(meta.name)
+        path = os.path.abspath(os.getcwd())
+        file_list = self.list_folder_content("/" + meta.name)
+        for entry in file_list._entries_value:#TODO Revise recursive folder download
+            if isinstance(entry, dropbox.files.FileMetadata):
+                with open(entry.name, "wb") as f:
+                    metadata, res = self.dbx.files_download(path=entry.path_display)
+                    f.write(res.content)
+            else:
+                self.download_folder_rec(entry)
+                os.chdir(path)
             
                     
 
