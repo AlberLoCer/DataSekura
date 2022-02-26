@@ -57,6 +57,7 @@ class Main:
                 
                 elif local_or_cloud == '3':
                     self.db = Db_object()
+                    self.encrypt_db_folder()
                     return
                 else:
                     print("Goodbye, take care.")
@@ -267,6 +268,15 @@ class Main:
         self.gd.hard_reset(self.folderDict["folder_path"])
         self.gd.delete_file(file_to_decrypt)
         return
+
+    ###################################################################################################
+    ###################################################################################################
+    
+    def encrypt_db_folder(self):
+        foldername = input("Input the folder to encrypt: ")
+        folder = self.db.search_folder(foldername)
+        folder_path = self.db.download_folder_launch(folder)
+        self.encrypt(folder_path)
 
     def password_input(self):
         self.base_password = input ("Enter your password for encryption: ")

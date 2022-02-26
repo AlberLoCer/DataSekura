@@ -9,9 +9,6 @@ import os
 class Db_object:
     def __init__(self):
         self.set_up()
-        foldername = input("Input the folder to encrypt: ")
-        folder = self.search_folder(foldername)
-        self.download_folder_launch(folder)
         return
 
     def set_up(self):
@@ -85,6 +82,7 @@ class Db_object:
             else:
                 self.download_folder_rec(entry)
                 os.chdir(path)
+        return path
                 
     def download_folder_rec(self,meta):
         os.mkdir(meta.name)
