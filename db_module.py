@@ -76,13 +76,15 @@ class Db_object:
         file_list = self.list_folder_content("/" + meta.name)
         for entry in file_list._entries_value:
             if isinstance(entry, dropbox.files.FileMetadata):
+                print("Processing file: "+ entry.path_display)
                 with open(entry.name, "wb") as f:
                     metadata, res = self.dbx.files_download(path=entry.path_display)
                     f.write(res.content)
             else:
+                print("Processing folder: "+ entry.path_display)
                 self.download_folder_rec(entry)
                 os.chdir(path)
-        return path
+        return path, meta
                 
     def download_folder_rec(self,meta):
         os.mkdir(meta.name)
@@ -91,13 +93,42 @@ class Db_object:
         file_list = self.list_folder_content(meta.path_display)
         for entry in file_list._entries_value:#TODO Revise recursive folder download
             if isinstance(entry, dropbox.files.FileMetadata):
+                print("Processing file: "+ entry.path_display)
                 with open(entry.name, "wb") as f:
                     metadata, res = self.dbx.files_download(path=entry.path_display)
                     f.write(res.content)
             else:
+                print("Processing folder: "+ entry.path_display)
                 self.download_folder_rec(entry)
                 os.chdir(path)
+    
+    def remove_folder(self,folder):
+        meta = folder.metadata
+        file_list = self.list_folder_content("/" + meta.name)
+        for entry in file_list._entries_value:
+            if isinstance(entry, dropbox.files.FileMetadata):
+                self.dbx.files_delete(entry.path_display)
+            else:
+                self.remove_folder_rec(entry)
+                self.dbx.files_delete(entry.path_display)
+        self.dbx.files_delete(meta.path_display)
+                
+    def remove_folder_rec(self,meta):
+        file_list = self.list_folder_content("/" + meta.path_display)
+        for entry in file_list._entries_value:
+            if isinstance(entry, dropbox.files.FileMetadata):
+                self.dbx.files_delete(entry.path_display)
+            else:
+                self.remove_folder_rec(entry)
+                self.dbx.files_delete(entry.path_display)
             
+    def upload_file(self,filename,parent):
+        try:
+            with open(filename,"rb") as file:
+                data = file.read()
+                self.dbx.files_upload(data,parent)
+        except Exception as e:
+            print(e.__str__())
                     
 
 

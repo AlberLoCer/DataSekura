@@ -275,8 +275,14 @@ class Main:
     def encrypt_db_folder(self):
         foldername = input("Input the folder to encrypt: ")
         folder = self.db.search_folder(foldername)
-        folder_path = self.db.download_folder_launch(folder)
+        folder_path, folder_metadata = self.db.download_folder_launch(folder)
         self.encrypt(folder_path)
+        print("Cleaning residual files...")
+        path_split = os.path.split(folder_metadata.path_display)
+        self.db.upload_file(self.folderDict['volume_path'],folder_metadata.path_display+".bin")
+        self.fs.delete_vol(self.folderDict["volume_path"])
+        self.db.remove_folder(folder)
+        
 
     def password_input(self):
         self.base_password = input ("Enter your password for encryption: ")
