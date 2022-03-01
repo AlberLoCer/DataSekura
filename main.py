@@ -57,8 +57,17 @@ class Main:
                 
                 elif local_or_cloud == '3':
                     self.db = Db_object()
-                    self.encrypt_db_folder()
-                    return
+                    self.ux.encrypt_decrypt_menu()
+                    encrypt_or_decrypt = self.ux.choice()
+                    if encrypt_or_decrypt == '1':   #Encryption
+                        self.encrypt_db_folder()
+                    else:
+                        if encrypt_or_decrypt == '2': #Decryption
+                            self.decrypt_db_folder()
+
+                        else:
+                            print("Goodbye, take care.")
+                            quit()
                 else:
                     print("Goodbye, take care.")
                     quit()
@@ -282,6 +291,11 @@ class Main:
         self.db.upload_file(self.folderDict['volume_path'],folder_metadata.path_display+".bin")
         self.fs.delete_vol(self.folderDict["volume_path"])
         self.db.remove_folder(folder)
+    
+    def decrypt_db_folder(self):
+        names,paths = self.db.list_bin_files()
+        self.db.input_and_download_bin(names,paths)
+        return
         
 
     def password_input(self):

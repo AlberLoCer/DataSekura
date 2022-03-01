@@ -6,6 +6,7 @@ from dropbox import auth
 from dropbox import dropbox_client 
 from pathlib import Path
 import os
+import fnmatch
 class Db_object:
     def __init__(self):
         self.set_up()
@@ -129,6 +130,34 @@ class Db_object:
                 self.dbx.files_upload(data,parent)
         except Exception as e:
             print(e.__str__())
-                    
+    
+    def list_bin_files(self):
+        file_names = []
+        file_paths = []
+        file_list = self.dbx.files_list_folder("",recursive=True)
+        for f in file_list.entries:
+            file_names.append(f.name)
+            file_paths.append(f.path_display)
+        pattern = '*.bin'
+        matching_names = fnmatch.filter(file_names, pattern)
+        matching_paths = fnmatch.filter(file_paths, pattern)
+        if matching_names != []:
+            for entry in matching_names:
+                print(entry)
+            return matching_names,matching_paths
+        else:
+            print("No encrypted files were found!")
+            return -1
+    
+    def input_and_download_bin(self, name_list, path_list):
+        file = input("Select the file to decrypt: ")
+        if file in name_list:
+            index = name_list.index(file)
+            path_to_download = path_list[index]
+            with open(name_list[index], "wb") as f:
+                metadata, res = self.dbx.files_download(path=path_to_download)
+                f.write(res.content)
+        return
+
 
 
