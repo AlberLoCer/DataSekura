@@ -287,7 +287,6 @@ class Main:
         folder_path, folder_metadata = self.db.download_folder_launch(folder)
         self.encrypt(folder_path)
         print("Cleaning residual files...")
-        path_split = os.path.split(folder_metadata.path_display)
         self.db.upload_file(self.folderDict['volume_path'],folder_metadata.path_display+".bin")
         self.fs.delete_vol(self.folderDict["volume_path"])
         self.db.remove_folder(folder)
@@ -295,9 +294,11 @@ class Main:
     def decrypt_db_folder(self):
         names,paths = self.db.list_bin_files()
         file,path = self.db.input_and_download_bin(names,paths)
-        self.db.remove_bin(path)
-        file = self.fs.remove_file_extension(file)
+        full_path = os.path.abspath(file)
+        file = self.fs.remove_file_extension(full_path)
         self.decrypt(file)
+        self.db.upload_folder(self.fs.remove_file_extension(path),file)
+        self.db.remove_bin(path)
         return
         
 

@@ -7,6 +7,7 @@ from dropbox import dropbox_client
 from pathlib import Path
 import os
 import fnmatch
+import shutil as sh
 class Db_object:
     def __init__(self):
         self.set_up()
@@ -130,6 +131,20 @@ class Db_object:
                 self.dbx.files_upload(data,parent)
         except Exception as e:
             print(e.__str__())
+    
+    def upload_folder(self, folder_db, folder_pc): #Not behaving as it should...
+        os.chdir(folder_pc)
+        self.dbx.files_create_folder(folder_db)
+        proper_folder = os.path.split(folder_db)
+        for root, subdirectories, files in os.walk(proper_folder[1]):
+            for subdirectory in subdirectories:
+                os.chdir(folder_pc)
+                update_folder = folder_db+"/"+subdirectory
+                self.upload_folder(folder_db=update_folder, folder_pc=subdirectory)
+            
+            for file in files:
+               self.upload_file(file,folder_db)
+        return
     
     def list_bin_files(self):
         file_names = []
