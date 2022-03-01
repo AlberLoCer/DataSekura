@@ -133,17 +133,28 @@ class Db_object:
             print(e.__str__())
     
     def upload_folder(self, folder_db, folder_pc): #Not behaving as it should...
+        folder_parent = Path(folder_pc).parent.absolute()
+        folder_parent = folder_parent.__str__()
+        os.chdir(folder_parent)
+        new_folder = folder_parent + folder_db
+        os.chdir(folder_parent + folder_db)
+        self.upload_folder_rec(folder_db,new_folder)
+        #sh.rmtree(folder_parent)
+    
+    def upload_folder_rec(self, folder_db, folder_pc):
         os.chdir(folder_pc)
         self.dbx.files_create_folder(folder_db)
-        proper_folder = os.path.split(folder_db)
-        for root, subdirectories, files in os.walk(proper_folder[1]):
+        for root, subdirectories, files in os.walk(folder_pc):
             for subdirectory in subdirectories:
-                os.chdir(folder_pc)
-                update_folder = folder_db+"/"+subdirectory
-                self.upload_folder(folder_db=update_folder, folder_pc=subdirectory)
-            
+                if os.path.isdir(subdirectory):
+                    update_folder = folder_db+"/"+subdirectory
+                    self.upload_folder_rec(folder_db=update_folder, folder_pc=folder_pc+os.sep+subdirectory)
+                    #sh.rmtree(folder_pc+os.sep+subdirectory)
+                    os.chdir(folder_pc)
             for file in files:
-               self.upload_file(file,folder_db)
+                if os.path.isfile(file):
+                    self.upload_file(file,folder_db+"/"+file)
+                    #os.remove(file)
         return
     
     def list_bin_files(self):
