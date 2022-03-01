@@ -105,7 +105,7 @@ class Db_object:
     
     def remove_folder(self,folder):
         meta = folder.metadata
-        file_list = self.list_folder_content("/" + meta.name)
+        file_list = self.list_folder_content("/" + meta.path_display)
         for entry in file_list._entries_value:
             if isinstance(entry, dropbox.files.FileMetadata):
                 self.dbx.files_delete(entry.path_display)
@@ -157,7 +157,15 @@ class Db_object:
             with open(name_list[index], "wb") as f:
                 metadata, res = self.dbx.files_download(path=path_to_download)
                 f.write(res.content)
-        return
+            if os.path.isfile(name_list[index]):
+                return name_list[index], path_list[index]
+            else:
+                return -1
+        else:
+            return -1
+    
+    def remove_bin(self,path):
+        self.dbx.files_delete(path)
 
 
 

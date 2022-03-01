@@ -294,7 +294,10 @@ class Main:
     
     def decrypt_db_folder(self):
         names,paths = self.db.list_bin_files()
-        self.db.input_and_download_bin(names,paths)
+        file,path = self.db.input_and_download_bin(names,paths)
+        self.db.remove_bin(path)
+        file = self.fs.remove_file_extension(file)
+        self.decrypt(file)
         return
         
 
