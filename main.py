@@ -245,6 +245,7 @@ class Main:
         self.gd.delete_file(file)
         self.fs.delete_vol(self.folderDict["volume_path"])
         self.gd.hard_reset(folderpath)
+        print("Google Drive Folder Successfully Encrypted!")
         
         
 
@@ -276,6 +277,7 @@ class Main:
         self.gd.upload_folder(self.folderDict["folder_path"], parent_dict['parent_id'], self.folderDict["folder_name"])
         self.gd.hard_reset(self.folderDict["folder_path"])
         self.gd.delete_file(file_to_decrypt)
+        print("Google Drive Folder Successfully Decrypted!")
         return
 
     ###################################################################################################
@@ -290,6 +292,7 @@ class Main:
         self.db.upload_file(self.folderDict['volume_path'],folder_metadata.path_display+".bin")
         self.fs.delete_vol(self.folderDict["volume_path"])
         self.db.remove_folder(folder)
+        print("Dropbox Folder Successfully Encrypted!")
     
     def decrypt_db_folder(self):
         names,paths = self.db.list_bin_files()
@@ -297,8 +300,12 @@ class Main:
         full_path = os.path.abspath(file)
         file = self.fs.remove_file_extension(full_path)
         self.decrypt(file)
+        print("Restoring folder contents...")
         self.db.upload_folder(self.fs.remove_file_extension(path),file)
+        print("Cleaning up residual files...")
         self.db.remove_bin(path)
+        self.fs.remove_full_folder(file)
+        print("Dropbox Folder Successfully Decrypted!")
         return
         
 

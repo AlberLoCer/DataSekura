@@ -139,7 +139,7 @@ class Db_object:
         new_folder = folder_parent + folder_db
         os.chdir(folder_parent + folder_db)
         self.upload_folder_rec(folder_db,new_folder)
-        #sh.rmtree(folder_parent)
+        os.chdir(folder_parent)
     
     def upload_folder_rec(self, folder_db, folder_pc):
         os.chdir(folder_pc)
@@ -149,12 +149,10 @@ class Db_object:
                 if os.path.isdir(subdirectory):
                     update_folder = folder_db+"/"+subdirectory
                     self.upload_folder_rec(folder_db=update_folder, folder_pc=folder_pc+os.sep+subdirectory)
-                    #sh.rmtree(folder_pc+os.sep+subdirectory)
                     os.chdir(folder_pc)
             for file in files:
                 if os.path.isfile(file):
                     self.upload_file(file,folder_db+"/"+file)
-                    #os.remove(file)
         return
     
     def list_bin_files(self):

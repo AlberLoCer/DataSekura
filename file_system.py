@@ -118,7 +118,21 @@ class File_System_Dealer:
    def removeFolder(self, path):
       os.rmdir(path)
    
-   
+   def remove_full_folder(self,path):
+      for filename in os.listdir(path):
+         file_path = os.path.join(path, filename)
+         try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                  os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                  sh.rmtree(file_path)
+         except Exception as e:
+            print(e.__str__())
+      try:
+         os.rmdir(path)
+      except Exception as e:
+         print(e.__str__())
+         
    def input_folder_decrypt(self):
       folderDict = dict()
       folderDict["volume_path"] = filedialog.askopenfilename()
