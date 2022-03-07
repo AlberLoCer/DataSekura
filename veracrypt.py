@@ -20,20 +20,24 @@ class Veracrypt:
             if(os.path.isfile(volPath)):
                 os.remove(volPath)
             return -1
-        if self.fs.move_files(folderpath, "X:"+os.sep) == -1:
-            if(os.path.isdir("X:"+os.sep)):
-                self.fs.move_files("X:"+os.sep, folderpath)
-                self.fs.remove_config(folderpath)
-                os.chdir(self.VCpath)
-                subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
-                os.remove(volPath)
-                return -1
-            if(os.path.isfile(volPath)):
-                os.remove(volPath)
-                return -1
-        os.chdir(self.VCpath)
-        subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
-        self.fs.removeFolder(folderpath)
+        #P -> X:// exists
+        if os.path.isdir("X:"+os.sep):
+            if self.fs.move_files(folderpath, "X:"+os.sep) == -1:
+                if(os.path.isdir("X:"+os.sep)):
+                    self.fs.move_files("X:"+os.sep, folderpath)
+                    self.fs.remove_config(folderpath)
+                    os.chdir(self.VCpath)
+                    subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
+                    os.remove(volPath)
+                    return -1
+                if(os.path.isfile(volPath)):
+                    os.remove(volPath)
+                    return -1
+            os.chdir(self.VCpath)
+            subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
+            self.fs.removeFolder(folderpath)
+        else:
+            return -1
 
     def VC_Decryption(self, volPath, password, folderpath):
         try:
