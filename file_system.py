@@ -11,8 +11,6 @@ from tkinter import filedialog
 from turtle import back
 class File_System_Dealer:
    def __init__(self):
-      self.root = Tk()
-      self.root.withdraw
       return
    
    
@@ -23,6 +21,7 @@ class File_System_Dealer:
       else:
          print("VeraCrypt could not be found in your system.")
          print("Please select the container folder of VeraCrypt in your system:")
+         self.root = Tk()
          path = filedialog.askdirectory()
          if os.path.isdir(path):
                os.chdir(path)
@@ -96,6 +95,7 @@ class File_System_Dealer:
       return parent_path
 
    def input_folder_encrypt(self):
+      self.tk = Tk()
       folder = filedialog.askdirectory(title="Select a folder to encrypt")
       aux_dict = self.create_dict(folder)
       return aux_dict
@@ -135,6 +135,7 @@ class File_System_Dealer:
          
    def input_folder_decrypt(self):
       folderDict = dict()
+      self.tk = Tk()
       folderDict["volume_path"] = filedialog.askopenfilename()
       path = Path(folderDict["volume_path"])
       folderDict["folder_parent"] = path.parent.absolute()

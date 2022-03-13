@@ -8,7 +8,6 @@ from password_permutator import Password_permutator
 from user_experience import User_experience
 from veracrypt import Veracrypt
 from file_dealing import File_alterator
-
 import os
 import shutil
 class Controller:
@@ -27,8 +26,7 @@ class Controller:
         if self.VCpath != '':
             if self.SSEpath != '':
                 self.vc = Veracrypt(self.VCpath)
-                self.fd = File_alterator(self.pw, self.SSEpath)
-                          
+                self.fd = File_alterator(self.pw, self.SSEpath)            
             else:
                 print("SSE File Encryptor could not be found in the system!")
                 print("SSE File Encryptor is an essential component in DataSekura.")

@@ -2,11 +2,10 @@ import os
 from tkinter import Tk, filedialog
 class User_experience:
     def __init__(self):
-        self.tk = Tk()
-        self.tk.withdraw
         return
     
     def choose_folder(self, text):
+        #self.tk = Tk()
         path = filedialog.askdirectory(text)
         return path
 
