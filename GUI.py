@@ -26,7 +26,7 @@ class DS_interface:
         tkinter.Button(win, image=drive, command= lambda:self.ctr.decrypt(NULL),borderwidth=0).pack(pady=20)
         tkinter.Button(win, image=dropbox, command= lambda:self.ctr.decrypt(NULL),borderwidth=0).pack(pady=20)
         def on_closing():
-            if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            if messagebox.askokcancel("Quit", "Do you want to exit DataSekura?"):
                 win.destroy()
                 return -1
 
