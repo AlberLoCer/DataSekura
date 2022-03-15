@@ -7,10 +7,11 @@ class Main:
         self.ux = User_experience()
         self.ctr = Controller()
         self.ui = DS_interface()
-        if self.ctr == -1:
-            return
         self.ux.local_or_cloud()
-        local_or_cloud = self.ux.choice()
+        if self.ctr == -1:
+            local_or_cloud = 0
+        else:
+            local_or_cloud = self.ux.choice()
         if local_or_cloud == '1': #Testing OK
             self.ctr.local_operation()
 

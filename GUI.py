@@ -1,27 +1,34 @@
 from asyncio.windows_events import NULL
 import tkinter
-from tkinter import ttk
-from tkinter import Tk
+from turtle import title
 from controller import Controller
+from tkinter import *
 from tkinter import messagebox
-from tkinter import Label
+from tkinter import ttk
 class DS_interface:
     def __init__(self):
         self.ctr = Controller()
         # Create an instance of tkinter frame
         win= Tk()
-
+        win.title("DataSekura")
         # Set the size of the tkinter window
-        win.geometry("700x350")
-
-        # Define a function to show the popup message
-        def show_msg():
-            messagebox.showinfo("Message","Hey There! I hope you are doing well.")
+        win.geometry("500x600")
+        logo= PhotoImage(file='GUI/ds.png')
+        local= PhotoImage(file='GUI/local.png')
+        drive= PhotoImage(file='GUI/drive_std.png')
+        dropbox= PhotoImage(file='GUI/dropbox_std.png')
 
         # Add an optional Label widget
-        Label(win, text= "Select an Operation", font= ('Aerial 17 bold italic')).pack(pady= 30)
+        Label(win, image=logo).pack(pady=30)
 
         # Create a Button to display the message
-        ttk.Button(win, text= "Encrypt", command= lambda:self.ctr.encrypt(NULL)).pack(pady= 20)
-        ttk.Button(win, text= "Decrypt", command= lambda:self.ctr.decrypt(NULL)).pack(pady= 20)
+        tkinter.Button(win,image=local, command= lambda:self.ctr.encrypt(NULL),borderwidth=0).pack(pady=20)
+        tkinter.Button(win, image=drive, command= lambda:self.ctr.decrypt(NULL),borderwidth=0).pack(pady=20)
+        tkinter.Button(win, image=dropbox, command= lambda:self.ctr.decrypt(NULL),borderwidth=0).pack(pady=20)
+        def on_closing():
+            if messagebox.askokcancel("Quit", "Do you want to quit?"):
+                win.destroy()
+                return -1
+
+        win.protocol("WM_DELETE_WINDOW", on_closing)
         win.mainloop()
