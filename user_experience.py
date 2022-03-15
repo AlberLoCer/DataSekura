@@ -15,6 +15,11 @@ class User_experience:
         print("2. Decrypt a folder")
         print("0. Exit")
     
+    def scatter_local_menu(self):
+        print("Choose the operation mode: \n")
+        print("1. Scatter: Spread encrypted fragments accross the cloud (Requires internet access)")
+        print("2. Local: Concentrate the full encryption flow in the local file system")
+
     def local_or_cloud(self):
         print("Select a platform: \n")
         print("1. Local File System")

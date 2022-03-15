@@ -43,7 +43,12 @@ class Controller:
         self.ux.encrypt_decrypt_menu()
         encrypt_or_decrypt = self.ux.choice()
         if encrypt_or_decrypt == '1':   
-            self.encrypt(NULL)
+            self.ux.scatter_local_menu()
+            scatter_local = self.ux.choice()
+            if scatter_local == 1:
+                return
+            else: 
+                self.encrypt(NULL)
         else:
             if encrypt_or_decrypt == '2': 
                 self.decrypt(NULL)
