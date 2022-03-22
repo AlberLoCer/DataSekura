@@ -5,8 +5,7 @@ import shutil
 from operator import xor
 from password_permutator import Password_permutator
 import subprocess
-import random
-import string
+import hashlib
 
 
 class File_alterator:
@@ -85,7 +84,8 @@ class File_alterator:
             for i in range(1,self.file_number):
                 chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
                 if(os.path.isfile(chunk_file_name)):
-                    name = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 5+(self.file_number%4)))
+                    passBytes = bytes(chunk_file_name,"ascii") 
+                    name = hashlib.sha256(passBytes).hexdigest()
                     os.rename(chunk_file_name,name)
                     file_list.append(name)
                 else:

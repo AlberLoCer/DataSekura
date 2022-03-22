@@ -70,75 +70,77 @@ class Controller:
             self.scatter_encrypt()
     
     def scatter_encrypt(self):
+        cwd = os.getcwd()
         creds = self.gd.login()
         self.folderDict = self.fs.input_folder_encrypt() #Select folder to encrypt
-        f = open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "a+") #Write file (filename=folder)
-        #Encrypt up to scatter
-        self.user_input_encrypt()
-        self.password_input()
-        print("Encrypting base volume...")
-        #P -> volume_path does not exist, X/:: not mounted
-        if (os.path.isfile(self.folderDict["volume_path"]) == False) or (os.path.isdir("X:"+os.sep) == False):
-            if self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
-                return
+        with open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "w") as f: #Write file (filename=folder)
+            #Encrypt up to scatter
+            self.user_input_encrypt()
+            self.password_input()
+            print("Encrypting base volume...")
+            #P -> volume_path does not exist, X/:: not mounted
+            if (os.path.isfile(self.folderDict["volume_path"]) == False) or (os.path.isdir("X:"+os.sep) == False):
+                if self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
+                    return
+                else:
+                    print("First layer of encryption successfully created!")
+                print("Splitting and permutating the volume...")
             else:
-                print("First layer of encryption successfully created!")
-            print("Splitting and permutating the volume...")
-        else:
-            print("Could not perform encryption")
+                print("Could not perform encryption")
+                if os.path.isfile(self.folderDict["volume_path"]):
+                    print("File: "+ self.folderDict["volume_path"]+ " already exists!")
+                    return
+                else:
+                    print("Virtual drive 'X' is already being used!")
+                    return
+            #P -> volume exists
             if os.path.isfile(self.folderDict["volume_path"]):
-                print("File: "+ self.folderDict["volume_path"]+ " already exists!")
-                return
+                if  self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) == -1: 
+                    print("Could not split encrypted file: Not enough space on device for performing the operation")
+                    self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
+                    return
+                else:
+                    print("Encrypted file succesfully splitted")
             else:
-                print("Virtual drive 'X' is already being used!")
+                print("Encrypted container could not be created, nothing to split!")
                 return
-        #P -> volume exists
-        if os.path.isfile(self.folderDict["volume_path"]):
-            if  self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) == -1: 
-                print("Could not split encrypted file: Not enough space on device for performing the operation")
+            #P -> none
+            self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
+            print("Encrypting milestone files...")
+            #P -> none
+            if self.fd.intermediate_encryption() == -1:
+                self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"])
+                self.fd.restore_file(self.folderDict["folder_name"])
                 self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
                 return
             else:
-                print("Encrypted file succesfully splitted")
-        else:
-            print("Encrypted container could not be created, nothing to split!")
-            return
-        #P -> none
-        self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
-        print("Encrypting milestone files...")
-        #P -> none
-        if self.fd.intermediate_encryption() == -1:
-            self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"])
-            self.fd.restore_file(self.folderDict["folder_name"])
-            self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
-            return
-        else:
-            print("Milestone files successfully encrypted!")
+                print("Milestone files successfully encrypted!")
 
-        #Ask for folder in google_drive
-        print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
-        fname = input()
-        folder_fetched = self.gd.check_folder_exists(creds,fname)
-        if folder_fetched == 0:
-            folder_fecthed = self.gd.create_folder('root',fname) #Create folder
-            f.write("root/"+fname)
+            #Ask for folder in google_drive
+            print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
+            fname = input()
+            folder_fetched = self.gd.check_folder_exists(creds,fname)
+            if folder_fetched == 0:
+                folder_fecthed = self.gd.create_folder('root',fname) #Create folder
+                f.write("root/"+fname)
+                
+            else:
+                #Write drive_folder in trace file
+                parent = self.gd.search_parent("root",folder_fetched['title'])
+                f.write(parent['parent_id']+"/"+fname)
+                
             
-        else:
-            #Write drive_folder in trace file
-            parent = self.gd.search_parent("root",folder_fetched['title'])
-            f.write(parent['parent_id']+"/"+fname)
-            
-        
-        f.write("/"+self.fd.file_number.__str__()) #Write number of files in trace file
-        names_list = self.fd.intermediate_masking(self.folderDict["folder_parent"], self.folderDict["folder_name"])#Rename files randomly 
-        #Write filenames(pathlike) in document
-        for name in names_list:
-            f.write(name+";")
-            self.gd.upload(name,folder_fecthed['id'],name,creds)
-        #Encrypt folder ds_traces
-        self.encrypt("ds_traces")
-
-        shutil.rmtree(self.folderDict["folder_path"])
+            f.write("/"+self.fd.file_number.__str__()+"/") #Write number of files in trace file
+            names_list = self.fd.intermediate_masking(self.folderDict["folder_parent"], self.folderDict["folder_name"])#Rename files randomly 
+            #Write filenames(pathlike) in document
+            for name in names_list:
+                f.write(name+";")
+                self.gd.upload(name,folder_fecthed['id'],name,creds)
+                os.remove(name)
+            #Encrypt folder ds_traces
+            f.close()
+        self.encrypt(cwd+os.sep+"ds_traces")
+        os.remove(cwd+os.sep+"credentials_module.json")
         return
     
     def scatter_decrypt(self):
