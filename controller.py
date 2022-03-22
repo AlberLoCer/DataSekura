@@ -70,7 +70,7 @@ class Controller:
             os.chdir("ds_traces")
     
     def scatter_encrypt(self):
-        self.gd.login()
+        creds = self.gd.login()
         self.folderDict = self.fs.input_folder_encrypt() #Select folder to encrypt
         f = open(self.folderDict["folder_name"]+".txt", "x") #Write file (filename=folder)
         #Encrypt up to scatter
@@ -117,14 +117,19 @@ class Controller:
 
         #Ask for folder in google_drive
         print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
-        if self.gd.check_folder_exists() == 0:
-            #Create folder
-            return
+        fname = input()
+        folder_fetched = self.gd.check_folder_exists(creds,fname)
+        if folder_fetched == 0:
+            self.gd.create_folder('root',fname) #Create folder
+            f.write("root/"+fname)
+            
         else:
             #Write drive_folder in trace file
-            return
+            parent = self.gd.search_parent("root",folder_fetched['title'])
+            f.write(+"/"+fname)
+            
         
-        #Write number of files in trace file
+        f.write("/"+self.fd.file_number.__str__()) #Write number of files in trace file
         #Rename files randomly 
         #Write filenames(pathlike) in document
         #Encrypt folder ds_traces
