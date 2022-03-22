@@ -144,13 +144,35 @@ class Controller:
         return
     
     def scatter_decrypt(self):
-        #Decrypt folder ds_traces
-        #Select folder to decrypt
-        #Read file 
+        cwd = os.getcwd()
+        creds = self.gd.login()
+        if os.path.isfile("ds_traces.bin"):
+            self.decrypt(cwd+os.sep+"ds_traces")
+            os.chdir(cwd+os.sep+"ds_traces")
+             #Select folder to decrypt
+            print("Select a file to decrypt: ")
+            for filename in os.listdir(cwd+os.sep+"ds_traces"):
+                print(filename)
+            file = input()
+            if os.path.isfile(file):
+                #Read file 
+                with open(filename) as f:
+                    text = f.read()
+                    resources = text.split("/")
+                    folder_path = resources[0] + resources[1]
+                    file_number = resources[2]
+                    file_list = resources[3].split(";")
+
         #Fecth files from drive
+
         #Delete files from drive
+
+        #Rename files into original milestones
+
         #Decrypt milestones and decrypt
+
         #Delete trace file
+        
         #Encrypt folder ds_traces
         return
 

@@ -39,7 +39,6 @@ class Gd_object:
       return file_list
    
 
-
    def download_file(self, creds, id_file, download_path):
       if creds == NULL:
          creds = self.login()
