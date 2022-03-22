@@ -6,12 +6,12 @@ class Main:
     def __init__(self):
         self.ux = User_experience()
         self.ctr = Controller()
-        self.ui = DS_interface()
+        #self.ui = DS_interface()
         self.ux.local_or_cloud()
-        if self.ctr == -1:
-            local_or_cloud = 0
-        else:
-            local_or_cloud = self.ux.choice()
+        #if self.ui == -1:
+        #    local_or_cloud = 0
+        
+        local_or_cloud = self.ux.choice()
         if local_or_cloud == '1': #Testing OK
             self.ctr.local_operation()
 

@@ -45,7 +45,8 @@ class Controller:
         if encrypt_or_decrypt == '1':   
             self.ux.scatter_local_menu()
             scatter_local = self.ux.choice()
-            if scatter_local == 1:
+            if scatter_local == '1':
+                self.scatter_init()
                 return
             else: 
                 self.encrypt(NULL)
@@ -57,6 +58,90 @@ class Controller:
                 print("Goodbye, take care.")
                 quit()
     
+    def scatter_init(self):
+        if os.path.isfile("ds_traces.bin"):
+            self.decrypt("ds_traces")
+            os.chdir("ds_traces")
+
+        else:
+            print("Folder with traces was not found...")
+            print("Creating folder...")
+            os.mkdir("ds_traces")
+            os.chdir("ds_traces")
+    
+    def scatter_encrypt(self):
+        self.gd.login()
+        self.folderDict = self.fs.input_folder_encrypt() #Select folder to encrypt
+        f = open(self.folderDict["folder_name"]+".txt", "x") #Write file (filename=folder)
+        #Encrypt up to scatter
+        self.user_input_encrypt()
+        self.password_input()
+        print("Encrypting base volume...")
+        #P -> volume_path does not exist, X/:: not mounted
+        if (os.path.isfile(self.folderDict["volume_path"]) == False) or (os.path.isdir("X:"+os.sep) == False):
+            if self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
+                return
+            else:
+                print("First layer of encryption successfully created!")
+            print("Splitting and permutating the volume...")
+        else:
+            print("Could not perform encryption")
+            if os.path.isfile(self.folderDict["volume_path"]):
+                print("File: "+ self.folderDict["volume_path"]+ " already exists!")
+                return
+            else:
+                print("Virtual drive 'X' is already being used!")
+                return
+        #P -> volume exists
+        if os.path.isfile(self.folderDict["volume_path"]):
+            if  self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) == -1: 
+                print("Could not split encrypted file: Not enough space on device for performing the operation")
+                self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
+                return
+            else:
+                print("Encrypted file succesfully splitted")
+        else:
+            print("Encrypted container could not be created, nothing to split!")
+            return
+        #P -> none
+        self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
+        print("Encrypting milestone files...")
+        #P -> none
+        if self.fd.intermediate_encryption() == -1:
+            self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"])
+            self.fd.restore_file(self.folderDict["folder_name"])
+            self.vc.VC_Decryption(self.folderDict["volume_path"],self.permuted_password, self.folderDict["folder_path"])
+            return
+        else:
+            print("Milestone files successfully encrypted!")
+
+        #Ask for folder in google_drive
+        print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
+        if self.gd.check_folder_exists() == 0:
+            #Create folder
+            return
+        else:
+            #Write drive_folder in trace file
+            return
+        
+        #Write number of files in trace file
+        #Rename files randomly 
+        #Write filenames(pathlike) in document
+        #Encrypt folder ds_traces
+        return
+    
+    def scatter_decrypt(self):
+        #Decrypt folder ds_traces
+        #Select folder to decrypt
+        #Read file 
+        #Fecth files from drive
+        #Delete files from drive
+        #Decrypt milestones and decrypt
+        #Delete trace file
+        #Encrypt folder ds_traces
+        return
+
+
     def google_drive_operation(self):
         self.gd = Gd_object()
         self.ux.encrypt_decrypt_menu()
