@@ -72,7 +72,7 @@ class Controller:
     def scatter_encrypt(self):
         creds = self.gd.login()
         self.folderDict = self.fs.input_folder_encrypt() #Select folder to encrypt
-        f = open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "x") #Write file (filename=folder)
+        f = open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "a+") #Write file (filename=folder)
         #Encrypt up to scatter
         self.user_input_encrypt()
         self.password_input()
@@ -126,7 +126,7 @@ class Controller:
         else:
             #Write drive_folder in trace file
             parent = self.gd.search_parent("root",folder_fetched['title'])
-            f.write(parent+"/"+fname)
+            f.write(parent['parent_id']+"/"+fname)
             
         
         f.write("/"+self.fd.file_number.__str__()) #Write number of files in trace file

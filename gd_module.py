@@ -7,7 +7,7 @@ import os
 class Gd_object:
 
    def __init__(self):
-      self.credentials_directory = "credentials_module.json"
+      self.credentials_directory = os.getcwd()+os.sep+"credentials_module.json"
       self.creds = self.login()
       return
 

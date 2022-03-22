@@ -90,7 +90,7 @@ class File_alterator:
                     file_list.append(name)
                 else:
                     return -1
-            return 0
+            return file_list
         except Exception as e:
             print("An error occured while trying to decrypt the milestone files: " + e.__str__())
             return -1
