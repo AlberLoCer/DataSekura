@@ -5,6 +5,8 @@ import shutil
 from operator import xor
 from password_permutator import Password_permutator
 import subprocess
+import random
+import string
 
 
 class File_alterator:
@@ -68,6 +70,24 @@ class File_alterator:
                     os.chdir(self.parentPath)
                     os.remove(chunk_file_name)
                     print("File: "+ repr(i)+ " decrypted with pass: " + self.pwdDict[i])
+                else:
+                    return -1
+            return 0
+        except Exception as e:
+            print("An error occured while trying to decrypt the milestone files: " + e.__str__())
+            return -1
+    
+    def intermediate_masking(self, parentPath, basename):
+        self.parentPath = parentPath
+        self.base_file_name = basename
+        file_list = []
+        try:
+            for i in range(1,self.file_number):
+                chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
+                if(os.path.isfile(chunk_file_name)):
+                    name = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 5+(self.file_number%4)))
+                    os.rename(chunk_file_name,name)
+                    file_list.append(name)
                 else:
                     return -1
             return 0

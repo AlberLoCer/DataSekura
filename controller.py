@@ -59,20 +59,20 @@ class Controller:
                 quit()
     
     def scatter_init(self):
+        self.gd = Gd_object()
         if os.path.isfile("ds_traces.bin"):
             self.decrypt("ds_traces")
-            os.chdir("ds_traces")
-
+            self.scatter_encrypt()
         else:
             print("Folder with traces was not found...")
             print("Creating folder...")
             os.mkdir("ds_traces")
-            os.chdir("ds_traces")
+            self.scatter_encrypt()
     
     def scatter_encrypt(self):
         creds = self.gd.login()
         self.folderDict = self.fs.input_folder_encrypt() #Select folder to encrypt
-        f = open(self.folderDict["folder_name"]+".txt", "x") #Write file (filename=folder)
+        f = open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "x") #Write file (filename=folder)
         #Encrypt up to scatter
         self.user_input_encrypt()
         self.password_input()
@@ -120,19 +120,25 @@ class Controller:
         fname = input()
         folder_fetched = self.gd.check_folder_exists(creds,fname)
         if folder_fetched == 0:
-            self.gd.create_folder('root',fname) #Create folder
+            folder_fecthed = self.gd.create_folder('root',fname) #Create folder
             f.write("root/"+fname)
             
         else:
             #Write drive_folder in trace file
             parent = self.gd.search_parent("root",folder_fetched['title'])
-            f.write(+"/"+fname)
+            f.write(parent+"/"+fname)
             
         
         f.write("/"+self.fd.file_number.__str__()) #Write number of files in trace file
-        #Rename files randomly 
+        names_list = self.fd.intermediate_masking(self.folderDict["folder_parent"], self.folderDict["folder_name"])#Rename files randomly 
         #Write filenames(pathlike) in document
+        for name in names_list:
+            f.write(name+";")
+            self.gd.upload(name,folder_fecthed['id'],name,creds)
         #Encrypt folder ds_traces
+        self.encrypt("ds_traces")
+
+        shutil.rmtree(self.folderDict["folder_path"])
         return
     
     def scatter_decrypt(self):
