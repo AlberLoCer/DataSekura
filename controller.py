@@ -193,7 +193,8 @@ class Controller:
                     ref_list = []
                     #Up to here works fine
                     for i in range(1,int(file_number)):
-                        original_name = filename+"_"+repr(i)+".bin.enc"
+                        file_title = self.fs.remove_file_extension(filename)
+                        original_name = file_title+"_"+repr(i)+".bin.enc"
                         passBytes = bytes(original_name,"ascii") 
                         masked_name = hashlib.sha256(passBytes).hexdigest()
                         ref_dict = dict()
@@ -201,13 +202,17 @@ class Controller:
                         ref_dict["mask"] = masked_name
                         ref_list.append(ref_dict)
                     for i in range(0,int(file_number)-1):
-                        self.gd.download_file(creds,drive_list[i]["id"],original_path+os.sep+ref_list[i]["name"])
-                        self.gd.delete_file(folder_id)
-                        os.rename(original_path+os.sep+ref_list[i]["mask"], original_path+os.sep+ref_list[i]["name"])
-                        
-                    
-                     
-                    
+                        new_path = self.gd.download_file(creds,drive_list[i]["id"],original_path)
+                        file = creds.CreateFile({'id':drive_list[i]["id"]})
+                        file.Delete()
+                        os.rename(new_path, original_path+os.sep+ref_list[i]["name"])
+                    self.fd.intermediate_decryption(original_path, file_title)
+                    self.fd.restore_file(file_title)
+                    base_vol = os.path.basename(original_path+os.sep+file_title+".bin")
+                    self.password_input()
+                    print("Preparing decryption environment...")
+                    self.final_pass = self.pw.password_permutation(self.permuted_password)
+                    self.vc.VC_Decryption(base_vol,self.final_pass, original_path+os.sep+file_title)
 
 
         #Fecth files from drive
