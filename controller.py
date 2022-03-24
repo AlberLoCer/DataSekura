@@ -148,9 +148,9 @@ class Controller:
             names_list = self.fd.intermediate_masking(self.folderDict["folder_parent"], self.folderDict["folder_name"])#Rename files randomly 
             #Write filenames(pathlike) in document
             for name in names_list:
-                f.write(name+";")
                 try:
                     file = self.gd.upload(name,folder_fetched['id'],name,creds)
+                    f.write(name+" "+file["id"]+"#")
                 finally:
                     file.content.close()
                     if file.uploaded:
@@ -184,11 +184,12 @@ class Controller:
                     file_list = resources[3].split("#")
                     drive_list = []
                     for k in file_list:
-                        file_dict = dict()
-                        aux = k.split(" ")
-                        file_dict["title"] = aux[0]
-                        file_dict["id"] = aux[1]
-                        drive_list.append(file_dict)
+                        if k != "":
+                            file_dict = dict()
+                            aux = k.split(" ")
+                            file_dict["title"] = aux[0]
+                            file_dict["id"] = aux[1]
+                            drive_list.append(file_dict)
                     ref_list = []
                     #Up to here works fine
                     for i in range(1,int(file_number)):
