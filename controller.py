@@ -148,14 +148,17 @@ class Controller:
             names_list = self.fd.intermediate_masking(self.folderDict["folder_parent"], self.folderDict["folder_name"])#Rename files randomly 
             #Write filenames(pathlike) in document
             for name in names_list:
-                f.write(name+" ")
-                self.gd.upload(name,folder_fetched['id'],name,creds)
-                os.remove(name)
+                f.write(name+";")
+                try:
+                    file = self.gd.upload(name,folder_fetched['id'],name,creds)
+                finally:
+                    file.content.close()
+                    if file.uploaded:
+                        os.remove(name)
             #Encrypt folder ds_traces
             f.close()
         self.encrypt(cwd+os.sep+"ds_traces")
         os.remove(cwd+os.sep+"credentials_module.json")
-        #TODO Remove milestone files
         return
     
     def scatter_decrypt(self):
