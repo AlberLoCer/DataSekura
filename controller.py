@@ -10,6 +10,7 @@ from veracrypt import Veracrypt
 from file_dealing import File_alterator
 import os
 import shutil
+import hashlib
 class Controller:
     def __init__(self):
         self.DataSekura_setUp()
@@ -74,6 +75,7 @@ class Controller:
         creds = self.gd.login()
         self.folderDict = self.fs.input_folder_encrypt() #Select folder to encrypt
         with open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "w") as f: #Write file (filename=folder)
+            f.write(self.folderDict['folder_path'])
             #Encrypt up to scatter
             self.user_input_encrypt()
             self.password_input()
@@ -122,20 +124,25 @@ class Controller:
             folder_fetched = self.gd.check_folder_exists(creds,fname)
             if folder_fetched == 0:
                 folder_fecthed = self.gd.create_folder('root',fname) #Create folder
-                f.write("root/"+fname)
+                f.write(folder_fecthed["id"])
                 
             else:
                 #Write drive_folder in trace file
                 parent = self.gd.search_parent("root",folder_fetched['title'])
-                f.write(parent['parent_id']+"/"+fname)
+                folder_list = self.gd.fetch_folders_in_folder(parent["id"])
+                for f in folder_list:
+                    if f['title'] == folder_fetched['title']:
+                        folder_fecthed = f
+                f.write(folder_fecthed["id"])
                 
             
             f.write("/"+self.fd.file_number.__str__()+"/") #Write number of files in trace file
             names_list = self.fd.intermediate_masking(self.folderDict["folder_parent"], self.folderDict["folder_name"])#Rename files randomly 
             #Write filenames(pathlike) in document
             for name in names_list:
-                f.write(name+";")
-                self.gd.upload(name,folder_fecthed['id'],name,creds)
+                file =  self.gd.upload(name,folder_fecthed['id'],name,creds)
+                file_id = file['id']
+                f.write(file_id+" ")
                 os.remove(name)
             #Encrypt folder ds_traces
             f.close()
@@ -159,9 +166,28 @@ class Controller:
                 with open(filename) as f:
                     text = f.read()
                     resources = text.split("/")
-                    folder_path = resources[0] + resources[1]
+                    original_path = resources[0]
+                    folder_id = resources[1]
                     file_number = resources[2]
-                    file_list = resources[3].split(";")
+                    file_list = resources[3].split(" ")
+                    ref_list = []
+                    for i in range(1,file_number):
+                        original_name = filename+"_"+repr(i)+".bin.enc"
+                        passBytes = bytes(original_name,"ascii") 
+                        masked_name = hashlib.sha256(passBytes).hexdigest()
+                        ref_dict = dict()
+                        ref_dict["name"] = original_name
+                        ref_dict["mask"] = masked_name
+                        ref_list.append(ref_dict)
+                    for i in range(1,file_number):
+                        self.gd.download_file(creds,file_list[i],original_path+os.sep+f)
+                        os.rename(original_path+os.sep+f, original_path+os.sep+ref_list[i]["name"])
+                        file = self.gd.get_file(file_list[i])
+                        self.gd.delete_file(file)
+                    
+                     
+                    
+
 
         #Fecth files from drive
 

@@ -47,6 +47,10 @@ class Gd_object:
       path = download_path+os.sep+filename
       file.GetContentFile(path)
       return path
+   
+   def get_file(self,creds,id):
+      file = creds.ListFile({'q': "id = '"+id+"'"}).GetList()
+      return file
 
    
    def fetch_folder(self):
@@ -61,6 +65,12 @@ class Gd_object:
             folder_str = input("Select a folder: ")
             file_output = self.check_folder_exists(creds,folder_str)
          return file_output
+   
+   def fetch_folders_in_folder(self, parent):
+      creds = self.login()
+      folder_list = creds.ListFile({'q': "'"+parent['id']+"' in parents and trashed=false and mimeType='application/vnd.google-apps.folder'"}).GetList()
+      return folder_list
+
 
    def download_folder_launch(self, file_output):
       creds = self.login()
@@ -97,6 +107,7 @@ class Gd_object:
             file = creds.CreateFile({'title':name})
          file.SetContentFile(path)
          file.Upload()
+         return file
 
    def create_folder(self, id, name):
       creds = self.login()
