@@ -140,7 +140,7 @@ class Gd_object:
                os.rmdir(path + os.sep + subdirectory) 
 
    def delete_file(self, file):
-      file.Delete()
+      file.Delete(file)
       
 
    

@@ -178,7 +178,14 @@ class Controller:
                     original_path = resources[0]
                     folder_id = resources[1]
                     file_number = resources[2]
-                    file_list = resources[3].split(" ")
+                    file_list = resources[3].split("#")
+                    drive_list = []
+                    for k in file_list:
+                        file_dict = dict()
+                        aux = k.split(" ")
+                        file_dict["title"] = aux[0]
+                        file_dict["id"] = aux[1]
+                        drive_list.append(file_dict)
                     ref_list = []
                     #Up to here works fine
                     for i in range(1,int(file_number)):
@@ -189,11 +196,11 @@ class Controller:
                         ref_dict["name"] = original_name
                         ref_dict["mask"] = masked_name
                         ref_list.append(ref_dict)
-                    for i in range(1,file_number):
-                        self.gd.download_file(creds,file_list[i],original_path+os.sep+f)
-                        os.rename(original_path+os.sep+f, original_path+os.sep+ref_list[i]["name"])
-                        file = self.gd.get_file(file_list[i])
-                        self.gd.delete_file(file)
+                    for i in range(0,int(file_number)-1):
+                        self.gd.download_file(creds,drive_list[i]["id"],original_path+os.sep+ref_list[i]["name"])
+                        self.gd.delete_file(folder_id)
+                        os.rename(original_path+os.sep+ref_list[i]["mask"], original_path+os.sep+ref_list[i]["name"])
+                        
                     
                      
                     
