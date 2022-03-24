@@ -53,7 +53,14 @@ class Controller:
                 self.encrypt(NULL)
         else:
             if encrypt_or_decrypt == '2': 
-                self.decrypt(NULL)
+                self.ux.scatter_local_menu()
+                scatter_local = self.ux.choice()
+                if scatter_local == '1':
+                    self.scatter_decrypt()
+                    return
+                else:
+                    self.decrypt(NULL)
+                    return
 
             else:
                 print("Goodbye, take care.")
@@ -75,7 +82,8 @@ class Controller:
         creds = self.gd.login()
         self.folderDict = self.fs.input_folder_encrypt() #Select folder to encrypt
         with open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "w") as f: #Write file (filename=folder)
-            f.write(self.folderDict['folder_path'])
+            f.write(self.folderDict['folder_parent'].__str__()+"|")
+            aux_parent = self.folderDict['folder_parent'].__str__()
             #Encrypt up to scatter
             self.user_input_encrypt()
             self.password_input()
@@ -124,7 +132,7 @@ class Controller:
             folder_fetched = self.gd.check_folder_exists(creds,fname)
             if folder_fetched == 0:
                 folder_fecthed = self.gd.create_folder('root',fname) #Create folder
-                f.write(folder_fecthed["id"])
+                f.write(folder_fecthed["id"]+"|")
                 
             else:
                 #Write drive_folder in trace file
@@ -133,24 +141,26 @@ class Controller:
                 for f in folder_list:
                     if f['title'] == folder_fetched['title']:
                         folder_fecthed = f
-                f.write(folder_fecthed["id"])
+                f.write(folder_fecthed["id"]+"|")
                 
             
-            f.write("/"+self.fd.file_number.__str__()+"/") #Write number of files in trace file
+            f.write(self.fd.file_number.__str__()+"|") #Write number of files in trace file
             names_list = self.fd.intermediate_masking(self.folderDict["folder_parent"], self.folderDict["folder_name"])#Rename files randomly 
             #Write filenames(pathlike) in document
             for name in names_list:
                 file =  self.gd.upload(name,folder_fecthed['id'],name,creds)
                 file_id = file['id']
                 f.write(file_id+" ")
-                os.remove(name)
+                #os.remove(name)
             #Encrypt folder ds_traces
             f.close()
         self.encrypt(cwd+os.sep+"ds_traces")
         os.remove(cwd+os.sep+"credentials_module.json")
+        #TODO Remove milestone files
         return
     
     def scatter_decrypt(self):
+        self.gd = Gd_object()
         cwd = os.getcwd()
         creds = self.gd.login()
         if os.path.isfile("ds_traces.bin"):
@@ -165,13 +175,14 @@ class Controller:
                 #Read file 
                 with open(filename) as f:
                     text = f.read()
-                    resources = text.split("/")
+                    resources = text.split("|")
                     original_path = resources[0]
                     folder_id = resources[1]
                     file_number = resources[2]
                     file_list = resources[3].split(" ")
                     ref_list = []
-                    for i in range(1,file_number):
+                    #Up to here works fine
+                    for i in range(1,int(file_number)):
                         original_name = filename+"_"+repr(i)+".bin.enc"
                         passBytes = bytes(original_name,"ascii") 
                         masked_name = hashlib.sha256(passBytes).hexdigest()
