@@ -219,18 +219,6 @@ class Controller:
                         print("Decryption complete!")
                         print("Final Step: Encrypting ds_traces...")
                         self.encrypt(cwd+os.sep+"ds_traces")
-
-        #Fecth files from drive
-
-        #Delete files from drive
-
-        #Rename files into original milestones
-
-        #Decrypt milestones and decrypt
-
-        #Delete trace file
-        
-        #Encrypt folder ds_traces
         return
 
 
