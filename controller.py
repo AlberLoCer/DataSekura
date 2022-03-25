@@ -69,6 +69,8 @@ class Controller:
     def scatter_init(self):
         self.gd = Gd_object()
         if os.path.isfile("ds_traces.bin"):
+            print("ds_traces found!")
+            print("Decrypting ds_traces...")
             self.decrypt("ds_traces")
             self.scatter_encrypt()
         else:
@@ -83,12 +85,9 @@ class Controller:
         self.folderDict = self.fs.input_folder_encrypt() #Select folder to encrypt
         with open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "w") as f: #Write file (filename=folder)
             f.write(self.folderDict['folder_parent'].__str__()+"|")
-            aux_parent = self.folderDict['folder_parent'].__str__()
-            #Encrypt up to scatter
             self.user_input_encrypt()
             self.password_input()
-            print("Encrypting base volume...")
-            #P -> volume_path does not exist, X/:: not mounted
+            print("Encrypting "+ self.folderDict["folder_name"] + "...")
             if (os.path.isfile(self.folderDict["volume_path"]) == False) or (os.path.isdir("X:"+os.sep) == False):
                 if self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
                     return
@@ -155,8 +154,9 @@ class Controller:
                     file.content.close()
                     if file.uploaded:
                         os.remove(name)
-            #Encrypt folder ds_traces
+        #Encrypt folder ds_traces
             f.close()
+        print("Encrypting ds_traces...")
         self.encrypt(cwd+os.sep+"ds_traces")
         os.remove(cwd+os.sep+"credentials_module.json")
         return
@@ -166,6 +166,7 @@ class Controller:
         cwd = os.getcwd()
         creds = self.gd.login()
         if os.path.isfile("ds_traces.bin"):
+            print("Decrypting ds_traces...")
             self.decrypt(cwd+os.sep+"ds_traces")
             os.chdir(cwd+os.sep+"ds_traces")
              #Select folder to decrypt
@@ -206,14 +207,18 @@ class Controller:
                         file = creds.CreateFile({'id':drive_list[i]["id"]})
                         file.Delete()
                         os.rename(new_path, original_path+os.sep+ref_list[i]["name"])
+                    print("Decrypting " + file_title + "...")
+                    self.password_input()
+                    self.fd.populateDict(self.alpha_base,self.beta_base, len(self.permuted_password),self.permuted_password)
+                    print("Parameters fetched!")
+                    print("Preparing decryption environment...")
                     self.fd.intermediate_decryption(original_path, file_title)
                     self.fd.restore_file(file_title)
-                    base_vol = os.path.basename(original_path+os.sep+file_title+".bin")
-                    self.password_input()
-                    print("Preparing decryption environment...")
-                    self.final_pass = self.pw.password_permutation(self.permuted_password)
-                    self.vc.VC_Decryption(base_vol,self.final_pass, original_path+os.sep+file_title)
-
+                    base_vol = original_path+os.sep+file_title+".bin"
+                    if self.vc.VC_Decryption(base_vol,self.permuted_password, original_path+os.sep+file_title) != -1:
+                        print("Decryption complete!")
+                        print("Final Step: Encrypting ds_traces...")
+                        self.encrypt(cwd+os.sep+"ds_traces")
 
         #Fecth files from drive
 
