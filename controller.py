@@ -182,6 +182,7 @@ class Controller:
                     original_path = resources[0]
                     folder_id = resources[1]
                     file_number = resources[2]
+                    self.fd.set_file_number(int(file_number))
                     file_list = resources[3].split("#")
                     drive_list = []
                     for k in file_list:

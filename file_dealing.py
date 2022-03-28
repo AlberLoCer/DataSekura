@@ -139,3 +139,6 @@ class File_alterator:
         except Exception as e:
             print("An error occurred while decrypting the deep layer: " + e.__str__())
             return -1
+
+    def set_file_number(self, file_number):
+        self.file_number = file_number
