@@ -150,9 +150,6 @@ class File_System_Dealer:
       return os.path.splitext(name)[0]
    
    def restore_files(self, path, name):
-      pathObj = Path(path)
-      parent = pathObj.parent.absolute()
-      os.chdir(parent)
       name_noExt = self.remove_file_extension(name)
       os.mkdir(name_noExt)
       self.move_files("X:"+os.sep, path)

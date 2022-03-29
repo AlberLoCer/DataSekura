@@ -69,6 +69,8 @@ class Controller:
     def scatter_init(self):
         self.gd = Gd_object()
         if os.path.isfile("ds_traces.bin"):
+            with open("ds_traces.bin") as bin:
+                bin.close()
             print("ds_traces found!")
             print("Decrypting ds_traces...")
             self.decrypt("ds_traces")
@@ -132,7 +134,6 @@ class Controller:
             if folder_fetched == 0:
                 folder_fetched = self.gd.create_folder('root',fname) #Create folder
                 f.write(folder_fetched["id"]+"|")
-                
             else:
                 #Write drive_folder in trace file
                 parent = self.gd.search_parent("root",folder_fetched['title'])
@@ -219,6 +220,7 @@ class Controller:
                     if self.vc.VC_Decryption(base_vol,self.permuted_password, original_path+os.sep+file_title) != -1:
                         print("Decryption complete!")
                         print("Final Step: Encrypting ds_traces...")
+                        f.close()
                         self.encrypt(cwd+os.sep+"ds_traces")
         return
 
