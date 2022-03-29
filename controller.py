@@ -131,16 +131,13 @@ class Controller:
             print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
             fname = input()
             folder_fetched = self.gd.check_folder_exists(creds,fname)
+            if folder_fetched == -1:
+                return
             if folder_fetched == 0:
                 folder_fetched = self.gd.create_folder('root',fname) #Create folder
                 f.write(folder_fetched["id"]+"|")
             else:
                 #Write drive_folder in trace file
-                parent = self.gd.search_parent("root",folder_fetched['title'])
-                folder_list = self.gd.fetch_folders_in_folder(parent["id"])
-                for f in folder_list:
-                    if f['title'] == folder_fetched['title']:
-                        folder_fetched = f
                 f.write(folder_fetched["id"]+"|")
                 
             
@@ -221,6 +218,9 @@ class Controller:
                         print("Decryption complete!")
                         print("Final Step: Encrypting ds_traces...")
                         f.close()
+                        os.chdir(cwd)
+                        path_to_remove = "ds_traces" + os.sep + self.folderDict["folder_name"] + ".txt"
+                        os.remove(path_to_remove)
                         self.encrypt(cwd+os.sep+"ds_traces")
         return
 
