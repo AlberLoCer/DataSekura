@@ -1,11 +1,12 @@
 from asyncio.windows_events import NULL
 import gd_module
+from local_operations import Operations
 import user_experience
 import file_system
 import controller
 import os
 
-class GD_operations:
+class GD_operations(Operations):
     def __init__(self):
         self.set_up()
         return

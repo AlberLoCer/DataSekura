@@ -1,3 +1,4 @@
+from db_operations import DB_operations
 from gd_module import Gd_object
 from db_module import Db_object
 from asyncio.windows_events import NULL
@@ -12,6 +13,7 @@ import os
 import shutil
 import hashlib
 import gd_operations
+import db_operations
 class Controller:
     def __init__(self):
         self.dataSekura_setUp()
@@ -43,6 +45,9 @@ class Controller:
     
     def google_drive_operation(self):
         gd_operations.GD_operations()
+
+    def dropbox_operation(self):
+        db_operations.DB_operations()
 
     def local_operation(self):
         self.ux.encrypt_decrypt_menu()
@@ -227,20 +232,7 @@ class Controller:
                         os.remove(path_to_remove)
                         self.encrypt(cwd+os.sep+"ds_traces")
         return
-    
-    def dropbox_operation(self):
-        self.db = Db_object()
-        self.ux.encrypt_decrypt_menu()
-        encrypt_or_decrypt = self.ux.choice()
-        if encrypt_or_decrypt == '1':   #Encryption
-            self.encrypt_db_folder()
-        else:
-            if encrypt_or_decrypt == '2': #Decryption
-                self.decrypt_db_folder()
 
-            else:
-                print("Goodbye, take care.")
-                quit()
 
         #P -> folder = pathlike
     def encrypt(self, folder):
@@ -406,30 +398,6 @@ class Controller:
     ###################################################################################################
     ###################################################################################################
     
-    def encrypt_db_folder(self):
-        foldername = input("Input the folder to encrypt: ")
-        folder = self.db.search_folder(foldername)
-        folder_path, folder_metadata = self.db.download_folder_launch(folder)
-        self.encrypt(folder_path)
-        print("Cleaning residual files...")
-        self.db.upload_file(self.folderDict['volume_path'],folder_metadata.path_display+".bin")
-        self.fs.delete_vol(self.folderDict["volume_path"])
-        self.db.remove_folder(folder)
-        print("Dropbox Folder Successfully Encrypted!")
-    
-    def decrypt_db_folder(self):
-        names,paths = self.db.list_bin_files()
-        file,path = self.db.input_and_download_bin(names,paths)
-        full_path = os.path.abspath(file)
-        file = self.fs.remove_file_extension(full_path)
-        self.decrypt(file)
-        print("Restoring folder contents...")
-        self.db.upload_folder(self.fs.remove_file_extension(path),file)
-        print("Cleaning up residual files...")
-        self.db.remove_bin(path)
-        self.fs.remove_full_folder(file)
-        print("Dropbox Folder Successfully Decrypted!")
-        return
         
 
     def password_input(self):
