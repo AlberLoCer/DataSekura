@@ -44,7 +44,7 @@ class Controller:
         return 0
     
     def local_set_up(self):
-        self.ux = User_experience
+        self.ux = User_experience()
         self.ux.encrypt_decrypt_menu()
         _encryptor = Local_encryptor(self)
         _scatter = Scatter_encryption(self)
