@@ -7,18 +7,16 @@ class Main:
         self.ctr = Controller()
         #self.ui = DS_interface()
         self.ux.local_or_cloud()
-        #if self.ui == -1:
-        #    local_or_cloud = 0
-        
+
         local_or_cloud = self.ux.choice()
         if local_or_cloud == '1': #Testing OK
-            self.ctr.local_operation()
+            self.ctr.local_set_up()
 
         elif local_or_cloud == '2':
-            self.ctr.google_drive_operation()
+            self.ctr.gDrive_set_up()
                 
         elif local_or_cloud == '3':
-            self.ctr.dropbox_operation()
+            self.ctr.dropbox_set_up()
 
         else:
             print("Goodbye, take care.")

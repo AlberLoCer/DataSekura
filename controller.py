@@ -118,11 +118,6 @@ class Controller:
                 quit()
 
         #P -> folder = pathlike
-    
-    ###################################################################################################
-    ###################################################################################################
-    
-        
 
     def password_input(self):
         self.base_password = input ("Enter your password for encryption: ")
