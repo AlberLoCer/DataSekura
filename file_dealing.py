@@ -3,13 +3,12 @@ import pathlib
 import math
 import shutil
 from operator import xor
-from controller import Controller
 from password_permutator import Password_permutator
 import subprocess
 import hashlib
 
 class File_alterator:
-    def __init__(self, ctr:Controller):
+    def __init__(self, ctr):
         self.ctr = ctr
         self.pwdperm = self.ctr.pw
         self.pwdDict = dict()

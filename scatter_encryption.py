@@ -11,15 +11,7 @@ import os
 
 class Scatter_encryption(Encryptor):
     def __init__(self,ctr) -> None:
-        self.ctr = ctr
-        self.fs = File_System_Dealer()
-        self.pw = Password_permutator()
-        self.ux = User_experience()
-        self.VCpath = self.ctr.VCpath
-        self.SSEpath = self.ctr.SSEpath
-        self.vc = Veracrypt(self.VCpath)
-        self.fd = File_alterator(self.ctr)       
-        super().__init__()
+        super().__init__(ctr)
 
     def encrypt(self):
         cwd = os.getcwd()
