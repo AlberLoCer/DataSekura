@@ -2,7 +2,6 @@ import os
 import subprocess
 from pathlib import Path
 import file_system
-from tkinter import filedialog
 class Veracrypt:
     def __init__(self, path):
         self.fs = file_system.File_System_Dealer()
@@ -15,28 +14,14 @@ class Veracrypt:
         try:
             subprocess.call(["VeraCrypt Format.exe","/create", volPath,"/password", password, "/hash", hash, "/encryption", encryption, "/filesystem", fs, "/size", size,"/silent"])
             subprocess.call(["VeraCrypt.exe", "/volume", volPath, "/letter", "X", "/password", password, "/quit", "/silent"])
-        except Exception as e:
-            print("Failed while creating encrypted volume: " + e.__str__())
-            if(os.path.isfile(volPath)):
-                os.remove(volPath)
-            return -1
-        #P -> X:// exists
-        if os.path.isdir("X:"+os.sep):
-            if self.fs.move_files(folderpath, "X:"+os.sep) == -1:
-                if(os.path.isdir("X:"+os.sep)):
-                    self.fs.move_files("X:"+os.sep, folderpath)
-                    self.fs.remove_config(folderpath)
-                    os.chdir(self.VCpath)
-                    subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
-                    os.remove(volPath)
-                    return -1
-                if(os.path.isfile(volPath)):
-                    os.remove(volPath)
-                    return -1
+            self.fs.move_files(folderpath, "X:"+os.sep)
             os.chdir(self.VCpath)
             subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
             self.fs.removeFolder(folderpath)
-        else:
+        except Exception as e:
+            print("Could not encrypt first layer: " + e.__str__())
+            if os.path.isdir("X:"+os.sep):
+                subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
             return -1
 
     def VC_Decryption(self, volPath, password, folderpath):
