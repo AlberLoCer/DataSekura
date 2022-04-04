@@ -1,4 +1,5 @@
 from encryptor import Encryptor
+from local_encryptor import Local_encryptor
 from gd_module import Gd_object
 import hashlib
 import os
@@ -6,6 +7,8 @@ import os
 
 class Scatter_encryption(Encryptor):
     def __init__(self,ctr) -> None:
+        self.local = Local_encryptor(ctr)
+        self.gd = Gd_object()
         super().__init__(ctr)
 
     def encrypt(self):
@@ -14,7 +17,7 @@ class Scatter_encryption(Encryptor):
         self.folderDict = self.fs.input_folder_encrypt()
         with open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "w") as f:
             f.write(self.folderDict['folder_parent'].__str__()+"|")
-            self.ctr.user_input_encrypt()
+            self.ctr.user_input_encrypt(self.folderDict)
             self.ctr.password_input()
             print("Encrypting "+ self.folderDict["folder_name"] + "...")
             if (os.path.isfile(self.folderDict["volume_path"]) == False) or (os.path.isdir("X:"+os.sep) == False):
@@ -82,7 +85,7 @@ class Scatter_encryption(Encryptor):
         #Encrypt folder ds_traces
             f.close()
         print("Encrypting ds_traces...")
-        self.encrypt(cwd+os.sep+"ds_traces")
+        self.local.encrypt(cwd+os.sep+"ds_traces")
         os.remove(cwd+os.sep+"credentials_module.json")
         return
     
@@ -148,5 +151,5 @@ class Scatter_encryption(Encryptor):
                         os.chdir(cwd)
                         path_to_remove = "ds_traces" + os.sep + self.folderDict["folder_name"] + ".txt"
                         os.remove(path_to_remove)
-                        self.encrypt(cwd+os.sep+"ds_traces")
+                        self.local.encrypt(cwd+os.sep+"ds_traces")
         return

@@ -84,7 +84,6 @@ class Controller:
                 quit()
 
     def scatter_set_up(self):
-        self.gd = Gd_object()
         local = Local_encryptor(self)
         scatter = Scatter_encryption(self)
         if os.path.isfile("ds_traces.bin"):
