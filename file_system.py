@@ -48,6 +48,13 @@ class File_System_Dealer:
          else:
                return ''
    
+   def directory_backup_create(self,path):
+      str_ext = "(AUX)"
+      sh.copytree(path,path+str_ext)
+   
+   def directory_backup_rename(self,path,original):
+      os.rename(path,original)
+   
    def file_backup_creation(self, path):
       try: 
          dest = self.remove_file_extension(path)
@@ -62,8 +69,7 @@ class File_System_Dealer:
    def backup_rename(self, backup, original):
       os.rename(backup, original)
 
-
-
+   
 
    def find(self, name, path):
       for root, dirs, files in os.walk(path):
