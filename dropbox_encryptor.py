@@ -5,11 +5,7 @@ from user_experience import User_experience
 import os
 class DB_encryptor(Encryptor):
     def __init__(self, ctr):
-        self.ctr = ctr
-        self.db = Db_object()
-        self.ux = User_experience()
-        self.fs = File_System_Dealer()
-        return
+        super().__init__(ctr)
     
     def encrypt(self):
         foldername = input("Input the folder to encrypt: ")

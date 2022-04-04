@@ -11,7 +11,7 @@ from user_experience import User_experience
 from veracrypt import Veracrypt
 from file_dealing import File_alterator
 import os
-import gd_operations
+from googledrive_encryptor import GoogleDriveEncryptor
 class Controller:
     def __init__(self):
         self.dataSekura_setUp()
@@ -103,7 +103,7 @@ class Controller:
     def gDrive_set_up(self):
         self.ux.encrypt_decrypt_menu()
         encrypt_or_decrypt = self.ux.choice()
-        encryptor = gd_operations.GoogleDriveEncryptor()
+        encryptor = GoogleDriveEncryptor()
         if encrypt_or_decrypt == '1': 
             encryptor.encrypt()
         else:
@@ -152,3 +152,4 @@ class Controller:
         self.cmd_fs = self.ux.choose_fs(fs)
 
         self.volume_size = self.fs.fetch_size(folderDict["folder_path"], self.cmd_fs)
+    

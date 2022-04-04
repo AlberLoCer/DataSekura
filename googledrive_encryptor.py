@@ -7,12 +7,8 @@ from file_system import File_System_Dealer
 import os
 
 class GoogleDriveEncryptor(Encryptor):
-    def __init__(self,ctr):
-        self.gd = Gd_object()
-        self.ux = User_experience()
-        self.fs = File_System_Dealer()
-        self.ctr = ctr
-        return
+    def __init__(self, ctr):
+        super().__init__(ctr)
     
     def encrypt(self):
         creds = self.gd.login()

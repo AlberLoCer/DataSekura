@@ -6,10 +6,10 @@ class Main:
         self.ux = User_experience()
         self.ctr = Controller()
         #self.ui = DS_interface()
+        
         self.ux.local_or_cloud()
-
         local_or_cloud = self.ux.choice()
-        if local_or_cloud == '1': #Testing OK
+        if local_or_cloud == '1': 
             self.ctr.local_set_up()
 
         elif local_or_cloud == '2':
