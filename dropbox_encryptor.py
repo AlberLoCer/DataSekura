@@ -1,7 +1,4 @@
-from db_module import Db_object
-from file_system import File_System_Dealer
 from encryptor import Encryptor
-from user_experience import User_experience
 import os
 class DB_encryptor(Encryptor):
     def __init__(self, ctr):

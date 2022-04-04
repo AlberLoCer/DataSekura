@@ -1,10 +1,5 @@
 from encryptor import Encryptor
 from gd_module import Gd_object
-from file_system import File_System_Dealer
-from password_permutator import Password_permutator
-from user_experience import User_experience
-from veracrypt import Veracrypt
-from file_dealing import File_alterator
 import hashlib
 import os
 
@@ -16,8 +11,8 @@ class Scatter_encryption(Encryptor):
     def encrypt(self):
         cwd = os.getcwd()
         creds = self.gd.login()
-        self.folderDict = self.fs.input_folder_encrypt() #Select folder to encrypt
-        with open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "w") as f: #Write file (filename=folder)
+        self.folderDict = self.fs.input_folder_encrypt()
+        with open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "w") as f:
             f.write(self.folderDict['folder_parent'].__str__()+"|")
             self.ctr.user_input_encrypt()
             self.ctr.password_input()
