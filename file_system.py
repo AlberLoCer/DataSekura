@@ -51,6 +51,8 @@ class File_System_Dealer:
    def directory_backup_create(self,path):
       str_ext = "(AUX)"
       sh.copytree(path,path+str_ext)
+      return path+str_ext
+
    
    def directory_backup_rename(self,path,original):
       os.rename(path,original)

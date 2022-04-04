@@ -18,7 +18,7 @@ class Local_encryptor(Encryptor):
             self.folderDict = self.fs.input_folder_encrypt()
         else:
             self.folderDict = self.fs.create_dict(folder)
-        self.fs.directory_backup_create(self.folderDict['folder_path'])
+        backup = self.fs.directory_backup_create(self.folderDict['folder_path'])
         self.ctr.user_input_encrypt(self.folderDict)
         self.ctr.password_input()
         print("Encrypting base volume...")
@@ -79,6 +79,7 @@ class Local_encryptor(Encryptor):
             return
         print("Encryption complete!")
         print("Good luck!")
+        shutil.rmtree(backup)
         return self.folderDict
 
      
