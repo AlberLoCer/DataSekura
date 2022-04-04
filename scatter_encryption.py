@@ -18,7 +18,7 @@ class Scatter_encryption(Encryptor):
         self.VCpath = self.ctr.VCpath
         self.SSEpath = self.ctr.SSEpath
         self.vc = Veracrypt(self.VCpath)
-        self.fd = File_alterator(self.pw, self.SSEpath)       
+        self.fd = File_alterator(self.ctr)       
         super().__init__()
 
     def encrypt(self):

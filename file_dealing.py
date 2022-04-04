@@ -3,16 +3,17 @@ import pathlib
 import math
 import shutil
 from operator import xor
+from controller import Controller
 from password_permutator import Password_permutator
 import subprocess
 import hashlib
 
-
 class File_alterator:
-    def __init__(self, pwd, path):
-        self.pwdperm = pwd
+    def __init__(self, ctr:Controller):
+        self.ctr = ctr
+        self.pwdperm = self.ctr.pw
         self.pwdDict = dict()
-        self.ssepath = path
+        self.ssepath = self.ctr.SSEpath
         return
     
     def populateDict(self, alpha, beta, length,base):
@@ -100,7 +101,7 @@ class File_alterator:
         pathObj = pathlib.Path(path)
         self.parentPath = pathObj.parent.absolute()
         os.chdir(self.parentPath)
-        CHUNK_SIZE = math.floor(os.path.getsize(path) / (self.pwdperm.get_alpha() + 2))
+        CHUNK_SIZE = math.floor(os.path.getsize(path) / (self.pwdperm.alpha() + 1))
         total, used, free = shutil.disk_usage(path)
         free_space_MB = free // (2**20)
         space_required = (os.path.getsize(path)/1024)/1024

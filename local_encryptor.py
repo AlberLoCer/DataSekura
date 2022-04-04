@@ -19,7 +19,7 @@ class Local_encryptor(Encryptor):
         self.VCpath = self.ctr.VCpath
         self.SSEpath = self.ctr.SSEpath
         self.vc = Veracrypt(self.VCpath)
-        self.fd = File_alterator(self.pw, self.SSEpath)           
+        self.fd = File_alterator(self.ctr)           
 
 
     def encrypt(self, folder):
@@ -27,7 +27,7 @@ class Local_encryptor(Encryptor):
             self.folderDict = self.fs.input_folder_encrypt()
         else:
             self.folderDict = self.fs.create_dict(folder)
-        self.ctr.user_input_encrypt()
+        self.ctr.user_input_encrypt(self.folderDict)
         self.ctr.password_input()
         print("Encrypting base volume...")
         #P -> volume_path does not exist, X/:: not mounted

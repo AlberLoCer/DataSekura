@@ -15,7 +15,6 @@ class File_System_Dealer:
    
    
    def check_VC_integrity(self):
-      #Now the checking is more exhaustive
       if os.path.isdir("C:/Program Files/VeraCrypt") and os.path.isfile("C:/Program Files/VeraCrypt/VeraCrypt Format.exe"):
          return "C:/Program Files/VeraCrypt"
       else:

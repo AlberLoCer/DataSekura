@@ -1,17 +1,10 @@
 import hashlib
 import base64
-import codecs
-import rsa
 
 
 class Password_permutator:
     def __init__(self):
         return
-    
-    def rsa_encrypt(self, index, pwd):
-        pubkey, privkey = rsa.newkeys(index)
-        enc_pwd = rsa.encrypt(pwd.encode(),pubkey)
-
 
     def merge(self, a, b):
         merged = ""

@@ -1,13 +1,8 @@
-from asyncio.windows_events import NULL
-from importlib.metadata import metadata
 import webbrowser
 import dropbox
-from dropbox import auth
-from dropbox import dropbox_client 
 from pathlib import Path
 import os
 import fnmatch
-import shutil as sh
 class Db_object:
     def __init__(self):
         self.set_up()

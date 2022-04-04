@@ -2,10 +2,8 @@ from asyncio.windows_events import NULL
 import shutil
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
-from pydrive2.files import FileNotUploadedError
 import os
 class Gd_object:
-
    def __init__(self):
       self.credentials_directory = os.getcwd()+os.sep+"credentials_module.json"
       self.creds = self.login()
@@ -21,11 +19,12 @@ class Gd_object:
          auth.SaveCredentialsFile(self.credentials_directory)
       else:
          auth.Authorize()
-
       return GoogleDrive(auth)
+
 
    def criteria(self,e):
       return e['title']
+
 
    def list_folders(self, creds):
       file_list = creds.ListFile({"q":"'me' in owners and visibility='limited' and trashed=false and mimeType='application/vnd.google-apps.folder'"}).GetList()
@@ -142,7 +141,6 @@ class Gd_object:
    def delete_file(self, file):
       file.Delete()
       
-
    
    def hard_reset(self,path):
       os.remove("credentials_module.json")

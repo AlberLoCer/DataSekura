@@ -1,6 +1,5 @@
 from dropbox_encryptor import DB_encryptor
 from gd_module import Gd_object
-from db_module import Db_object
 from asyncio.windows_events import NULL
 import subprocess
 import sys
@@ -12,7 +11,6 @@ from user_experience import User_experience
 from veracrypt import Veracrypt
 from file_dealing import File_alterator
 import os
-import hashlib
 import gd_operations
 class Controller:
     def __init__(self):
@@ -30,7 +28,7 @@ class Controller:
         if self.VCpath != '':
             if self.SSEpath != '':
                 self.vc = Veracrypt(self.VCpath)
-                self.fd = File_alterator(self.pw, self.SSEpath)            
+                self.fd = File_alterator(self)            
             else:
                 print("SSE File Encryptor could not be found in the system!")
                 print("SSE File Encryptor is an essential component in DataSekura.")
@@ -44,7 +42,6 @@ class Controller:
         return 0
     
     def local_set_up(self):
-        self.ux = User_experience()
         self.ux.encrypt_decrypt_menu()
         _encryptor = Local_encryptor(self)
         _scatter = Scatter_encryption(self)
@@ -76,10 +73,10 @@ class Controller:
         encryptor = DB_encryptor(self)
         self.ux.encrypt_decrypt_menu()
         encrypt_or_decrypt = self.ux.choice()
-        if encrypt_or_decrypt == '1':   #Encryption
+        if encrypt_or_decrypt == '1': 
             encryptor.encrypt()
         else:
-            if encrypt_or_decrypt == '2': #Decryption
+            if encrypt_or_decrypt == '2':
                 encryptor.encrypt()
 
             else:
@@ -107,17 +104,15 @@ class Controller:
         self.ux.encrypt_decrypt_menu()
         encrypt_or_decrypt = self.ux.choice()
         encryptor = gd_operations.GoogleDriveEncryptor()
-        if encrypt_or_decrypt == '1':   #Encryption
+        if encrypt_or_decrypt == '1': 
             encryptor.encrypt()
         else:
-            if encrypt_or_decrypt == '2': #Decryption
+            if encrypt_or_decrypt == '2':
                 encryptor.decrypt()
 
             else:
                 print("Goodbye, take care.")
                 quit()
-
-        #P -> folder = pathlike
 
     def password_input(self):
         self.base_password = input ("Enter your password for encryption: ")
@@ -126,24 +121,24 @@ class Controller:
         self.beta_base = self.pw.get_beta()
 
 
-    def user_input_encrypt(self):
+    def user_input_encrypt(self, folderDict):
         self.ux.print_config_menu()
         option = self.ux.choice()
         if option == '1':
-            self.automatic_configuration()
+            self.automatic_configuration(folderDict)
         else:
-            self.custom_settings()
+            self.custom_settings(folderDict)
 
 
-    def automatic_configuration(self):
+    def automatic_configuration(self, folderDict):
         self.cmd_encryption = "aes"
         self.cmd_hash = "sha512"
         self.cmd_fs = "fat"
-        self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"],self.cmd_fs)
+        self.volume_size = self.fs.fetch_size(folderDict["folder_path"],self.cmd_fs)
         
 
 
-    def custom_settings(self):
+    def custom_settings(self, folderDict):
         self.ux.print_encryption_menu()
         encryption = self.ux.choice()
         self.cmd_encryption = self.ux.choose_encryption(encryption)
@@ -156,4 +151,4 @@ class Controller:
         fs = self.ux.choice()
         self.cmd_fs = self.ux.choose_fs(fs)
 
-        self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"], self.cmd_fs)
+        self.volume_size = self.fs.fetch_size(folderDict["folder_path"], self.cmd_fs)
