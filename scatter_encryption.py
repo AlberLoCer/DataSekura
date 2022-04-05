@@ -124,7 +124,7 @@ class Scatter_encryption(Encryptor):
                     ref_list = []
                     #Up to here works fine
                     for i in range(1,int(file_number)):
-                        file_title = self.fs.remove_file_extension(filename)
+                        file_title = self.fs.remove_file_extension(file)
                         original_name = file_title+"_"+repr(i)+".bin.enc"
                         passBytes = bytes(original_name,"ascii") 
                         masked_name = hashlib.sha256(passBytes).hexdigest()
