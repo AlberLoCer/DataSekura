@@ -44,12 +44,12 @@ class Controller:
     def local_set_up(self):
         self.ux.encrypt_decrypt_menu()
         _encryptor = Local_encryptor(self)
-        _scatter = Scatter_encryption(self)
         encrypt_or_decrypt = self.ux.choice()
-        if encrypt_or_decrypt == '1':   
+        if encrypt_or_decrypt == '1': 
             self.ux.scatter_local_menu()
             scatter_local = self.ux.choice()
             if scatter_local == '1':
+                _scatter = Scatter_encryption(self)
                 self.scatter_set_up()
                 return
             else: 
@@ -59,6 +59,7 @@ class Controller:
                 self.ux.scatter_local_menu()
                 scatter_local = self.ux.choice()
                 if scatter_local == '1':
+                    _scatter = Scatter_encryption(self)
                     _scatter.decrypt()
                     return
                 else:
@@ -77,7 +78,7 @@ class Controller:
             encryptor.encrypt()
         else:
             if encrypt_or_decrypt == '2':
-                encryptor.encrypt()
+                encryptor.decrypt()
 
             else:
                 print("Goodbye, take care.")
@@ -102,7 +103,7 @@ class Controller:
     def gDrive_set_up(self):
         self.ux.encrypt_decrypt_menu()
         encrypt_or_decrypt = self.ux.choice()
-        encryptor = GoogleDriveEncryptor()
+        encryptor = GoogleDriveEncryptor(self)
         if encrypt_or_decrypt == '1': 
             encryptor.encrypt()
         else:

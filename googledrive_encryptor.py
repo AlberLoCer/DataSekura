@@ -1,21 +1,23 @@
 from asyncio.windows_events import NULL
 from encryptor import Encryptor
+from gd_module import Gd_object
 from local_encryptor import Local_encryptor
 import os
 
 class GoogleDriveEncryptor(Encryptor):
     def __init__(self, ctr):
         super().__init__(ctr)
+        self.gd = Gd_object()
+        self.local = Local_encryptor(self.ctr)
     
     def encrypt(self):
         creds = self.gd.login()
         file = self.gd.fetch_folder()
-        local = Local_encryptor(self.ctr)
         print("Processing resources inside the folder...")
         folderpath = self.gd.download_folder_launch(file) 
         parent_dict = self.gd.search_parent("root",os.path.basename(folderpath))
         print("Encrypting folder...")
-        self.folderDict = local.encrypt(folderpath)
+        self.folderDict = self.local.encrypt(folderpath)
         self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["volume_path"]), creds)
         print("Cleaning up residual files...")
         self.gd.delete_file(file)
@@ -31,7 +33,6 @@ class GoogleDriveEncryptor(Encryptor):
         print("Fetching Drive resources...")
         bin_list = self.gd.fetch_bin_files()
         file_to_decrypt = NULL
-        local = Local_encryptor(self.ctr)
         print(".bin file list:")
         for f in bin_list:
             print(f['title'])
@@ -49,7 +50,7 @@ class GoogleDriveEncryptor(Encryptor):
         folderpath = self.gd.download_file(NULL,file_to_decrypt['id'], curr_path)
         parent_dict = self.gd.search_parent("root",os.path.basename(folderpath))
         print("Decrypting the file...")
-        self.folderDict = local.decrypt(self.fs.remove_file_extension(folderpath))
+        self.folderDict = self.local.decrypt(self.fs.remove_file_extension(folderpath))
         print("Cleaning up residual files...")
         self.gd.upload_folder(self.folderDict["folder_path"], parent_dict['parent_id'], self.folderDict["folder_name"])
         self.gd.hard_reset(self.folderDict["folder_path"])
