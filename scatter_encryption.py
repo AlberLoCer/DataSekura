@@ -1,3 +1,4 @@
+from re import S
 from encryptor import Encryptor
 from local_encryptor import Local_encryptor
 from gd_module import Gd_object
@@ -95,7 +96,7 @@ class Scatter_encryption(Encryptor):
         creds = self.gd.login()
         if os.path.isfile("ds_traces.bin"):
             print("Decrypting ds_traces...")
-            self.decrypt(cwd+os.sep+"ds_traces")
+            self.local.decrypt(cwd+os.sep+"ds_traces")
             os.chdir(cwd+os.sep+"ds_traces")
              #Select folder to decrypt
             print("Select a file to decrypt: ")
