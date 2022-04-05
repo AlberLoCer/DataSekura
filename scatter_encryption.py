@@ -105,7 +105,7 @@ class Scatter_encryption(Encryptor):
             file = input()
             if os.path.isfile(file):
                 #Read file 
-                with open(filename) as f:
+                with open(file) as f:
                     text = f.read()
                     resources = text.split("|")
                     original_path = resources[0]
@@ -148,9 +148,9 @@ class Scatter_encryption(Encryptor):
                     if self.vc.VC_Decryption(base_vol,self.ctr.permuted_password, original_path+os.sep+file_title) != -1:
                         print("Decryption complete!")
                         print("Final Step: Encrypting ds_traces...")
-                        f.close()
-                        os.chdir(cwd)
-                        path_to_remove = "ds_traces" + os.sep + self.folderDict["folder_name"] + ".txt"
-                        os.remove(path_to_remove)
-                        self.local.encrypt(cwd+os.sep+"ds_traces")
+                f.close()
+            os.chdir(cwd)
+            path_to_remove = "ds_traces" + os.sep + file
+            os.remove(path_to_remove)
+            self.local.encrypt(cwd+os.sep+"ds_traces")
         return
