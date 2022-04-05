@@ -5,7 +5,6 @@ from gd_module import Gd_object
 import hashlib
 import os
 
-
 class Scatter_encryption(Encryptor):
     def __init__(self,ctr) -> None:
         self.local = Local_encryptor(ctr)
@@ -21,44 +20,10 @@ class Scatter_encryption(Encryptor):
             self.ctr.user_input_encrypt(self.folderDict)
             self.ctr.password_input()
             print("Encrypting "+ self.folderDict["folder_name"] + "...")
-            if (os.path.isfile(self.folderDict["volume_path"]) == False) or (os.path.isdir("X:"+os.sep) == False):
-                if self.vc.VC_Encryption(self.folderDict["volume_path"], self.ctr.permuted_password, self.ctr.cmd_hash, self.ctr.cmd_encryption, self.ctr.cmd_fs, self.ctr.volume_size, self.folderDict["folder_path"]) == -1:
-                    return
-                else:
-                    print("First layer of encryption successfully created!")
-                print("Splitting and permutating the volume...")
-            else:
-                print("Could not perform encryption")
-                if os.path.isfile(self.folderDict["volume_path"]):
-                    print("File: "+ self.folderDict["volume_path"]+ " already exists!")
-                    return
-                else:
-                    print("Virtual drive 'X' is already being used!")
-                    return
-            #P -> volume exists
-            if os.path.isfile(self.folderDict["volume_path"]):
-                if  self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) == -1: 
-                    print("Could not split encrypted file: Not enough space on device for performing the operation")
-                    self.vc.VC_Decryption(self.folderDict["volume_path"],self.ctr.permuted_password, self.folderDict["folder_path"])
-                    return
-                else:
-                    print("Encrypted file succesfully splitted")
-            else:
-                print("Encrypted container could not be created, nothing to split!")
-                return
-            #P -> none
-            self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.ctr.permuted_password),self.ctr.permuted_password)
-            print("Encrypting milestone files...")
-            #P -> none
-            if self.fd.intermediate_encryption() == -1:
-                self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"])
-                self.fd.restore_file(self.folderDict["folder_name"])
-                self.vc.VC_Decryption(self.folderDict["volume_path"],self.ctr.permuted_password, self.folderDict["folder_path"])
-                return
-            else:
-                print("Milestone files successfully encrypted!")
-
-            #Ask for folder in google_drive
+            self.local.deep_layer_encryption()
+            print("First layer of encryption successfully created!")
+            print("Splitting and permutating the volume...")
+            self.local.milestone_encryption()
             print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
             fname = input()
             folder_fetched = self.gd.check_folder_exists(creds,fname)
@@ -70,7 +35,6 @@ class Scatter_encryption(Encryptor):
             else:
                 #Write drive_folder in trace file
                 f.write(folder_fetched["id"]+"|")
-                
             
             f.write(self.fd.file_number.__str__()+"|") #Write number of files in trace file
             names_list = self.fd.intermediate_masking(self.folderDict["folder_parent"], self.folderDict["folder_name"])#Rename files randomly 
@@ -83,7 +47,6 @@ class Scatter_encryption(Encryptor):
                     file.content.close()
                     if file.uploaded:
                         os.remove(name)
-        #Encrypt folder ds_traces
             f.close()
         print("Encrypting ds_traces...")
         self.local.encrypt(cwd+os.sep+"ds_traces")
