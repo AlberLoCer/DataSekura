@@ -1,7 +1,6 @@
 import os
 import shutil
 import subprocess
-from controller import Controller
 from file_system import File_System_Dealer
 from password_permutator import Password_permutator
 from user_experience import User_experience
@@ -17,24 +16,17 @@ class Encryption_utils:
         self.VCpath = self.fs.check_VC_integrity()
         self.SSEpath = self.fs.check_SSFEnc_integrity()
         self.vc = Veracrypt(self.VCpath)
-        self.fd = File_alterator(self)      
-        self.ctr = Controller()    
+        self.fd = File_alterator(self)       
         return
     
     def deep_layer_encryption(self):
         if (os.path.isfile(self.folderDict["volume_path"]) == False) or (os.path.isdir("X:"+os.sep) == False):
-            if self.vc.VC_Encryption(self.folderDict["volume_path"], self.ctr.permuted_password, self.ctr.cmd_hash, self.ctr.cmd_encryption, self.ctr.cmd_fs, self.ctr.volume_size, self.folderDict["folder_path"]) == -1:
+            if self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
                 if os.path.isfile(self.folderDict["volume_path"]):
                     os.remove(self.folderDict["volume_path"])
                 shutil.rmtree(self.folderDict['folder_path'])
                 self.fs.directory_backup_rename(self.backup,self.folderDict['folder_path'])
                 return
-            else:
-                print("Could not perform encryption")
-                if os.path.isfile(self.folderDict["volume_path"]):
-                    print("File: "+ self.folderDict["volume_path"]+ " already exists!")
-                else:
-                    print("Virtual drive 'X' is already being used!")
             return
 
     def milestone_encryption(self):
@@ -54,7 +46,7 @@ class Encryption_utils:
             print("Encrypted container could not be created, nothing to split!")
             return
         #P -> none
-        self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.ctr.permuted_password),self.ctr.permuted_password)
+        self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
         print("Encrypting milestone files...")
         #P -> none
         if self.fd.intermediate_encryption() == -1:
@@ -88,9 +80,9 @@ class Encryption_utils:
             self.fs.directory_backup_rename(self.backup,self.folderDict['folder_path'])
             return
         print("Encrypting last layer...")
-        self.final_pass = self.pw.password_permutation(self.ctr.permuted_password)
+        self.final_pass = self.pw.password_permutation(self.permuted_password)
         self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"], self.fs)
-        if self.vc.VC_Encryption(self.folderDict["volume_path"], self.final_pass, self.ctr.cmd_hash, self.ctr.cmd_encryption, self.ctr.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
+        if self.vc.VC_Encryption(self.folderDict["volume_path"], self.final_pass, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
             if os.path.isfile(self.folderDict["volume_path"]):
                 os.remove(self.folderDict["volume_path"])
             shutil.rmtree(self.folderDict['folder_path'])
@@ -98,7 +90,7 @@ class Encryption_utils:
     
     def decryption_init(self):
         print("Preparing decryption environment...")
-        self.final_pass = self.pw.password_permutation(self.ctr.permuted_password)
+        self.final_pass = self.pw.password_permutation(self.permuted_password)
         print("Decrypting outer layer...")
         os.chdir(self.folderDict["folder_parent"])
         base_vol = os.path.basename(self.folderDict["volume_path"])
@@ -131,7 +123,7 @@ class Encryption_utils:
     
     def milestone_decryption(self):
         self.fd.file_number = self.fs.retake_file_number(self.fs.remove_file_extension(self.vol_path))
-        self.fd.populateDict(self.ctr.alpha_base,self.ctr.beta_base, len(self.ctr.permuted_password),self.ctr.permuted_password)
+        self.fd.populateDict(self.alpha_base,self.beta_base, len(self.permuted_password),self.permuted_password)
         print("Parameters fetched!")
         if self.fs.folder_decompossition(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number) == -1:
             name = self.folderDict["folder_parent"].__str__()+os.sep+self.folderDict["folder_name"]
@@ -160,7 +152,7 @@ class Encryption_utils:
         print("Milestone files successfully decrypted!")
     
     def deep_layer_decryption(self):
-        if self.vc.VC_Decryption(self.vol_path,self.ctr.permuted_password, self.folderDict["folder_path"]) == -1:
+        if self.vc.VC_Decryption(self.vol_path,self.permuted_password, self.folderDict["folder_path"]) == -1:
             if os.path.isdir("X:"+os.sep):
                 os.chdir(self.VCpath)
                 subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
@@ -177,3 +169,42 @@ class Encryption_utils:
                 os.remove(self.vol_path)
             self.fs.backup_rename(self.backup, self.vol_path)
             return
+    
+    def password_input(self):
+        self.base_password = input ("Enter your password for encryption: ")
+        self.permuted_password = self.pw.password_permutation(self.base_password)
+        self.alpha_base = self.pw.get_alpha()
+        self.beta_base = self.pw.get_beta()
+
+
+    def user_input_encrypt(self, folderDict):
+        self.ux.print_config_menu()
+        option = self.ux.choice()
+        if option == '1':
+            self.automatic_configuration(folderDict)
+        else:
+            self.custom_settings(folderDict)
+
+
+    def automatic_configuration(self, folderDict):
+        self.cmd_encryption = "aes"
+        self.cmd_hash = "sha512"
+        self.cmd_fs = "fat"
+        self.volume_size = self.fs.fetch_size(folderDict["folder_path"],self.cmd_fs)
+        
+
+
+    def custom_settings(self, folderDict):
+        self.ux.print_encryption_menu()
+        encryption = self.ux.choice()
+        self.cmd_encryption = self.ux.choose_encryption(encryption)
+
+        self.ux.print_hash_menu()
+        hash = self.ux.choice()
+        self.cmd_hash = self.ux.choose_hash(hash)
+
+        self.ux.print_fs_menu()
+        fs = self.ux.choice()
+        self.cmd_fs = self.ux.choose_fs(fs)
+
+        self.volume_size = self.fs.fetch_size(folderDict["folder_path"], self.cmd_fs)

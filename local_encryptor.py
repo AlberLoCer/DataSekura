@@ -13,11 +13,11 @@ class Local_encryptor(Encryptor):
             folderDict = self.fs.input_folder_encrypt()
         else:
             folderDict = self.fs.create_dict(folder)
-        self.backup = self.fs.directory_backup_create(folderDict['folder_path'])
-        self.ctr.user_input_encrypt(folderDict)
-        self.ctr.password_input()
-        print("Encrypting base volume...")
         self.utils = Encryption_utils(folderDict)
+        self.backup = self.fs.directory_backup_create(folderDict['folder_path'])
+        self.utils.user_input_encrypt(folderDict)
+        self.utils.password_input()
+        print("Encrypting base volume...")
         #P -> volume_path does not exist, X/:: not mounted
         self.utils.deep_layer_encryption()
         print("First layer of encryption successfully created!")
@@ -37,7 +37,7 @@ class Local_encryptor(Encryptor):
             folderDict = self.fs.input_folder_decrypt()
         else:
             folderDict = self.fs.create_dict(folder)
-        self.ctr.password_input()
+        self.utils.password_input()
         self.utils = Encryption_utils(folderDict)
         self.utils.decryption_init()
         self.utils.outer_layer_decryption()

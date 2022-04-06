@@ -113,42 +113,5 @@ class Controller:
                 print("Goodbye, take care.")
                 quit()
 
-    def password_input(self):
-        self.base_password = input ("Enter your password for encryption: ")
-        self.permuted_password = self.pw.password_permutation(self.base_password)
-        self.alpha_base = self.pw.get_alpha()
-        self.beta_base = self.pw.get_beta()
-
-
-    def user_input_encrypt(self, folderDict):
-        self.ux.print_config_menu()
-        option = self.ux.choice()
-        if option == '1':
-            self.automatic_configuration(folderDict)
-        else:
-            self.custom_settings(folderDict)
-
-
-    def automatic_configuration(self, folderDict):
-        self.cmd_encryption = "aes"
-        self.cmd_hash = "sha512"
-        self.cmd_fs = "fat"
-        self.volume_size = self.fs.fetch_size(folderDict["folder_path"],self.cmd_fs)
-        
-
-
-    def custom_settings(self, folderDict):
-        self.ux.print_encryption_menu()
-        encryption = self.ux.choice()
-        self.cmd_encryption = self.ux.choose_encryption(encryption)
-
-        self.ux.print_hash_menu()
-        hash = self.ux.choice()
-        self.cmd_hash = self.ux.choose_hash(hash)
-
-        self.ux.print_fs_menu()
-        fs = self.ux.choice()
-        self.cmd_fs = self.ux.choose_fs(fs)
-
-        self.volume_size = self.fs.fetch_size(folderDict["folder_path"], self.cmd_fs)
+    
     
