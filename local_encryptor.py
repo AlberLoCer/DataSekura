@@ -33,19 +33,19 @@ class Local_encryptor(Encryptor):
 
     #P -> folder = pathlike w/ no extension
     def decrypt(self, folder):
+        cwd = os.getcwd()
         if folder == NULL:
             folderDict = self.fs.input_folder_decrypt()
         else:
             folderDict = self.fs.create_dict(folder)
+        os.chdir(cwd)
+        self.utils = Encryption_utils(folderDict) 
         self.utils.password_input()
-        self.utils = Encryption_utils(folderDict)
         self.utils.decryption_init()
         self.utils.outer_layer_decryption()
         print("Outer layer successfully decrypted!")
         print("Fetching milestone file parameters...")
         self.utils.milestone_decryption()
-        print("Restoring file...")
-        self.fd.restore_file(self.folderDict["folder_name"])
         print("Originial file successfully restored!")
         print("Decrypting deep layer...")
         self.utils.deep_layer_decryption()
