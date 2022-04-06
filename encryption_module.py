@@ -168,6 +168,8 @@ class Encryption_utils:
             if os.path.isfile(self.vol_path):
                 os.remove(self.vol_path)
             self.fs.backup_rename(self.backup, self.vol_path)
+        else:
+            os.remove(self.backup)
             return
     
     def password_input(self):

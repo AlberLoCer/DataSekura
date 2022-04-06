@@ -49,7 +49,6 @@ class Local_encryptor(Encryptor):
         print("Originial file successfully restored!")
         print("Decrypting deep layer...")
         self.utils.deep_layer_decryption()
-        os.remove(self.backup)
         print("Decryption Complete!")
         print("Stay safe!")
         return folderDict
