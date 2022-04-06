@@ -1,4 +1,5 @@
 from re import S
+from encryption_module import Encryption_utils
 from encryptor import Encryptor
 from local_encryptor import Local_encryptor
 from gd_module import Gd_object
@@ -14,16 +15,17 @@ class Scatter_encryption(Encryptor):
     def encrypt(self):
         cwd = os.getcwd()
         creds = self.gd.login()
-        self.folderDict = self.fs.input_folder_encrypt()
-        with open("ds_traces" + os.sep + self.folderDict["folder_name"]+".txt", "w") as f:
-            f.write(self.folderDict['folder_parent'].__str__()+"|")
-            self.ctr.user_input_encrypt(self.folderDict)
+        folderDict = self.fs.input_folder_encrypt()
+        self.utils = Encryption_utils(folderDict)
+        with open("ds_traces" + os.sep + folderDict["folder_name"]+".txt", "w") as f:
+            f.write(folderDict['folder_parent'].__str__()+"|")
+            self.ctr.user_input_encrypt(folderDict)
             self.ctr.password_input()
-            print("Encrypting "+ self.folderDict["folder_name"] + "...")
-            self.local.deep_layer_encryption()
+            print("Encrypting "+ folderDict["folder_name"] + "...")
+            self.utils.deep_layer_encryption()
             print("First layer of encryption successfully created!")
             print("Splitting and permutating the volume...")
-            self.local.milestone_encryption()
+            self.utils.milestone_encryption()
             print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
             fname = input()
             folder_fetched = self.gd.check_folder_exists(creds,fname)
@@ -37,7 +39,7 @@ class Scatter_encryption(Encryptor):
                 f.write(folder_fetched["id"]+"|")
             
             f.write(self.fd.file_number.__str__()+"|") #Write number of files in trace file
-            names_list = self.fd.intermediate_masking(self.folderDict["folder_parent"], self.folderDict["folder_name"])#Rename files randomly 
+            names_list = self.fd.intermediate_masking(folderDict["folder_parent"], folderDict["folder_name"])
             #Write filenames(pathlike) in document
             for name in names_list:
                 try:

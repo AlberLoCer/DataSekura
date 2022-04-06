@@ -1,12 +1,11 @@
 from dropbox_encryptor import DB_encryptor
-from gd_module import Gd_object
 from asyncio.windows_events import NULL
 import subprocess
 import sys
 from file_system import File_System_Dealer
 from local_encryptor import Local_encryptor
 from password_permutator import Password_permutator
-from scatter_encryption import Scatter_encryption
+from scatter_encryptor import Scatter_encryption
 from user_experience import User_experience
 from veracrypt import Veracrypt
 from file_dealing import File_alterator
