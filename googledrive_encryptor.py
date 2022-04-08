@@ -15,18 +15,19 @@ class GoogleDriveEncryptor(Encryptor):
         file = self.gd.fetch_folder()
         print("Processing resources inside the folder...")
         folderpath = self.gd.download_folder_launch(file) 
-        parent_dict = self.gd.search_parent("root",os.path.basename(folderpath))
+        parent_dict = self.gd.search_parent("root",os.path.basename(folderpath)) #Probably will need to check this in the future
         print("Encrypting folder...")
         self.folderDict = self.local.encrypt(folderpath)
-        self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["volume_path"]), creds)
-        print("Cleaning up residual files...")
-        self.gd.delete_file(file)
-        self.fs.delete_vol(self.folderDict["volume_path"])
+        try:
+            gfile = self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["volume_path"]), creds)
+            print("Cleaning up residual files...")
+        finally:
+            gfile.content.close()
+            if gfile.uploaded:
+                os.remove(self.folderDict["volume_path"])
+                self.gd.delete_file(file)
         self.gd.hard_reset(folderpath)
         print("Google Drive Folder Successfully Encrypted!")
-        
-        
-
         ##TRABAJO FUTURO MALWARE
 
     def decrypt(self):

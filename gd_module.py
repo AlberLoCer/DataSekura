@@ -127,9 +127,13 @@ class Gd_object:
          for file in files:
             if os.path.isfile(path + os.sep + file):
                id = folder['id']
-               self.upload(path + os.sep + file, id, os.path.basename(file), self.creds)
-               print("File: "+os.path.basename(file)+" OK")
-               os.remove(path + os.sep + file)
+               try:
+                  drive_file = self.upload(path + os.sep + file, id, os.path.basename(file), self.creds)
+                  print("File: "+os.path.basename(file)+" OK")
+               finally:
+                  drive_file.content.close()
+                  if drive_file.uploaded:
+                     os.remove(path + os.sep + file)
 
          for subdirectory in subdirectories:
             if os.path.isdir(path + os.sep + subdirectory):
@@ -143,7 +147,7 @@ class Gd_object:
       
    
    def hard_reset(self,path):
-      os.remove("credentials_module.json")
+      os.remove(self.credentials_directory)
       if os.path.isdir(path):
          shutil.rmtree(path)
    
