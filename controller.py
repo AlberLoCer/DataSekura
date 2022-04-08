@@ -22,6 +22,7 @@ class Controller:
         self.fs = File_System_Dealer()
         self.pw = Password_permutator()
         self.ux = User_experience()
+        self.base = os.chdir(os.getcwd())
         self.VCpath = self.fs.check_VC_integrity()
         self.SSEpath = self.fs.check_SSFEnc_integrity()
         if self.VCpath != '':
