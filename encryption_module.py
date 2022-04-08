@@ -137,18 +137,9 @@ class Encryption_utils:
             self.fs.backup_rename(self.backup, self.vol_path)
             return
         print("Decrypting milestone files...")
-        if self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"]):
-            os.chdir(self.folderDict["folder_parent"])
-            for i in range(1,self.fd.file_number):
-                chunk_file_name_1 = self.folderDict["folder_path"]+"_"+repr(i)+".bin.enc"
-                chunk_file_name_2 = self.folderDict["folder_path"]+"_"+repr(i)+".bin"
-                if os.path.isfile(chunk_file_name_1):
-                    os.remove(chunk_file_name_1)
-                if os.path.isfile(chunk_file_name_2):
-                    os.remove(chunk_file_name_2)
-            self.fs.backup_rename(self.backup, self.vol_path)
-            print("Could not finish intermediate decryption. Exiting...")
-            return
+        self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"])
+        self.fd.restore_file(self.folderDict["folder_name"])
+        self
         print("Milestone files successfully decrypted!")
     
     def deep_layer_decryption(self):

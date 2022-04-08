@@ -48,6 +48,7 @@ class Local_encryptor(Encryptor):
         self.utils.milestone_decryption()
         print("Originial file successfully restored!")
         print("Decrypting deep layer...")
+        aux = os.getcwd()
         self.utils.deep_layer_decryption()
         print("Decryption Complete!")
         print("Stay safe!")
