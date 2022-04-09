@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from re import S
 from encryption_module import Encryption_utils
 from encryptor import Encryptor
@@ -19,8 +20,8 @@ class Scatter_encryption(Encryptor):
         self.utils = Encryption_utils(folderDict)
         with open("ds_traces" + os.sep + folderDict["folder_name"]+".txt", "w") as f:
             f.write(folderDict['folder_parent'].__str__()+"|")
-            self.ctr.user_input_encrypt(folderDict)
-            self.ctr.password_input()
+            self.utils.user_input_encrypt(folderDict)
+            self.utils.password_input()
             print("Encrypting "+ folderDict["folder_name"] + "...")
             self.utils.deep_layer_encryption()
             print("First layer of encryption successfully created!")
@@ -38,8 +39,8 @@ class Scatter_encryption(Encryptor):
                 #Write drive_folder in trace file
                 f.write(folder_fetched["id"]+"|")
             
-            f.write(self.fd.file_number.__str__()+"|") #Write number of files in trace file
-            names_list = self.fd.intermediate_masking(folderDict["folder_parent"], folderDict["folder_name"])
+            f.write(self.utils.fd.file_number.__str__()+"|") #Write number of files in trace file
+            names_list = self.utils.fd.intermediate_masking(folderDict["folder_parent"], folderDict["folder_name"])
             #Write filenames(pathlike) in document
             for name in names_list:
                 try:
@@ -59,6 +60,7 @@ class Scatter_encryption(Encryptor):
         self.gd = Gd_object()
         cwd = os.getcwd()
         creds = self.gd.login()
+        self.utils = Encryption_utils(NULL)
         if os.path.isfile("ds_traces.bin"):
             print("Decrypting ds_traces...")
             self.local.decrypt(cwd+os.sep+"ds_traces")
@@ -103,14 +105,14 @@ class Scatter_encryption(Encryptor):
                         file.Delete()
                         os.rename(new_path, original_path+os.sep+ref_list[i]["name"])
                     print("Decrypting " + file_title + "...")
-                    self.ctr.password_input()
-                    self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(), len(self.ctr.permuted_password),self.ctr.permuted_password)
+                    self.utils.password_input()
+                    self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(), len(self.utils.permuted_password),self.utils.permuted_password)
                     print("Parameters fetched!")
                     print("Preparing decryption environment...")
                     self.fd.intermediate_decryption(original_path, file_title)
                     self.fd.restore_file(file_title)
                     base_vol = original_path+os.sep+file_title+".bin"
-                    if self.vc.VC_Decryption(base_vol,self.ctr.permuted_password, original_path+os.sep+file_title) != -1:
+                    if self.vc.VC_Decryption(base_vol,self.utils.permuted_password, original_path+os.sep+file_title) != -1:
                         print("Decryption complete!")
                         print("Final Step: Encrypting ds_traces...")
                 f.close()

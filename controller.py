@@ -88,6 +88,7 @@ class Controller:
     def scatter_set_up(self):
         local = Local_encryptor(self)
         scatter = Scatter_encryption(self)
+        os.chdir(self.base)
         if os.path.isfile("ds_traces.bin"):
             with open("ds_traces.bin") as bin:
                 bin.close()
