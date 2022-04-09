@@ -2,6 +2,7 @@ from dropbox_encryptor import DB_encryptor
 from asyncio.windows_events import NULL
 import subprocess
 import sys
+from encryption_module import Encryption_utils
 from file_system import File_System_Dealer
 from local_encryptor import Local_encryptor
 from password_permutator import Password_permutator
@@ -22,7 +23,7 @@ class Controller:
         self.fs = File_System_Dealer()
         self.pw = Password_permutator()
         self.ux = User_experience()
-        self.base = os.chdir(os.getcwd())
+        self.base = os.getcwd()
         self.VCpath = self.fs.check_VC_integrity()
         self.SSEpath = self.fs.check_SSFEnc_integrity()
         if self.VCpath != '':

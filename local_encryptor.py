@@ -13,6 +13,7 @@ class Local_encryptor(Encryptor):
             folderDict = self.fs.input_folder_encrypt()
         else:
             folderDict = self.fs.create_dict(folder)
+        os.chdir(self.ctr.base)
         self.utils = Encryption_utils(folderDict)
         self.backup = self.fs.directory_backup_create(folderDict['folder_path'])
         self.utils.user_input_encrypt(folderDict)
