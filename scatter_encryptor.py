@@ -78,7 +78,7 @@ class Scatter_encryption(Encryptor):
                     original_path = resources[0]
                     folder_id = resources[1]
                     file_number = resources[2]
-                    self.fd.set_file_number(int(file_number))
+                    self.utils.fd.set_file_number(int(file_number))
                     file_list = resources[3].split("#")
                     drive_list = []
                     for k in file_list:
@@ -91,7 +91,7 @@ class Scatter_encryption(Encryptor):
                     ref_list = []
                     #Up to here works fine
                     for i in range(1,int(file_number)):
-                        file_title = self.fs.remove_file_extension(file)
+                        file_title = self.utils.fs.remove_file_extension(file)
                         original_name = file_title+"_"+repr(i)+".bin.enc"
                         passBytes = bytes(original_name,"ascii") 
                         masked_name = hashlib.sha256(passBytes).hexdigest()
@@ -106,13 +106,13 @@ class Scatter_encryption(Encryptor):
                         os.rename(new_path, original_path+os.sep+ref_list[i]["name"])
                     print("Decrypting " + file_title + "...")
                     self.utils.password_input()
-                    self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(), len(self.utils.permuted_password),self.utils.permuted_password)
+                    self.utils.fd.populateDict(self.utils.pw.get_alpha(),self.utils.pw.get_beta(), len(self.utils.permuted_password),self.utils.permuted_password)
                     print("Parameters fetched!")
                     print("Preparing decryption environment...")
-                    self.fd.intermediate_decryption(original_path, file_title)
-                    self.fd.restore_file(file_title)
+                    self.utils.fd.intermediate_decryption(original_path, file_title)
+                    self.utils.fd.restore_file(file_title)
                     base_vol = original_path+os.sep+file_title+".bin"
-                    if self.vc.VC_Decryption(base_vol,self.utils.permuted_password, original_path+os.sep+file_title) != -1:
+                    if self.utils.vc.VC_Decryption(base_vol,self.utils.permuted_password, original_path+os.sep+file_title) != -1:
                         print("Decryption complete!")
                         print("Final Step: Encrypting ds_traces...")
                 f.close()
