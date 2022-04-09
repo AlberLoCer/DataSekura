@@ -9,9 +9,11 @@ class DB_encryptor(Encryptor):
         self.local = Local_encryptor(self.ctr)
     
     def encrypt(self):
+        cwd = os.getcwd()
         foldername = input("Input the folder to encrypt: ")
         folder = self.db.search_folder(foldername)
         folder_path, folder_metadata = self.db.download_folder_launch(folder)
+        os.chdir(cwd)
         self.folderDict = self.local.encrypt(folder_path)
         print("Cleaning residual files...")
         self.db.upload_file(self.folderDict['volume_path'],folder_metadata.path_display+".bin")
@@ -20,10 +22,12 @@ class DB_encryptor(Encryptor):
         print("Dropbox Folder Successfully Encrypted!")
     
     def decrypt(self):
+        cwd = os.getcwd()
         names,paths = self.db.list_bin_files()
         file,path = self.db.input_and_download_bin(names,paths)
         full_path = os.path.abspath(file)
         file = self.fs.remove_file_extension(full_path)
+        os.chdir(cwd)
         self.folderDict = self.local.decrypt(file)
         print("Restoring folder contents...")
         self.db.upload_folder(self.fs.remove_file_extension(path),file)
