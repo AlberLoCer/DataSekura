@@ -15,20 +15,19 @@ class Scatter_encryption(Encryptor):
 
     def encrypt(self):
         cwd = os.getcwd()
-        creds = self.gd.login()
-        folderDict = self.fs.input_folder_encrypt()
-        self.utils = Encryption_utils(folderDict)
-        with open("ds_traces" + os.sep + folderDict["folder_name"]+".txt", "w") as f:
-            f.write(folderDict['folder_parent'].__str__()+"|")
-            self.utils.user_input_encrypt(folderDict)
+        self.utils = Encryption_utils(NULL,0)
+        with open("ds_traces" + os.sep + self.utils.folderDict["folder_name"]+".txt", "w") as f:
+            f.write(self.utils.folderDict['folder_parent'].__str__()+"|")
+            self.utils.user_input_encrypt(self.utils.folderDict)
             self.utils.password_input()
-            print("Encrypting "+ folderDict["folder_name"] + "...")
+            print("Encrypting "+ self.utils.folderDict["folder_name"] + "...")
             self.utils.deep_layer_encryption()
             print("First layer of encryption successfully created!")
             print("Splitting and permutating the volume...")
             self.utils.milestone_encryption()
             print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
             fname = input()
+            creds = self.gd.login()
             folder_fetched = self.gd.check_folder_exists(creds,fname)
             if folder_fetched == -1:
                 return
@@ -40,7 +39,7 @@ class Scatter_encryption(Encryptor):
                 f.write(folder_fetched["id"]+"|")
             
             f.write(self.utils.fd.file_number.__str__()+"|") #Write number of files in trace file
-            names_list = self.utils.fd.intermediate_masking(folderDict["folder_parent"], folderDict["folder_name"])
+            names_list = self.utils.fd.intermediate_masking(self.utils.folderDict["folder_parent"], self.utils.folderDict["folder_name"])
             #Write filenames(pathlike) in document
             for name in names_list:
                 try:
@@ -52,15 +51,16 @@ class Scatter_encryption(Encryptor):
                         os.remove(name)
             f.close()
         print("Encrypting ds_traces...")
+        os.chdir(cwd)
         self.local.encrypt(cwd+os.sep+"ds_traces")
         os.remove(cwd+os.sep+"credentials_module.json")
         return
     
     def decrypt(self):
+        self.utils = Encryption_utils(NULL,2) #Rethink this for scatter
         self.gd = Gd_object()
         cwd = os.getcwd()
         creds = self.gd.login()
-        self.utils = Encryption_utils(NULL)
         if os.path.isfile("ds_traces.bin"):
             print("Decrypting ds_traces...")
             self.local.decrypt(cwd+os.sep+"ds_traces")
@@ -101,8 +101,8 @@ class Scatter_encryption(Encryptor):
                         ref_list.append(ref_dict)
                     for i in range(0,int(file_number)-1):
                         new_path = self.gd.download_file(creds,drive_list[i]["id"],original_path)
-                        file = creds.CreateFile({'id':drive_list[i]["id"]})
-                        file.Delete()
+                        gfile = creds.CreateFile({'id':drive_list[i]["id"]})
+                        gfile.Delete()
                         os.rename(new_path, original_path+os.sep+ref_list[i]["name"])
                     print("Decrypting " + file_title + "...")
                     self.utils.password_input()

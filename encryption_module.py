@@ -19,8 +19,10 @@ class Encryption_utils:
         self.fd = File_alterator(self)      
         if op == 0:
             self.init_Enc(folder) 
-        else:
+        elif op == 1:
             self.init_Dec(folder)
+        else:
+            self.folderDict = NULL
         return
     
     def init_Enc(self,folder):
