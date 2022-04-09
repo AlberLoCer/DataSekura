@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import os
 import shutil
 import subprocess
@@ -8,16 +9,32 @@ from veracrypt import Veracrypt
 from file_dealing import File_alterator
 
 class Encryption_utils:
-    def __init__(self, folderDict:dict):
-        self.folderDict = folderDict
+    def __init__(self, folder, op):
         self.fs = File_System_Dealer()
         self.pw = Password_permutator()
         self.ux = User_experience()
         self.VCpath = self.fs.check_VC_integrity()
         self.SSEpath = self.fs.check_SSFEnc_integrity()
         self.vc = Veracrypt(self.VCpath)
-        self.fd = File_alterator(self)       
+        self.fd = File_alterator(self)      
+        if op == 0:
+            self.init_Enc(folder) 
+        else:
+            self.init_Dec(folder)
         return
+    
+    def init_Enc(self,folder):
+        if folder == NULL:
+            self.folderDict = self.fs.input_folder_encrypt()
+        else:
+            self.folderDict = self.fs.create_dict(folder)        
+        self.backup = self.fs.directory_backup_create(self.folderDict['folder_path'])
+    
+    def init_Dec(self,folder):
+        if folder == NULL:
+            self.folderDict = self.fs.input_folder_decrypt()
+        else:
+            self.folderDict = self.fs.create_dict(folder)
     
     def deep_layer_encryption(self):
         if (os.path.isfile(self.folderDict["volume_path"]) == False) or (os.path.isdir("X:"+os.sep) == False):

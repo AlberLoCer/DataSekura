@@ -9,17 +9,10 @@ class Local_encryptor(Encryptor):
         super().__init__(ctr)
 
     def encrypt(self, folder):
-        if folder == NULL:
-            folderDict = self.fs.input_folder_encrypt()
-        else:
-            folderDict = self.fs.create_dict(folder)
-        os.chdir(self.ctr.base)
-        self.utils = Encryption_utils(folderDict)
-        self.backup = self.fs.directory_backup_create(folderDict['folder_path'])
-        self.utils.user_input_encrypt(folderDict)
+        self.utils = Encryption_utils(folder,0)
+        self.utils.user_input_encrypt(self.utils.folderDict)
         self.utils.password_input()
         print("Encrypting base volume...")
-        #P -> volume_path does not exist, X/:: not mounted
         self.utils.deep_layer_encryption()
         print("First layer of encryption successfully created!")
         print("Splitting and permutating the volume...")
@@ -28,19 +21,13 @@ class Local_encryptor(Encryptor):
         self.utils.outer_layer_encryption()
         print("Encryption complete!")
         print("Good luck!")
-        shutil.rmtree(self.backup)
-        return folderDict
+        shutil.rmtree(self.utils.backup)
+        return self.utils.folderDict
 
 
     #P -> folder = pathlike w/ no extension
     def decrypt(self, folder):
-        cwd = os.getcwd()
-        if folder == NULL:
-            folderDict = self.fs.input_folder_decrypt()
-        else:
-            folderDict = self.fs.create_dict(folder)
-        os.chdir(cwd)
-        self.utils = Encryption_utils(folderDict) 
+        self.utils = Encryption_utils(folder, 1)
         self.utils.password_input()
         self.utils.decryption_init()
         self.utils.outer_layer_decryption()
@@ -49,11 +36,10 @@ class Local_encryptor(Encryptor):
         self.utils.milestone_decryption()
         print("Originial file successfully restored!")
         print("Decrypting deep layer...")
-        aux = os.getcwd()
         self.utils.deep_layer_decryption()
         print("Decryption Complete!")
         print("Stay safe!")
-        return folderDict
+        return self.utils.folderDict
 
 
     
