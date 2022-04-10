@@ -39,73 +39,41 @@ class Encryption_utils:
             self.folderDict = self.fs.create_dict(folder)
     
     def deep_layer_encryption(self):
-        if (os.path.isfile(self.folderDict["volume_path"]) == False) or (os.path.isdir("X:"+os.sep) == False):
-            if self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
-                if os.path.isfile(self.folderDict["volume_path"]):
-                    os.remove(self.folderDict["volume_path"])
-                shutil.rmtree(self.folderDict['folder_path'])
-                self.fs.directory_backup_rename(self.backup,self.folderDict['folder_path'])
-                return
-            return
+        if os.path.isfile(self.folderDict["volume_path"]):
+            print("Encrypted volume already exists!")
+            return -1
+        elif os.path.isdir("X:"+os.sep):
+            print("Drive X:// is already being used...")
+            return -1
+        try:
+            self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"])
+        except Exception as e:
+            os.remove(self.backup)
+            return -1
 
     def milestone_encryption(self):
         if os.path.isfile(self.folderDict["volume_path"]):
-            if  self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) == -1: 
-                for i in range(self.fd.file_number):
-                    chunk_file_name = self.folderDict['volume_path']+"_"+repr(i)+".bin"
-                    if os.path.isfile(chunk_file_name):
-                        os.remove(chunk_file_name)
-                if os.path.isfile(self.folderDict["volume_path"]):
-                    os.remove(self.folderDict["volume_path"])
-                self.fs.directory_backup_rename(self.backup,self.folderDict['folder_path'])
-                return
+            if self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) != -1:
+                self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
+                print("Encrypting milestone files...")
+                if self.fd.intermediate_encryption() == -1:
+                    return -1
             else:
-                print("Encrypted file succesfully splitted")
-        else:
-            print("Encrypted container could not be created, nothing to split!")
-            return
-        #P -> none
-        self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
-        print("Encrypting milestone files...")
-        #P -> none
-        if self.fd.intermediate_encryption() == -1:
-            for i in range(self.fd.file_number):
-                chunk_file_name = self.folderDict['volume_path']+"_"+repr(i)+".bin"
-                chunk_file_name_enc = self.folderDict['volume_path']+"_"+repr(i)+".bin"+".enc"
-                if os.path.isfile(chunk_file_name):
-                    os.remove(chunk_file_name)
-                elif os.path.isfile(chunk_file_name_enc):
-                    os.remove(chunk_file_name_enc)
-            if os.path.isfile(self.folderDict["volume_path"]):
-                os.remove(self.folderDict["volume_path"])
-            self.fs.directory_backup_rename(self.backup,self.folderDict['folder_path'])
+                return -1
+
+            print("Milestone encryption completed!")
             return
         else:
-            print("Milestone files successfully encrypted!")
-            return
+            return -1
+        
     
     def outer_layer_encryption(self):
-        if self.fs.folder_aggregation(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number) == -1:
-            for i in range(self.fd.file_number):
-                chunk_file_name = self.folderDict['volume_path']+"_"+repr(i)+".bin"
-                chunk_file_name_enc = self.folderDict['volume_path']+"_"+repr(i)+".bin"+".enc"
-                if os.path.isfile(chunk_file_name):
-                    os.remove(chunk_file_name)
-                elif os.path.isfile(chunk_file_name_enc):
-                    os.remove(chunk_file_name_enc)
-            if os.path.isfile(self.folderDict["volume_path"]):
-                os.remove(self.folderDict["volume_path"])
-            shutil.rmtree(self.folderDict['folder_path'])
-            self.fs.directory_backup_rename(self.backup,self.folderDict['folder_path'])
-            return
+        self.fs.folder_aggregation(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
         print("Encrypting last layer...")
         self.final_pass = self.pw.password_permutation(self.permuted_password)
         self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"], self.fs)
-        if self.vc.VC_Encryption(self.folderDict["volume_path"], self.final_pass, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
-            if os.path.isfile(self.folderDict["volume_path"]):
-                os.remove(self.folderDict["volume_path"])
-            shutil.rmtree(self.folderDict['folder_path'])
-            self.fs.directory_backup_rename(self.backup,self.folderDict['folder_path'])
+        self.vc.VC_Encryption(self.folderDict["volume_path"], self.final_pass, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"])
+    
     
     def decryption_init(self):
         print("Preparing decryption environment...")

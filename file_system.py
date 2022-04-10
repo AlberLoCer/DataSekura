@@ -173,25 +173,15 @@ class File_System_Dealer:
 
 
    def move_files(self, source_folder, destination_folder):
-      try:
-         os.chdir(source_folder)
-         for root, subdirectories, files in os.walk(source_folder):
-            for subdirectory in subdirectories:
-               if os.path.basename(subdirectory) != "System Volume Information":
-                  sh.move(subdirectory, destination_folder)
-            
-            for file in files:
-               if os.path.isfile(file) and (os.path.isfile(destination_folder.__str__()+os.sep+file) == False):
-                  sh.move(os.path.abspath(file), destination_folder)
-               
-
-      
-         path = Path(source_folder)
-         parent = path.parent.absolute()
-         os.chdir(parent)
-      except Exception as e:
-         print("Could not move files while encrypting: " + e.__str__())
-         return -1
+      os.chdir(source_folder)
+      for root, subdirectories, files in os.walk(source_folder):
+         for subdirectory in subdirectories:
+            if os.path.basename(subdirectory) != "System Volume Information":
+               sh.move(subdirectory, destination_folder)
+         
+         for file in files:
+            if os.path.isfile(file) and (os.path.isfile(destination_folder.__str__()+os.sep+file) == False):
+               sh.move(os.path.abspath(file), destination_folder)
 
 
    def remove_config(self, path):
@@ -205,7 +195,6 @@ class File_System_Dealer:
          os.rmdir(conf_path)
    
    def folder_aggregation(self,path,volname,file_number):
-      try:
          os.chdir(path)
          name = path.__str__()+os.sep+volname
          os.mkdir(volname)
@@ -214,9 +203,6 @@ class File_System_Dealer:
             if os.path.isfile(chunk_file_name):
                sh.move(os.path.abspath(chunk_file_name), name)  
          return 0
-      except Exception as e:
-         print("There was an error while aggregating the milestone files: " + e.__str__())
-         return -1
 
       
 

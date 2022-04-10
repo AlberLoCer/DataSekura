@@ -1,5 +1,4 @@
 from asyncio.windows_events import NULL
-from re import S
 from encryption_module import Encryption_utils
 from encryptor import Encryptor
 from local_encryptor import Local_encryptor

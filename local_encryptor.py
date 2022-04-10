@@ -13,10 +13,12 @@ class Local_encryptor(Encryptor):
         self.utils.user_input_encrypt(self.utils.folderDict)
         self.utils.password_input()
         print("Encrypting base volume...")
-        self.utils.deep_layer_encryption()
+        if self.utils.deep_layer_encryption() == -1:
+            return
         print("First layer of encryption successfully created!")
         print("Splitting and permutating the volume...")
-        self.utils.milestone_encryption()
+        if self.utils.milestone_encryption() == -1:
+            return
         print("Aggregating files...")
         self.utils.outer_layer_encryption()
         print("Encryption complete!")

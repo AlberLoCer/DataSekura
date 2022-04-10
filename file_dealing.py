@@ -1,3 +1,4 @@
+import chunk
 import os
 import pathlib
 import math
@@ -41,19 +42,18 @@ class File_alterator:
     
     
     def intermediate_encryption(self):
-        try:
-            for i in range(1,self.file_number):
-                chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin"
+        for i in range(1,self.file_number):
+            chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin"
+            if os.path.isfile(chunk_file_name):
                 os.chdir(self.ssepath)
                 subprocess.call(['java', '-Xmx1g', '-jar', 'ssefenc.jar', chunk_file_name, self.pwdDict[i], 'aes'])
                 os.chdir(self.parentPath)
                 os.remove(chunk_file_name)
                 print("File: "+ repr(i)+ " encrypted with pass: " + self.pwdDict[i])
-            return 0
-
-        except Exception as e:
-            print("An error occured while trying to encrypt the milestone files: " + e.__str__())
-            return -1
+            else:
+                print(chunk_file_name + " could not be found in your system!")
+                return -1
+        return 0
 
     def intermediate_decryption(self, parentPath, basename):
         self.parentPath = parentPath
@@ -116,6 +116,7 @@ class File_alterator:
             f.close()
             os.remove(path)
         else:
+            print("Not enough space in disk! At least " + space_required.__str__() + " MB are required...")
             return -1
         
     
