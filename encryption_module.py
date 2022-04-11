@@ -68,6 +68,7 @@ class Encryption_utils:
         
     
     def outer_layer_encryption(self):
+        #In principle P should be 'none' if the rest was ok
         self.fs.folder_aggregation(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
         print("Encrypting last layer...")
         self.final_pass = self.pw.password_permutation(self.permuted_password)

@@ -34,6 +34,7 @@ class Local_encryptor(Encryptor):
         self.utils = Encryption_utils(folder, 1)
         self.utils.password_input()
         self.utils.decryption_init()
+        #If this fails it was an incorrect password
         if self.utils.outer_layer_decryption() == -1:
             return
         print("Outer layer successfully decrypted!")

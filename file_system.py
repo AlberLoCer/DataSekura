@@ -147,7 +147,11 @@ class File_System_Dealer:
    def input_folder_decrypt(self):
       folderDict = dict()
       self.tk = Tk()
-      folderDict["volume_path"] = filedialog.askopenfilename()
+      volPath = ""
+      while volPath == "":
+         volPath = filedialog.askopenfilename()
+         print("Please select a valid file")
+      folderDict["volume_path"] = volPath
       path = Path(folderDict["volume_path"])
       folderDict["folder_parent"] = path.parent.absolute()
       os.chdir(folderDict["folder_parent"])
