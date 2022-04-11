@@ -90,65 +90,24 @@ class Encryption_utils:
     
 
     def outer_layer_decryption(self):
-         if self.vc.VC_Decryption(self.vol_path,self.final_pass, self.folderDict["folder_path"]) == -1:
-            if os.path.isdir("X:"+os.sep):
-                os.chdir(self.VCpath)
-                subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
-            os.chdir(self.folderDict["folder_parent"])
-            if os.path.isdir(self.folderDict["folder_path"]):
-                self.fs.remove_config(self.folderDict["folder_path"])
-                for filename in os.listdir(self.folderDict["folder_path"]):
-                    file_path = os.path.join(self.folderDict["folder_path"], filename)
-                    os.remove(file_path)
-                os.chdir(self.folderDict["folder_parent"])
-                os.chmod(self.folderDict["folder_path"], 0o777)
-                shutil.rmtree(self.folderDict["folder_path"])
-            if os.path.isfile(self.vol_path):
-                os.remove(self.vol_path)
-            self.fs.backup_rename(self.backup, self.vol_path)
-            return
+        if self.vc.VC_Decryption(self.vol_path,self.final_pass, self.folderDict["folder_path"]) == -1:
+            print("Incorrect password!")
+            return -1
+        else:
+            return 0
     
     def milestone_decryption(self):
         self.fd.file_number = self.fs.retake_file_number(self.fs.remove_file_extension(self.vol_path))
         self.fd.populateDict(self.alpha_base,self.beta_base, len(self.permuted_password),self.permuted_password)
         print("Parameters fetched!")
-        if self.fs.folder_decompossition(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number) == -1:
-            name = self.folderDict["folder_parent"].__str__()+os.sep+self.folderDict["folder_name"]
-            os.chdir(name)
-            for i in range(1,self.fd.file_number):
-                chunk_file_name = self.folderDict["folder_path"]+"_"+repr(i)+".bin.enc"
-                if os.path.isfile(chunk_file_name):
-                    os.remove(chunk_file_name)
-            os.chdir(self.folderDict["folder_parent"])
-            shutil.rmtree(self.folderDict["folder_path"])
-            self.fs.backup_rename(self.backup, self.vol_path)
-            return
+        self.fs.folder_decompossition(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
         print("Decrypting milestone files...")
         self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"])
         self.fd.restore_file(self.folderDict["folder_name"])
-        self
         print("Milestone files successfully decrypted!")
     
     def deep_layer_decryption(self):
-        if self.vc.VC_Decryption(self.vol_path,self.permuted_password, self.folderDict["folder_path"]) == -1:
-            if os.path.isdir("X:"+os.sep):
-                os.chdir(self.VCpath)
-                subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
-            os.chdir(self.folderDict["folder_parent"])
-            if os.path.isdir(self.folderDict["folder_path"]):
-                self.fs.remove_config(self.folderDict["folder_path"])
-                for filename in os.listdir(self.folderDict["folder_path"]):
-                    file_path = os.path.join(self.folderDict["folder_path"], filename)
-                    os.remove(file_path)
-                os.chdir(self.folderDict["folder_parent"])
-                os.chmod(self.folderDict["folder_path"], 0o777)
-                shutil.rmtree(self.folderDict["folder_path"])
-            if os.path.isfile(self.vol_path):
-                os.remove(self.vol_path)
-            self.fs.backup_rename(self.backup, self.vol_path)
-        else:
-            os.remove(self.backup)
-            return
+        self.vc.VC_Decryption(self.vol_path,self.permuted_password, self.folderDict["folder_path"])
     
     def password_input(self):
         self.base_password = input ("Enter your password for encryption: ")

@@ -9,6 +9,8 @@ class Local_encryptor(Encryptor):
         super().__init__(ctr)
 
     def encrypt(self, folder):
+        #The preconditions for encryption are soft.
+        #We basically need that the folder we are encrypting exists.
         self.utils = Encryption_utils(folder,0)
         self.utils.user_input_encrypt(self.utils.folderDict)
         self.utils.password_input()
@@ -32,7 +34,8 @@ class Local_encryptor(Encryptor):
         self.utils = Encryption_utils(folder, 1)
         self.utils.password_input()
         self.utils.decryption_init()
-        self.utils.outer_layer_decryption()
+        if self.utils.outer_layer_decryption() == -1:
+            return
         print("Outer layer successfully decrypted!")
         print("Fetching milestone file parameters...")
         self.utils.milestone_decryption()

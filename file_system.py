@@ -103,7 +103,11 @@ class File_System_Dealer:
 
    def input_folder_encrypt(self):
       self.tk = Tk()
-      folder = filedialog.askdirectory(title="Select a folder to encrypt")
+      folder = ""
+      while folder == "":
+         folder = filedialog.askdirectory(title="Select a folder to encrypt")
+         if folder == "":
+            print("Please select a valid directory")
       aux_dict = self.create_dict(folder)
       return aux_dict
       
