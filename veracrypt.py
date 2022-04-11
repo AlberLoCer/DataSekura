@@ -18,9 +18,6 @@ class Veracrypt:
             os.chdir(self.VCpath)
             subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
             self.fs.removeFolder(folderpath)
-        else:
-            print("Something went wrong...")
-            raise Exception
 
 
     def VC_Decryption(self, volPath, password, folderpath):

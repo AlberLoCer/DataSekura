@@ -18,7 +18,10 @@ class Encryption_utils:
         self.vc = Veracrypt(self.VCpath)
         self.fd = File_alterator(self)      
         if op == 0:
-            self.init_Enc(folder) 
+            if self.init_Enc(folder) == -1:
+                print("Permission denied while trying to encrypt this folder...")
+                print("Aborting operation")
+                raise Exception
         elif op == 1:
             self.init_Dec(folder)
         else:
@@ -29,14 +32,35 @@ class Encryption_utils:
         if folder == NULL:
             self.folderDict = self.fs.input_folder_encrypt()
         else:
-            self.folderDict = self.fs.create_dict(folder)        
+            self.folderDict = self.fs.create_dict(folder)       
+        try:
+            print("Checking permissions of folder...")
+            self.checkPermissions(self.folderDict['folder_path']) == -1
+        except Exception as e:
+            return -1
+
         self.backup = self.fs.directory_backup_create(self.folderDict['folder_path'])
-    
+
     def init_Dec(self,folder):
         if folder == NULL:
             self.folderDict = self.fs.input_folder_decrypt()
         else:
             self.folderDict = self.fs.create_dict(folder)
+    
+    def checkPermissions(self,source_folder):
+        os.chdir(source_folder)
+        for root, subdirectories, files in os.walk(source_folder):
+            for subdirectory in subdirectories:
+                if os.access(subdirectory, os.X_OK | os.W_OK | os.R_OK) == False:
+                    print("Permission denied on folder: " + os.path.basename(subdirectory))
+                    raise Exception
+                else:
+                    self.checkPermissions(source_folder+os.sep+subdirectory)
+            for file in files:
+                if os.access(file, os.X_OK | os.W_OK | os.R_OK) == False:
+                    print("Permission denied on file: " + os.path.basename(file))
+                    raise Exception
+        return 0
     
     def deep_layer_encryption(self):
         if os.access(self.folderDict['folder_path'], os.X_OK | os.W_OK | os.R_OK): #Deeper checking

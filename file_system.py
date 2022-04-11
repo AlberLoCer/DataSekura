@@ -181,7 +181,7 @@ class File_System_Dealer:
          for subdirectory in subdirectories:
             if os.path.basename(subdirectory) != "System Volume Information":
                sh.move(subdirectory, destination_folder)
-         
+
          for file in files:
             if os.path.isfile(file) and (os.path.isfile(destination_folder.__str__()+os.sep+file) == False):
                sh.move(os.path.abspath(file), destination_folder)

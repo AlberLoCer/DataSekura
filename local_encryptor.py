@@ -11,7 +11,10 @@ class Local_encryptor(Encryptor):
     def encrypt(self, folder):
         #The preconditions for encryption are soft.
         #We basically need that the folder we are encrypting exists. (Already satisfied on input folder)
-        self.utils = Encryption_utils(folder,0)
+        try:
+            self.utils = Encryption_utils(folder,0)
+        except Exception as e:
+            return
         self.utils.user_input_encrypt(self.utils.folderDict)
         self.utils.password_input()
         print("Encrypting base volume...")
