@@ -12,16 +12,16 @@ class Local_encryptor(Encryptor):
         try:
             self.utils = Encryption_utils(folder,0)
         except Exception as e:
-            return
+            return -1
         self.utils.user_input_encrypt(self.utils.folderDict)
         self.utils.password_input()
         print("Encrypting base volume...")
         if self.utils.deep_layer_encryption() == -1:
-            return
+            return -1
         print("First layer of encryption successfully created!")
         print("Splitting and permutating the volume...")
         if self.utils.milestone_encryption() == -1:
-            return
+            return -1
         print("Aggregating files...")
         self.utils.outer_layer_encryption()
         print("Encryption complete!")
@@ -38,10 +38,10 @@ class Local_encryptor(Encryptor):
             self.utils.decryption_init()
         except Exception as e:
             print("Aborting operation...")
-            return
+            return -1
         #If this fails it was an incorrect password
         if self.utils.outer_layer_decryption() == -1:
-            return
+            return -1
         print("Outer layer successfully decrypted!")
         print("Fetching milestone file parameters...")
         #From here on, everything should go fine
