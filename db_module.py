@@ -6,6 +6,7 @@ import fnmatch
 class Db_object:
     def __init__(self):
         self.set_up()
+        self.dbx._timeout = 900
         return
 
     def set_up(self):
@@ -118,14 +119,38 @@ class Db_object:
             else:
                 self.remove_folder_rec(entry)
                 self.dbx.files_delete(entry.path_display)
-            
-    def upload_file(self,filename,parent):
-        try:
-            with open(filename,"rb") as file:
-                data = file.read()
-                self.dbx.files_upload(data,parent)
-        except Exception as e:
-            print(e.__str__())
+    
+
+    #From Dropbox SDK documentation        
+    def upload_file(self,file_path, target_path, timeout=900, chunk_size=4 * 1024 * 1024,):
+        self.dbx._timeout = timeout
+        with open(file_path, "rb") as f:
+            file_size = os.path.getsize(file_path)
+            if file_size <= chunk_size:
+                print(self.dbx.files_upload(f.read(), target_path))
+            else:
+                    upload_session_start_result = self.dbx.files_upload_session_start(
+                        f.read(chunk_size)
+                    )
+                    cursor = dropbox.files.UploadSessionCursor(
+                        session_id=upload_session_start_result.session_id,
+                        offset=f.tell(),
+                    )
+                    commit = dropbox.files.CommitInfo(path=target_path)
+                    while f.tell() < file_size:
+                        if (file_size - f.tell()) <= chunk_size:
+                            print(
+                                self.dbx.files_upload_session_finish(
+                                    f.read(chunk_size), cursor, commit
+                                )
+                            )
+                        else:
+                            self.dbx.files_upload_session_append(
+                                f.read(chunk_size),
+                                cursor.session_id,
+                                cursor.offset,
+                            )
+                            cursor.offset = f.tell()
     
     def upload_folder(self, folder_db, folder_pc): #Not behaving as it should...
         folder_parent = Path(folder_pc).parent.absolute()
