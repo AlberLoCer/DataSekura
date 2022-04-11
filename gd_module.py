@@ -145,6 +145,8 @@ class Gd_object:
       os.remove(self.credentials_directory)
       if os.path.isdir(path):
          shutil.rmtree(path)
+      elif os.path.isfile(path):
+         os.remove(path)
    
    def fetch_bin_files(self):
       output_list = []

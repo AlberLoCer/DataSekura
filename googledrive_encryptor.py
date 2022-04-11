@@ -20,6 +20,7 @@ class GoogleDriveEncryptor(Encryptor):
         print("Encrypting folder...")
         self.folderDict = self.local.encrypt(folderpath)
         if self.folderDict == -1:
+            print("Failed to encrypt Google Drive Folder")
             self.gd.hard_reset(folderpath)
             return 
         try:
@@ -59,7 +60,9 @@ class GoogleDriveEncryptor(Encryptor):
         print("Decrypting the file...")
         self.folderDict = self.local.decrypt(self.fs.remove_file_extension(folderpath))
         if self.folderDict == -1:
+            print("Failed to decrypt Google Drive Folder")
             self.gd.hard_reset(folderpath)
+            return
         print("Cleaning up residual files...")
         self.gd.upload_folder(self.folderDict["folder_path"], parent_dict['parent_id'], self.folderDict["folder_name"])
         self.gd.hard_reset(self.folderDict["folder_path"])
