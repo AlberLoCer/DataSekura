@@ -44,6 +44,8 @@ class File_alterator:
     def intermediate_encryption(self):
         for i in range(1,self.file_number):
             chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin"
+            if os.path.isfile(chunk_file_name+".enc"):
+                os.remove(chunk_file_name+".enc") #This can only happen because of a failed encryption
             if os.path.isfile(chunk_file_name):
                 os.chdir(self.ssepath)
                 subprocess.call(['java', '-Xmx1g', '-jar', 'ssefenc.jar', chunk_file_name, self.pwdDict[i], 'aes'])
@@ -98,7 +100,7 @@ class File_alterator:
         pathObj = pathlib.Path(path)
         self.parentPath = pathObj.parent.absolute()
         os.chdir(self.parentPath)
-        CHUNK_SIZE = int(math.floor(os.path.getsize(path) / (self.pwdperm.beta)+4))
+        CHUNK_SIZE = int(math.floor(os.path.getsize(path)) / (self.pwdperm.beta)+4)
         total, used, free = shutil.disk_usage(path)
         free_space_MB = free // (2**20)
         space_required = (os.path.getsize(path)/1024)/1024
@@ -109,6 +111,8 @@ class File_alterator:
                 while chunk:
                     self.base_file_name = volName
                     chunk_file_name = volName+"_"+repr(self.file_number)+".bin"
+                    if os.path.isfile(chunk_file_name):
+                        os.remove(chunk_file_name) #Let's be honest: Who is going to have a file named like this?
                     chunk_file = open(chunk_file_name,'wb')
                     chunk_file.write(chunk)
                     self.file_number += 1
