@@ -139,6 +139,7 @@ class Encryption_utils:
     
     def deep_layer_decryption(self):
         self.vc.VC_Decryption(self.vol_path,self.permuted_password, self.folderDict["folder_path"])
+        os.remove(self.backup)
     
     def password_input(self):
         self.base_password = input ("Enter your password for encryption: ")
