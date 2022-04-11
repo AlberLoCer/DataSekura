@@ -62,6 +62,9 @@ class File_alterator:
         self.base_file_name = basename
         try:
             for i in range(1,self.file_number):
+                decrypted_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin"
+                if os.path.isfile(decrypted_name):
+                    os.remove(decrypted_name)
                 chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
                 if(os.path.isfile(chunk_file_name)):
                     os.chdir(self.ssepath)

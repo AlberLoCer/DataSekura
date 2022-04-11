@@ -1,14 +1,9 @@
-from csv import excel
 import os
-import sys
-import subprocess
-import pathlib
 from tkinter import *
 import shutil as sh
 from pathlib import Path
 import math
 from tkinter import filedialog
-from turtle import back
 class File_System_Dealer:
    def __init__(self):
       return

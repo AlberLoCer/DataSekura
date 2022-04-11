@@ -39,6 +39,7 @@ class Local_encryptor(Encryptor):
             return
         print("Outer layer successfully decrypted!")
         print("Fetching milestone file parameters...")
+        #From here on, everything should go fine
         self.utils.milestone_decryption()
         print("Originial file successfully restored!")
         print("Decrypting deep layer...")
