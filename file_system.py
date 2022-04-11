@@ -53,15 +53,15 @@ class File_System_Dealer:
       os.rename(path,original)
    
    def file_backup_creation(self, path):
-      try: 
-         dest = self.remove_file_extension(path)
-         str_ext = "(AUX).bin"
-         dest = dest + str_ext
+      dest = self.remove_file_extension(path)
+      str_ext = "(AUX).bin"
+      dest = dest + str_ext
+      try:
          sh.copyfile(path,dest)
-         return dest
       except Exception as e:
-         print("Could not create auxiliary backup of file to decrypt: "+ e.__str__())
-         return -1
+         if isinstance(e,PermissionError):
+            return -1
+      return dest
    
    def backup_rename(self, backup, original):
       os.rename(backup, original)
@@ -145,7 +145,8 @@ class File_System_Dealer:
       volPath = ""
       while volPath == "":
          volPath = filedialog.askopenfilename()
-         print("Please select a valid file")
+         if volPath == "":
+            print("Please select a valid file")
       folderDict["volume_path"] = volPath
       path = Path(folderDict["volume_path"])
       folderDict["folder_parent"] = path.parent.absolute()

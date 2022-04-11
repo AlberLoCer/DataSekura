@@ -9,8 +9,6 @@ class Local_encryptor(Encryptor):
         super().__init__(ctr)
 
     def encrypt(self, folder):
-        #The preconditions for encryption are soft.
-        #We basically need that the folder we are encrypting exists. (Already satisfied on input folder)
         try:
             self.utils = Encryption_utils(folder,0)
         except Exception as e:
@@ -36,7 +34,11 @@ class Local_encryptor(Encryptor):
     def decrypt(self, folder):
         self.utils = Encryption_utils(folder, 1)
         self.utils.password_input()
-        self.utils.decryption_init()
+        try:
+            self.utils.decryption_init()
+        except Exception as e:
+            print("Aborting operation...")
+            return
         #If this fails it was an incorrect password
         if self.utils.outer_layer_decryption() == -1:
             return

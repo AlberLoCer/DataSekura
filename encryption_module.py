@@ -111,7 +111,10 @@ class Encryption_utils:
         self.vol_path = self.folderDict["folder_parent"].__str__() + os.sep + base_vol
         self.backup = self.fs.file_backup_creation(self.vol_path)
         if self.backup == -1:
-            return -1
+            print("Permission denied while trying to decrypt the file...")
+            print("Try to relocate the encrypted file to a different location")
+            print("(e.g. Desktop) and try again...")
+            raise Exception
         else:
             return 0
     
@@ -119,6 +122,7 @@ class Encryption_utils:
     def outer_layer_decryption(self):
         if self.vc.VC_Decryption(self.vol_path,self.final_pass, self.folderDict["folder_path"]) == -1:
             print("Incorrect password!")
+            os.remove(self.backup)
             return -1
         else:
             return 0
