@@ -15,7 +15,7 @@ class GoogleDriveEncryptor(Encryptor):
         file = self.gd.fetch_folder()
         print("Processing resources inside the folder...")
         folderpath = self.gd.download_folder_launch(file) 
-        parent_dict = self.gd.search_parent("root",os.path.basename(folderpath)) #Probably will need to check this in the future
+        parent_dict = self.gd.search_parent(file) #Probably will need to check this in the future
         print("Encrypting folder...")
         self.folderDict = self.local.encrypt(folderpath)
         try:

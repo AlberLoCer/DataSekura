@@ -47,11 +47,6 @@ class Gd_object:
       file.GetContentFile(path)
       return path
    
-   def get_file(self,creds,id):
-      file = creds.ListFile({'q': "id = '"+id+"'"}).GetList()
-      return file
-
-   
    def fetch_folder(self):
       creds = self.login()
       print("Fetching drive directories...")
@@ -63,7 +58,7 @@ class Gd_object:
             print("Folder could not be found... Try again.")
             folder_str = input("Select a folder: ")
             file_output = self.check_folder_exists(creds,folder_str)
-         return file_output
+         return file_output #Drive filetype
    
    def fetch_folders_in_folder(self, parent):
       creds = self.login()
@@ -174,34 +169,29 @@ class Gd_object:
             return 0
          else:
             print("Folder Found!")
+            if len(f_list) > 1:
+               print("Found more than one match.")
             file = f_list[0]
             return file
       except Exception as e:
          print(e.__str__())
          return -1
 
-   def search_parent(self, source, searched):
+   def search_parent(self,file):
       creds = self.login()
       queue = []
       node_dict = dict()
-      s = dict()
-      s['id'] = "root"
-      s['title'] = "root"
-      queue.append(s)    
-      while queue:
-         s = queue.pop(0)
-         node_dict['parent_id'] = s['id']
-         node_dict['parent_name'] = s['title']
-         f_list = creds.ListFile({'q': "'"+s['id']+"' in parents and trashed=false"}).GetList()
-         node_dict['subfolders'] = f_list
-         for f in f_list:
-            if f['title'] == searched:
-               return node_dict
-            else:
-               s = dict()
-               s['id'] = f['id']
-               s['title'] = f['title']
-               queue.append(s)
+      meta = file.metadata
+      parents = meta['parents']
+      if parents[0]['isRoot'] == True:
+         node_dict['parent_id'] = "root"
+         node_dict['parent_name'] = "root"
+         return node_dict
+      else:
+         f = creds.CreateFile({"id": parents[0]['id']})
+         node_dict['parent_id'] = f['id']
+         node_dict['parent_name'] = f['title']
+         return node_dict
          
 
             
