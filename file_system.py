@@ -45,8 +45,11 @@ class File_System_Dealer:
    
    def directory_backup_create(self,path):
       str_ext = "(AUX)"
-      sh.copytree(path,path+str_ext)
-      return path+str_ext
+      if os.path.isdir(path+str_ext) == False:
+         sh.copytree(path,path+str_ext)
+         return path+str_ext
+      else:
+         return 0
 
    
    def directory_backup_rename(self,path,original):

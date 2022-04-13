@@ -18,9 +18,13 @@ class Encryption_utils:
         self.vc = Veracrypt(self.VCpath)
         self.fd = File_alterator(self)      
         if op == 0:
-            if self.init_Enc(folder) == -1:
+            init = self.init_Enc(folder)
+            if init == -1:
                 print("Permission denied while trying to encrypt this folder...")
                 print("Aborting operation")
+                raise Exception
+            elif init == 0:
+                print("Could not create backup: Backup already exists!")
                 raise Exception
         elif op == 1:
             self.init_Dec(folder)
@@ -35,11 +39,13 @@ class Encryption_utils:
             self.folderDict = self.fs.create_dict(folder)       
         try:
             print("Checking permissions of folder...")
-            self.checkPermissions(self.folderDict['folder_path']) == -1
+            self.checkPermissions(self.folderDict['folder_path'])
         except Exception as e:
             return -1
 
         self.backup = self.fs.directory_backup_create(self.folderDict['folder_path'])
+        if self.backup == 0:
+            return 0
 
     def init_Dec(self,folder):
         if folder == NULL:
