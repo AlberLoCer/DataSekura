@@ -40,6 +40,7 @@ class Encryption_utils:
             print("Checking permissions of folder...")
             self.checkPermissions(self.folderDict['folder_path'])
         except Exception as e:
+            print(e.__str__())
             return -1
 
         self.backup = self.fs.directory_backup_create(self.folderDict['folder_path'])
@@ -55,16 +56,20 @@ class Encryption_utils:
     def checkPermissions(self,source_folder):
         os.chdir(source_folder)
         for root, subdirectories, files in os.walk(source_folder):
-            for subdirectory in subdirectories:
-                if os.access(subdirectory, os.X_OK | os.W_OK | os.R_OK) == False:
-                    print("Permission denied on folder: " + os.path.basename(subdirectory))
-                    raise Exception
-                else:
-                    self.checkPermissions(source_folder+os.sep+subdirectory)
             for file in files:
-                if os.access(file, os.X_OK | os.W_OK | os.R_OK) == False:
+                path = os.path.join(root, file)
+                os.chmod(path,0o777)
+                if os.access(path, os.X_OK | os.W_OK | os.R_OK) == False:
                     print("Permission denied on file: " + os.path.basename(file))
                     raise Exception
+
+            for subdirectory in subdirectories:
+                path = os.path.join(root, subdirectory)
+                os.chmod(path,0o777)
+                if os.access(path, os.X_OK | os.W_OK | os.R_OK) == False:
+                    print("Permission denied on folder: " + os.path.basename(subdirectory))
+                    raise Exception
+            
         return 0
     
     def deep_layer_encryption(self):
