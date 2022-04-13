@@ -15,7 +15,9 @@ class Scatter_encryption(Encryptor):
     def encrypt(self):
         cwd = os.getcwd()
         self.utils = Encryption_utils(NULL,0)
-        with open("ds_traces" + os.sep + self.utils.folderDict["folder_name"]+".txt", "w") as f:
+        self.dstraces = cwd+os.sep+"ds_traces"
+        os.chdir(self.dstraces)
+        with open(self.utils.folderDict["folder_name"]+".txt", "w") as f:
             f.write(self.utils.folderDict['folder_parent'].__str__()+"|")
             self.utils.user_input_encrypt(self.utils.folderDict)
             self.utils.password_input()

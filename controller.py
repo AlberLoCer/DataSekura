@@ -97,9 +97,10 @@ class Controller:
             local.decrypt("ds_traces")
             scatter.encrypt()
         else:
-            print("Folder with traces was not found...")
-            print("Creating folder...")
-            os.mkdir("ds_traces")
+            if os.path.isdir("ds_traces") == False:
+                print("Folder with traces was not found...")
+                print("Creating folder...")
+                os.mkdir("ds_traces")
             scatter.encrypt()
     
     def gDrive_set_up(self):
