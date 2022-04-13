@@ -215,3 +215,4 @@ class Encryption_utils:
                 file.content.close()
                 if file.uploaded:
                     os.remove(name)
+    

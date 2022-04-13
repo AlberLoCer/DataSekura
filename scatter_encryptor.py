@@ -75,7 +75,6 @@ class Scatter_encryption(Encryptor):
                             file_dict["id"] = aux[1]
                             drive_list.append(file_dict)
                     ref_list = []
-                    #Up to here works fine
                     for i in range(1,int(file_number)):
                         file_title = self.utils.fs.remove_file_extension(file)
                         original_name = file_title+"_"+repr(i)+".bin.enc"
@@ -106,4 +105,6 @@ class Scatter_encryption(Encryptor):
             path_to_remove = "ds_traces" + os.sep + file
             os.remove(path_to_remove)
             self.local.encrypt(cwd+os.sep+"ds_traces")
+        else:
+            print("You do not seem to have anything encrypted as scatter...")
         return
