@@ -14,48 +14,33 @@ class Scatter_encryption(Encryptor):
 
     def encrypt(self):
         cwd = os.getcwd()
-        self.utils = Encryption_utils(NULL,0)
+        try:
+            self.utils = Encryption_utils(NULL,0)
+        except Exception as e:
+            return -1
         self.dstraces = cwd+os.sep+"ds_traces"
         os.chdir(self.dstraces)
-        with open(self.utils.folderDict["folder_name"]+".txt", "w") as f:
-            f.write(self.utils.folderDict['folder_parent'].__str__()+"|")
-            self.utils.user_input_encrypt(self.utils.folderDict)
-            self.utils.password_input()
-            print("Encrypting "+ self.utils.folderDict["folder_name"] + "...")
-            self.utils.deep_layer_encryption()
-            print("First layer of encryption successfully created!")
-            print("Splitting and permutating the volume...")
-            self.utils.milestone_encryption()
-            print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
-            fname = input()
-            creds = self.gd.login()
-            folder_fetched = self.gd.check_folder_exists(creds,fname)
-            if folder_fetched == -1:
-                return
-            if folder_fetched == 0:
-                folder_fetched = self.gd.create_folder('root',fname) #Create folder
-                f.write(folder_fetched["id"]+"|")
-            else:
-                #Write drive_folder in trace file
-                f.write(folder_fetched["id"]+"|")
-            
-            f.write(self.utils.fd.file_number.__str__()+"|") #Write number of files in trace file
-            names_list = self.utils.fd.intermediate_masking(self.utils.folderDict["folder_parent"], self.utils.folderDict["folder_name"])
-            #Write filenames(pathlike) in document
-            for name in names_list:
-                try:
-                    file = self.gd.upload(name,folder_fetched['id'],name,creds)
-                    f.write(name+" "+file["id"]+"#")
-                finally:
-                    file.content.close()
-                    if file.uploaded:
-                        os.remove(name)
-            f.close()
-        print("Encrypting ds_traces...")
-        os.chdir(cwd)
-        self.local.encrypt(cwd+os.sep+"ds_traces")
-        os.remove(cwd+os.sep+"credentials_module.json")
-        return
+        #If file already exists, it will be really messed up :)
+        if os.path.isfile(self.utils.folderDict["folder_name"]+".txt") == False:
+            with open(self.utils.folderDict["folder_name"]+".txt", "w") as f:
+                self.utils.scatter_first_step(f)
+                print("Encrypting "+ self.utils.folderDict["folder_name"] + "...")
+                self.utils.deep_layer_encryption()
+                print("First layer of encryption successfully created!")
+                print("Splitting and permutating the volume...")
+                self.utils.milestone_encryption()
+                print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
+                self.utils.perform_scatter(self.gd,f)
+                f.close()
+            print("Encrypting ds_traces...")
+            os.chdir(cwd)
+            self.local.encrypt(cwd+os.sep+"ds_traces")
+            os.remove(cwd+os.sep+"credentials_module.json")
+            return
+        else:
+            print("There is already an encrypted file named like that!")
+            return
+       
     
     def decrypt(self):
         self.utils = Encryption_utils(NULL,2) #Rethink this for scatter
