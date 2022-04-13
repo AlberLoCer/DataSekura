@@ -1,7 +1,6 @@
 from asyncio.windows_events import NULL
 import os
-import shutil
-import subprocess
+import hashlib
 from file_system import File_System_Dealer
 from password_permutator import Password_permutator
 from user_experience import User_experience
@@ -216,3 +215,43 @@ class Encryption_utils:
                 if file.uploaded:
                     os.remove(name)
     
+    def scatter_file_parse(self,f):
+        text = f.read()
+        resources = text.split("|")
+        self.original_path = resources[0]
+        self.folder_id = resources[1]
+        self.file_number = resources[2]
+        self.fd.set_file_number(int(self.file_number))
+        self.file_list = resources[3].split("#")
+    
+    def scatter_build_drive_list(self):
+        drive_list = []
+        for k in self.file_list:
+            if k != "":
+                file_dict = dict()
+                aux = k.split(" ")
+                file_dict["title"] = aux[0]
+                file_dict["id"] = aux[1]
+                drive_list.append(file_dict)
+        return drive_list
+
+    def scatter_build_ref_list(self, file):
+        ref_list = []
+        for i in range(1,int(self.file_number)):
+            self.file_title = self.fs.remove_file_extension(file)
+            original_name = self.file_title+"_"+repr(i)+".bin.enc"
+            passBytes = bytes(original_name,"ascii") 
+            masked_name = hashlib.sha256(passBytes).hexdigest()
+            ref_dict = dict()
+            ref_dict["name"] = original_name
+            ref_dict["mask"] = masked_name
+            ref_list.append(ref_dict)
+        return ref_list
+    
+    def scatter_files_translate(self, gd, drive_list, ref_list):
+        creds = gd.login()
+        for i in range(0,int(self.file_number)-1):
+            new_path = gd.download_file(creds,drive_list[i]["id"],self.original_path)
+            gfile = creds.CreateFile({'id':drive_list[i]["id"]})
+            gfile.Delete()
+            os.rename(new_path, self.original_path+os.sep+ref_list[i]["name"])
