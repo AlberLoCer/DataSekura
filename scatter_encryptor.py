@@ -36,6 +36,7 @@ class Scatter_encryption(Encryptor):
             os.chdir(cwd)
             self.local.encrypt(cwd+os.sep+"ds_traces")
             os.remove(cwd+os.sep+"credentials_module.json")
+            os.remove(self.utils.backup)
             return
         else:
             print("There is already an encrypted file named like that!")
