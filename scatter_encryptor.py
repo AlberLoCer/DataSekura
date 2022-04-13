@@ -47,7 +47,6 @@ class Scatter_encryption(Encryptor):
         self.utils = Encryption_utils(NULL,2) #Rethink this for scatter
         self.gd = Gd_object()
         cwd = os.getcwd()
-        creds = self.gd.login()
         if os.path.isfile("ds_traces.bin"):
             print("Decrypting ds_traces...")
             self.local.decrypt(cwd+os.sep+"ds_traces")
