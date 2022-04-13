@@ -185,3 +185,33 @@ class Encryption_utils:
         self.cmd_fs = self.ux.choose_fs(fs)
 
         self.volume_size = self.fs.fetch_size(folderDict["folder_path"], self.cmd_fs)
+    
+    def scatter_first_step(self,f):
+        f.write(self.folderDict['folder_parent'].__str__()+"|")
+        self.user_input_encrypt(self.folderDict)
+        self.password_input()
+    
+    def perform_scatter(self,gd, f):
+        fname = input()
+        creds = gd.login()
+        folder_fetched = gd.check_folder_exists(creds,fname)
+        if folder_fetched == -1:
+            return
+        if folder_fetched == 0:
+            folder_fetched = gd.create_folder('root',fname) #Create folder
+            f.write(folder_fetched["id"]+"|")
+        else:
+            #Write drive_folder in trace file
+            f.write(folder_fetched["id"]+"|")
+        
+        f.write(self.fd.file_number.__str__()+"|") #Write number of files in trace file
+        names_list = self.fd.intermediate_masking(self.folderDict["folder_parent"], self.folderDict["folder_name"])
+        #Write filenames(pathlike) in document
+        for name in names_list:
+            try:
+                file = gd.upload(name,folder_fetched['id'],name,creds)
+                f.write(name+" "+file["id"]+"#")
+            finally:
+                file.content.close()
+                if file.uploaded:
+                    os.remove(name)
