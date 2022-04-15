@@ -30,16 +30,17 @@ class DB_encryptor(Encryptor):
         names,paths = self.db.list_bin_files()
         file,path = self.db.input_and_download_bin(names,paths)
         full_path = os.path.abspath(file)
-        file = self.fs.remove_file_extension(full_path)
+        file_noext = self.fs.remove_file_extension(full_path)
         os.chdir(cwd)
-        self.folderDict = self.local.decrypt(file)
+        self.folderDict = self.local.decrypt(file_noext)
         if self.folderDict == -1:
-            shutil.rmtree(file)
+            os.chdir(cwd)
+            os.remove(file)
             return
         print("Restoring folder contents...")
         self.db.upload_folder(self.fs.remove_file_extension(path),file)
         print("Cleaning up residual files...")
         self.db.remove_bin(path)
-        self.fs.remove_full_folder(file)
+        self.fs.remove_full_folder(file_noext)
         print("Dropbox Folder Successfully Decrypted!")
         return
