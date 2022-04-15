@@ -1,3 +1,4 @@
+import shutil
 from db_module import Db_object
 from encryptor import Encryptor
 from local_encryptor import Local_encryptor
@@ -15,6 +16,9 @@ class DB_encryptor(Encryptor):
         folder_path, folder_metadata = self.db.download_folder_launch(folder)
         os.chdir(cwd)
         self.folderDict = self.local.encrypt(folder_path)
+        if self.folderDict == -1:
+            shutil.rmtree(folder_path)
+            return
         print("Cleaning residual files...")
         self.db.upload_file(self.folderDict['volume_path'],folder_metadata.path_display+".bin")
         self.fs.delete_vol(self.folderDict["volume_path"])
@@ -29,6 +33,9 @@ class DB_encryptor(Encryptor):
         file = self.fs.remove_file_extension(full_path)
         os.chdir(cwd)
         self.folderDict = self.local.decrypt(file)
+        if self.folderDict == -1:
+            shutil.rmtree(file)
+            return
         print("Restoring folder contents...")
         self.db.upload_folder(self.fs.remove_file_extension(path),file)
         print("Cleaning up residual files...")
