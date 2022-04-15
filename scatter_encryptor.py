@@ -1,4 +1,5 @@
 from asyncio.windows_events import NULL
+import shutil
 from encryption_module import Encryption_utils
 from encryptor import Encryptor
 from local_encryptor import Local_encryptor
@@ -33,10 +34,13 @@ class Scatter_encryption(Encryptor):
                 self.utils.perform_scatter(self.gd,f)
                 f.close()
             print("Encrypting ds_traces...")
+            
+            os.chdir(self.utils.folderDict["folder_parent"])
+            os.chmod(self.utils.backup,0o777)
+            shutil.rmtree(self.utils.backup)
             os.chdir(cwd)
             self.local.encrypt(cwd+os.sep+"ds_traces")
             os.remove(cwd+os.sep+"credentials_module.json")
-            os.remove(self.utils.backup)
             return
         else:
             print("There is already an encrypted file named like that!")
