@@ -53,36 +53,36 @@ class Scatter_encryption(Encryptor):
         cwd = os.getcwd()
         if os.path.isfile("ds_traces.bin"):
             print("Decrypting ds_traces...")
-            self.local.decrypt(cwd+os.sep+"ds_traces")
-            os.chdir(cwd+os.sep+"ds_traces")
-             #Select folder to decrypt
-            print("Select a file to decrypt: ")
-            for filename in os.listdir(cwd+os.sep+"ds_traces"):
-                print(filename)
-            file = input()
-            if os.path.isfile(file):
-                #Read file 
-                with open(file) as f:
-                    self.utils.scatter_file_parse(f)
-                    drive_list = self.utils.scatter_build_drive_list()
-                    ref_list = self.utils.scatter_build_ref_list(file)
-                    self.utils.scatter_files_translate(self.gd,drive_list,ref_list)
-                    print("Decrypting " + self.utils.file_title + "...")
-                    self.utils.password_input()
-                    self.utils.fd.populateDict(self.utils.pw.get_alpha(),self.utils.pw.get_beta(), len(self.utils.permuted_password),self.utils.permuted_password)
-                    print("Parameters fetched!")
-                    print("Preparing decryption environment...")
-                    self.utils.fd.intermediate_decryption(self.utils.original_path, self.utils.file_title)
-                    self.utils.fd.restore_file(self.utils.file_title)
-                    base_vol = self.utils.original_path+os.sep+self.utils.file_title+".bin"
-                    if self.utils.vc.VC_Decryption(base_vol,self.utils.permuted_password, self.utils.original_path+os.sep+self.utils.file_title) != -1:
-                        print("Decryption complete!")
-                        print("Final Step: Encrypting ds_traces...")
-                f.close()
-            os.chdir(cwd)
-            path_to_remove = "ds_traces" + os.sep + file
-            os.remove(path_to_remove)
-            self.local.encrypt(cwd+os.sep+"ds_traces")
-        else:
-            print("You do not seem to have anything encrypted as scatter...")
-        return
+            if self.local.decrypt(cwd+os.sep+"ds_traces") != -1:
+                os.chdir(cwd+os.sep+"ds_traces")
+                #Select folder to decrypt
+                print("Select a file to decrypt: ")
+                for filename in os.listdir(cwd+os.sep+"ds_traces"):
+                    print(filename)
+                file = input()
+                if os.path.isfile(file):
+                    #Read file 
+                    with open(file) as f:
+                        self.utils.scatter_file_parse(f)
+                        drive_list = self.utils.scatter_build_drive_list()
+                        ref_list = self.utils.scatter_build_ref_list(file)
+                        self.utils.scatter_files_translate(self.gd,drive_list,ref_list)
+                        print("Decrypting " + self.utils.file_title + "...")
+                        self.utils.password_input()
+                        self.utils.fd.populateDict(self.utils.pw.get_alpha(),self.utils.pw.get_beta(), len(self.utils.permuted_password),self.utils.permuted_password)
+                        print("Parameters fetched!")
+                        print("Preparing decryption environment...")
+                        self.utils.fd.intermediate_decryption(self.utils.original_path, self.utils.file_title)
+                        self.utils.fd.restore_file(self.utils.file_title)
+                        base_vol = self.utils.original_path+os.sep+self.utils.file_title+".bin"
+                        if self.utils.vc.VC_Decryption(base_vol,self.utils.permuted_password, self.utils.original_path+os.sep+self.utils.file_title) != -1:
+                            print("Decryption complete!")
+                            print("Final Step: Encrypting ds_traces...")
+                    f.close()
+                os.chdir(cwd)
+                path_to_remove = "ds_traces" + os.sep + file
+                os.remove(path_to_remove)
+                self.local.encrypt(cwd+os.sep+"ds_traces")
+            else:
+                print("You do not seem to have anything encrypted as scatter...")
+            return

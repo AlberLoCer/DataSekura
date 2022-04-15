@@ -94,8 +94,8 @@ class Controller:
                 bin.close()
             print("ds_traces found!")
             print("Decrypting ds_traces...")
-            local.decrypt("ds_traces")
-            scatter.encrypt()
+            if local.decrypt("ds_traces") != -1:
+                scatter.encrypt()
         else:
             if os.path.isdir("ds_traces") == False:
                 print("Folder with traces was not found...")
