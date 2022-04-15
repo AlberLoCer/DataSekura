@@ -73,17 +73,14 @@ class Encryption_utils:
         return 0
     
     def deep_layer_encryption(self):
-        if os.access(self.folderDict['folder_path'], os.X_OK | os.W_OK | os.R_OK): #Deeper checking
-            if os.path.isfile(self.folderDict["volume_path"]):
-                print("Encrypted volume already exists!")
-                return -1
-            elif os.path.isdir("X:"+os.sep):
-                print("Drive X:// is already being used...")
-                return -1
+        if os.path.isfile(self.folderDict["volume_path"]):
+            print("Encrypted volume already exists!")
+            return -1
+        elif os.path.isdir("X:"+os.sep):
+            print("Drive X:// is already being used...")
+            return -1
             
-            self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"])
-        else:
-            print("You are not authorized to encrypt here...")
+        if self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
             return -1
 
 

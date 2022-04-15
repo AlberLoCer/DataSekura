@@ -17,10 +17,12 @@ class Local_encryptor(Encryptor):
         self.utils.password_input()
         print("Encrypting base volume...")
         if self.utils.deep_layer_encryption() == -1:
+            shutil.rmtree(self.utils.backup)
             return -1
         print("First layer of encryption successfully created!")
         print("Splitting and permutating the volume...")
         if self.utils.milestone_encryption() == -1:
+            shutil.rmtree(self.utils.backup)
             return -1
         print("Aggregating files...")
         self.utils.outer_layer_encryption()

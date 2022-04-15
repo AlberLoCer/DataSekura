@@ -12,13 +12,17 @@ class Veracrypt:
 
     def VC_Encryption(self, volPath, password, hash, encryption, fs, size, folderpath):
         os.chdir(self.VCpath)
-        subprocess.call(["VeraCrypt Format.exe","/create", volPath,"/password", password, "/hash", hash, "/encryption", encryption, "/filesystem", fs, "/size", size,"/silent"])
-        subprocess.call(["VeraCrypt.exe", "/volume", volPath, "/letter", "X", "/password", password, "/quit", "/silent"])
-        if os.path.isdir("X:"+os.sep):
-            self.fs.move_files(folderpath, "X:"+os.sep)
-            os.chdir(self.VCpath)
-            subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
-            self.fs.removeFolder(folderpath)
+        subprocess.call(["VeraCrypt Format.exe","/create", volPath,"/password", password, "/hash", hash, "/encryption", encryption, "/filesystem", fs, "/size", size, "/silent"])
+        if os.path.isfile(volPath):
+            subprocess.call(["VeraCrypt.exe", "/volume", volPath, "/letter", "X", "/password", password, "/quit", "/silent"])
+            if os.path.isdir("X:"+os.sep):
+                self.fs.move_files(folderpath, "X:"+os.sep)
+                os.chdir(self.VCpath)
+                subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
+                self.fs.removeFolder(folderpath)
+        else:
+            print("Impossible to encrypt... Try in another directory")
+            return -1
 
 
     def VC_Decryption(self, volPath, password, folderpath):
