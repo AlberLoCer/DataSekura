@@ -70,8 +70,16 @@ class File_alterator:
                     os.chdir(self.ssepath)
                     subprocess.call(['java', '-Xmx1g', '-jar', 'ssefenc.jar', chunk_file_name, self.pwdDict[i], 'aes'])
                     os.chdir(self.parentPath)
-                    os.remove(chunk_file_name)
-                    print("File: "+ repr(i)+ " decrypted with pass: " + self.pwdDict[i])
+                    if os.path.isfile(decrypted_name):
+                        os.remove(chunk_file_name)
+                        print("File: "+ repr(i)+ " decrypted with pass: " + self.pwdDict[i])
+                    else:
+                        print("Incorrect password!")
+                        for i in range(1,self.file_number):
+                            chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
+                            if(os.path.isfile(chunk_file_name)):
+                                os.remove(chunk_file_name)
+                        return -1
                 else:
                     return -1
             return 0

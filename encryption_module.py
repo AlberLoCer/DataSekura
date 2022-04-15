@@ -98,6 +98,7 @@ class Encryption_utils:
             return
         else:
             return -1
+            
         
     
     def outer_layer_encryption(self):
