@@ -259,6 +259,10 @@ class Encryption_utils:
         creds = gd.login()
         for i in range(0,int(self.file_number)-1):
             new_path = gd.download_file(creds,drive_list[i]["id"],self.original_path)
+            os.rename(new_path, self.original_path+os.sep+ref_list[i]["name"])
+
+    def delete_residual_traces(self,gd, drive_list):
+        creds = gd.login()
+        for i in range(0,int(self.file_number)-1):
             gfile = creds.CreateFile({'id':drive_list[i]["id"]})
             gfile.Delete()
-            os.rename(new_path, self.original_path+os.sep+ref_list[i]["name"])

@@ -62,6 +62,7 @@ class Scatter_encryption(Encryptor):
         self.gd = Gd_object()
         cwd = os.getcwd()
         if os.path.isfile("ds_traces.bin"):
+            shutil.copy("ds_traces.bin", "ds_traces_auto.bin")
             print("Decrypting ds_traces...")
             if self.local.decrypt(cwd+os.sep+"ds_traces") != -1:
                 os.chdir(cwd+os.sep+"ds_traces")
@@ -82,19 +83,31 @@ class Scatter_encryption(Encryptor):
                         self.utils.fd.populateDict(self.utils.pw.get_alpha(),self.utils.pw.get_beta(), len(self.utils.permuted_password),self.utils.permuted_password)
                         print("Parameters fetched!")
                         print("Preparing decryption environment...")
-                        self.utils.fd.intermediate_decryption(self.utils.original_path, self.utils.file_title)
+                        if self.utils.fd.intermediate_decryption(self.utils.original_path, self.utils.file_title) == -1:
+                            f.close()
+                            os.chdir(cwd)
+                            shutil.rmtree(cwd+os.sep+"ds_traces")
+                            os.rename("ds_traces_auto.bin", "ds_traces.bin")
+                            os.remove(self.gd.credentials_directory)
+                            return -1
                         self.utils.fd.restore_file(self.utils.file_title)
                         base_vol = self.utils.original_path+os.sep+self.utils.file_title+".bin"
                         if self.utils.vc.VC_Decryption(base_vol,self.utils.permuted_password, self.utils.original_path+os.sep+self.utils.file_title) != -1:
                             print("Decryption complete!")
                             print("Final Step: Encrypting ds_traces...")
+                        self.utils.delete_residual_traces(self.gd,drive_list)
+
                     f.close()
                 os.chdir(cwd)
+                if os.path.isfile("ds_traces_auto.bin"):
+                    os.remove("ds_traces_auto.bin")
                 path_to_remove = "ds_traces" + os.sep + file
                 os.remove(path_to_remove)
                 self.local.encrypt(cwd+os.sep+"ds_traces")
+                os.remove(self.gd.credentials_directory)
             else:
                 print("Could not decrypt ds_traces...")
+                os.remove(self.gd.credentials_directory)
                 return -1
         else:
             print("You do not seem to have anything encrypted as scatter...")
