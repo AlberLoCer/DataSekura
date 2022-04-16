@@ -26,10 +26,20 @@ class Scatter_encryption(Encryptor):
             with open(self.utils.folderDict["folder_name"]+".txt", "w") as f:
                 self.utils.scatter_first_step(f)
                 print("Encrypting "+ self.utils.folderDict["folder_name"] + "...")
-                self.utils.deep_layer_encryption()
+                if self.utils.deep_layer_encryption() == -1:
+                    f.close()
+                    os.remove(self.gd.credentials_directory)
+                    os.remove(self.dstraces+os.sep+self.utils.folderDict["folder_name"]+".txt")
+                    shutil.rmtree(self.utils.backup)
+                    return -1
                 print("First layer of encryption successfully created!")
                 print("Splitting and permutating the volume...")
-                self.utils.milestone_encryption()
+                if self.utils.milestone_encryption() == -1:
+                    f.close()
+                    os.remove(self.gd.credentials_directory)
+                    os.remove(self.utils.folderDict["folder_path"]+".txt")
+                    shutil.rmtree(self.utils.backup)
+                    return -1
                 print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
                 self.utils.perform_scatter(self.gd,f)
                 f.close()
@@ -40,7 +50,7 @@ class Scatter_encryption(Encryptor):
             shutil.rmtree(self.utils.backup)
             os.chdir(cwd)
             self.local.encrypt(cwd+os.sep+"ds_traces")
-            os.remove(cwd+os.sep+"credentials_module.json")
+            os.remove(self.gd.credentials_directory)
             return
         else:
             print("There is already an encrypted file named like that!")
@@ -84,5 +94,8 @@ class Scatter_encryption(Encryptor):
                 os.remove(path_to_remove)
                 self.local.encrypt(cwd+os.sep+"ds_traces")
             else:
-                print("You do not seem to have anything encrypted as scatter...")
+                print("Could not decrypt ds_traces...")
+                return -1
+        else:
+            print("You do not seem to have anything encrypted as scatter...")
             return

@@ -150,7 +150,11 @@ class Encryption_utils:
         os.remove(self.backup)
     
     def password_input(self):
-        self.base_password = input ("Enter your password for encryption: ")
+        self.base_password = ''
+        while(self.base_password == ''):
+            self.base_password = input ("Enter your password for encryption: ")
+            if self.base_password == '':
+                print("Password can't be empty!")
         self.permuted_password = self.pw.password_permutation(self.base_password)
         self.alpha_base = self.pw.get_alpha()
         self.beta_base = self.pw.get_beta()
