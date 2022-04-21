@@ -4,30 +4,44 @@ from controller import Controller
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
+from tkinter import Canvas
 class DS_interface:
     def __init__(self):
         self.ctr = Controller()
+        width = 800
+        height = 900
         # Create an instance of tkinter frame
-        win= Tk()
-        win.title("DataSekura")
+        root= Tk()
+        root.title("DataSekura")
+        root.resizable(False,False)
         # Set the size of the tkinter window
-        win.geometry("500x600")
+        root.geometry("800x700")
+        back= PhotoImage(file='GUI/ds_back.png')
         logo= PhotoImage(file='GUI/ds.png')
         local= PhotoImage(file='GUI/local.png')
+        local_hover= PhotoImage(file='GUI/local_act.png')
         drive= PhotoImage(file='GUI/drive_std.png')
+        drive_hover= PhotoImage(file='GUI/drive_act.png')
         dropbox= PhotoImage(file='GUI/dropbox_std.png')
+        dropbox_hover= PhotoImage(file='GUI/dropbox_act.png')
+        def action(event):
+                messagebox.showinfo('First','You clicked the first image')
+        frame = Frame(root)
+        frame.pack
 
-        # Add an optional Label widget
-        Label(win, image=logo).pack(pady=30)
+        canvas = Canvas(frame, width=800, height=700)
+        canvas.pack()
 
-        # Create a Button to display the message
-        tkinter.Button(win,image=local, command= lambda:self.ctr.encrypt(NULL),borderwidth=0).pack(pady=20)
-        tkinter.Button(win, image=drive, command= lambda:self.ctr.decrypt(NULL),borderwidth=0).pack(pady=20)
-        tkinter.Button(win, image=dropbox, command= lambda:self.ctr.decrypt(NULL),borderwidth=0).pack(pady=20)
+
+        canvas.create_image(0,0,image=back,anchor=NW)
+        #logo = canvas.create_image(width/2,100,image=logo, anchor=NW)
+        #canvas.tag_bind(logo,"<Button-1>",action)
+
         def on_closing():
             if messagebox.askokcancel("Quit", "Do you want to exit DataSekura?"):
-                win.destroy()
+                root.destroy()
                 return -1
 
-        win.protocol("WM_DELETE_WINDOW", on_closing)
-        win.mainloop()
+        root.protocol("WM_DELETE_WINDOW", on_closing)
+        root.mainloop()
+    

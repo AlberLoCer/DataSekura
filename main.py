@@ -5,7 +5,7 @@ class Main:
     def __init__(self):
         self.ux = User_experience()
         self.ctr = Controller()
-        #self.ui = DS_interface()
+        self.ui = DS_interface()
         
         self.ux.local_or_cloud()
         local_or_cloud = self.ux.choice()
