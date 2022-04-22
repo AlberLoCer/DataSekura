@@ -15,28 +15,29 @@ class DS_interface:
         root.title("DataSekura")
         root.resizable(False,False)
         # Set the size of the tkinter window
-        root.geometry("800x700")
+        root.geometry("790x700")
         back= PhotoImage(file='GUI/ds_back.png')
-        logo= PhotoImage(file='GUI/ds.png')
+        logo= PhotoImage(file='GUI/logo.png')
         local= PhotoImage(file='GUI/local.png')
         local_hover= PhotoImage(file='GUI/local_act.png')
         drive= PhotoImage(file='GUI/drive_std.png')
         drive_hover= PhotoImage(file='GUI/drive_act.png')
         dropbox= PhotoImage(file='GUI/dropbox_std.png')
         dropbox_hover= PhotoImage(file='GUI/dropbox_act.png')
-        def action(event):
-                messagebox.showinfo('First','You clicked the first image')
-        frame = Frame(root)
-        frame.pack
+        def greet():
+                messagebox.showinfo('Created by Alberto López :)')
 
-        canvas = Canvas(frame, width=800, height=700)
-        canvas.pack()
+        bg = Label(root,image=back)
+        bg.place(x=0,y=0,relwidth=1,relheight=1,anchor=NW)
 
-
-        canvas.create_image(0,0,image=back,anchor=NW)
-        #logo = canvas.create_image(width/2,100,image=logo, anchor=NW)
-        #canvas.tag_bind(logo,"<Button-1>",action)
-
+        logo_btn = Label(root,image=logo,bg="#232137")
+        logo_btn.pack()
+        local_btn = Button(root,image=local,bg="#232137",borderwidth=0)
+        local_btn.pack()
+        drive_btn = Button(root,image=drive,bg="#232137",borderwidth=0)
+        drive_btn.pack()
+        dropbox_btn = Button(root,image=dropbox,bg="#232137",borderwidth=0)
+        dropbox_btn.pack()
         def on_closing():
             if messagebox.askokcancel("Quit", "Do you want to exit DataSekura?"):
                 root.destroy()

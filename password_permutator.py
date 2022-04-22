@@ -33,10 +33,6 @@ class Password_permutator:
         self.permutedPwd = new_pwd
         return new_pwd
     
-    def intermediate_permutation(self, index,passw):
-        rot_passw = pwd.rot_files(passw, index)
-        final_pass = pwd.merge(passw,rot_passw)
-        return final_pass
 
     def pwd_part_A(self,password):
         msg = password[0:self.alpha]

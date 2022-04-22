@@ -8,7 +8,6 @@ class File_System_Dealer:
    def __init__(self):
       return
    
-   
    def check_VC_integrity(self):
       if os.path.isdir("C:/Program Files/VeraCrypt") and os.path.isfile("C:/Program Files/VeraCrypt/VeraCrypt Format.exe"):
          return "C:/Program Files/VeraCrypt"
