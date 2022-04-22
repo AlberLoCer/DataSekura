@@ -9,13 +9,13 @@ class DS_interface:
     def __init__(self):
         self.ctr = Controller()
         width = 800
-        height = 900
+        height = 800
         # Create an instance of tkinter frame
         root= Tk()
         root.title("DataSekura")
         root.resizable(False,False)
         # Set the size of the tkinter window
-        root.geometry("790x700")
+        root.geometry("600x500")
         back= PhotoImage(file='GUI/ds_back.png')
         logo= PhotoImage(file='GUI/logo.png')
         local= PhotoImage(file='GUI/local.png')
