@@ -1,7 +1,7 @@
 from encryptor import Encryptor
 from asyncio.windows_events import NULL
-import os
 import shutil
+import time
 from encryption_module import Encryption_utils
 
 class Local_encryptor(Encryptor):
@@ -15,6 +15,7 @@ class Local_encryptor(Encryptor):
             return -1
         self.utils.user_input_encrypt(self.utils.folderDict)
         self.utils.password_input()
+        t_start = time.time()
         print("Encrypting base volume...")
         if self.utils.deep_layer_encryption() == -1:
             shutil.rmtree(self.utils.backup)
@@ -29,6 +30,9 @@ class Local_encryptor(Encryptor):
         print("Encryption complete!")
         print("Good luck!")
         shutil.rmtree(self.utils.backup)
+        t_end = time.time()
+        elapsed = t_end-t_start
+        print("ELAPSED: "+ elapsed.__str__())
         return self.utils.folderDict
 
 
@@ -42,6 +46,7 @@ class Local_encryptor(Encryptor):
             print("Aborting operation...")
             return -1
         #If this fails it was an incorrect password
+        t_start = time.time()
         if self.utils.outer_layer_decryption() == -1:
             return -1
         print("Outer layer successfully decrypted!")
@@ -53,6 +58,9 @@ class Local_encryptor(Encryptor):
         self.utils.deep_layer_decryption()
         print("Decryption Complete!")
         print("Stay safe!")
+        t_end = time.time()
+        elapsed = t_end-t_start
+        print("ELAPSED: "+ elapsed.__str__())
         return self.utils.folderDict
 
 
