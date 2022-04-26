@@ -51,9 +51,6 @@ class File_System_Dealer:
          return 0
 
    
-   def directory_backup_rename(self,path,original):
-      os.rename(path,original)
-   
    def file_backup_creation(self, path):
       dest = self.remove_file_extension(path)
       str_ext = "(AUX).bin"
@@ -64,16 +61,6 @@ class File_System_Dealer:
          if isinstance(e,PermissionError):
             return -1
       return dest
-   
-   def backup_rename(self, backup, original):
-      os.rename(backup, original)
-
-   
-
-   def find(self, name, path):
-      for root, dirs, files in os.walk(path):
-         if name in files:
-               return os.path.join(root, name)
 
    def get_folder_size(self, path):
       total_size = 0
@@ -92,11 +79,6 @@ class File_System_Dealer:
       for ele in os.scandir(path):
          elems+=1
       return elems
-
-   def get_parent(self,folder):
-      path = Path(folder)
-      parent_path = path.parent.absolute()
-      return parent_path
 
    def input_folder_encrypt(self):
       self.tk = Tk()
