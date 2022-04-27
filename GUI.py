@@ -1,15 +1,11 @@
 from asyncio.windows_events import NULL
 import tkinter
-
-from rsa import encrypt
-from controller import Controller
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 from tkinter import Canvas
 class DS_interface:
     def __init__(self):
-        self.ctr = Controller()
         self.frame_dict = dict()
         # Create an instance of tkinter frame
         self.root= Tk()
