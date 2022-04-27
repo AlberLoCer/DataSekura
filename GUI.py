@@ -2,8 +2,9 @@ from asyncio.windows_events import NULL
 import tkinter
 from tkinter import *
 from tkinter import messagebox
-from tkinter import ttk
 from tkinter import Canvas
+from tkinter import filedialog
+from threading import Thread
 from controller import Controller
 class DS_interface:
     def __init__(self):
@@ -15,41 +16,41 @@ class DS_interface:
         self.root.title("DataSekura")
         self.root.resizable(False,False)
         self.root.geometry("700x500")
-        self.frame_dict['home'] = self.home_screen()
-        self.frame_dict['local'] = self.local_screen()
+        home = self.home_screen()
+        local = self.local_screen()
 
-        self.frame_dict["enc_dec_local"] = self.enc_dec_screen()
-        self.frame_dict["enc_dec_scatter"] = self.enc_dec_screen()
-        self.frame_dict["enc_dec_drive"] = self.enc_dec_screen()
-        self.frame_dict["enc_dec_dropbox"] = self.enc_dec_screen()
+        enc_dec_local = self.enc_dec_screen()
+        enc_dec_scatter = self.enc_dec_screen()
+        enc_dec_drive = self.enc_dec_screen()
+        enc_dec_dropbox = self.enc_dec_screen()
+        pwd_screen_auto = self.password_screen(0)
+        pwd_screen_custom = self.password_screen(1)
 
-        self.frame_dict["config"] = self.config_screen()
-        home = self.frame_dict["home"]
-        local = self.frame_dict["local"]
+        config = self.config_screen()
 
-        enc_dec_local = self.frame_dict["enc_dec_local"]
-        enc_dec_scatter = self.frame_dict["enc_dec_scatter"]
-        enc_dec_drive = self.frame_dict["enc_dec_drive"]
-        enc_dec_dropbox = self.frame_dict["enc_dec_dropbox"]
 
-        config_local = self.frame_dict["config"]
-
+        #Home Screen
         home["frame"].pack(fill="both",expand=True)
-        home["local"].configure(command=lambda:(self.local_launch(home["frame"],local["frame"])))
-        home["drive"].configure(command=lambda:(self.drive_launch(home["frame"],enc_dec_drive["frame"])))
-        home["dropbox"].configure(command=lambda:(self.dropbox_launch(home["frame"],enc_dec_dropbox["frame"])))
+        home["local"].configure(command=lambda:(self.switch_screen(home["frame"],local["frame"])))
+        home["drive"].configure(command=lambda:(self.switch_screen(home["frame"],enc_dec_drive["frame"])))
+        home["dropbox"].configure(command=lambda:(self.switch_screen(home["frame"],enc_dec_dropbox["frame"])))
         
-        local["back"].configure(command=lambda:(self.switch_screen(local["frame"],home["frame"])))
+        #Local File System
         local["scatter"].configure(command=lambda:(self.switch_screen(local["frame"],enc_dec_scatter["frame"])))
         local["centralized"].configure(command=lambda:(self.switch_screen(local["frame"],enc_dec_local["frame"])))
-        
-        enc_dec_local["encrypt"].configure(command=lambda:(self.switch_screen(enc_dec_local["frame"],config_local["frame"])))        
+        local["back"].configure(command=lambda:(self.switch_screen(local["frame"],home["frame"])))
+
+        #Centralized operation
+        enc_dec_local["encrypt"].configure(command=lambda:(self.switch_screen( enc_dec_local["frame"], config["frame"])))
         enc_dec_local["back"].configure(command=lambda:(self.switch_screen(enc_dec_local["frame"],local["frame"])))
+
+        config["auto"].configure(command=lambda:(self.switch_screen(config["frame"],pwd_screen_auto)))
+        config["back"].configure(command=lambda:(self.switch_screen( config["frame"], enc_dec_local["frame"])))
+        #Scatter operation
         enc_dec_scatter["back"].configure(command=lambda:(self.switch_screen(enc_dec_scatter["frame"],local["frame"])))
-        enc_dec_drive["back"].configure(command=lambda:(self.switch_screen(enc_dec_drive["frame"],home["frame"])))
-        enc_dec_dropbox["back"].configure(command=lambda:(self.switch_screen(enc_dec_dropbox["frame"],home["frame"])))
-        config_local["back"].configure(command=lambda:(self.switch_screen(config_local["frame"],enc_dec_local["frame"])))
-        
+
+
+
         def on_closing():
             if messagebox.askokcancel("Quit", "Do you want to exit DataSekura?"):
                 self.root.destroy()
@@ -120,6 +121,31 @@ class DS_interface:
         screen["back"] = back
         return screen
 
+    def password_screen(self,option):
+        frame = Frame(self.root,background="#232137")
+        logo_lbl = Label(frame,image=self.logo,bg="#232137")
+        logo_lbl.pack()
+        widgets_frame = Frame(frame,background="#232137")
+        widgets_frame.pack()
+        pwd_input = Label(widgets_frame,text="Enter your password:",bg="#232137",fg="#FFFFFF")
+        pwd_input.configure(font=("Courier",16,"italic"))
+        pwd_input.grid(column=0,row=0,pady=20)
+        pwd_input.grid_columnconfigure(0,weight=1)
+        pwd_entry = Entry(widgets_frame)
+        pwd_entry.grid(column=0,row=1,pady=10)
+        pwd_entry.grid_columnconfigure(0,weight=1)
+        ok = Button(widgets_frame,text="OK",command=lambda:(self.launch_encryption(0,pwd_entry.get())))
+        ok.grid(column=0,row=2,pady=10)
+        ok.grid_columnconfigure(0,weight=1)
+        return frame
+    
+    def info_screen(self,message):
+        frame = Frame(self.root,background="#232137")
+        pwd_input = Label(frame,text=message,bg="#232137",fg="#FFFFFF")
+        pwd_input.pack()
+        return frame
+
+
 
     def load_images(self):
         self.back= PhotoImage(file='GUI/ds_back.png')
@@ -160,27 +186,26 @@ class DS_interface:
         btn.bind("<Enter>",on_enter_local)
         btn.bind("<Leave>",on_leave_local)
         return btn
-    
-    def local_launch(self, old_frame, new_frame):
-        self.switch_screen(old_frame,new_frame)
-        self.controller.local_set_up(self)
-    
-    def drive_launch(self, old_frame, new_frame):
-        self.switch_screen(old_frame,new_frame)
-        self.controller.gDrive_set_up(self)
-    
-    def dropbox_launch(self, old_frame, new_frame):
-        self.switch_screen(old_frame,new_frame)
-        self.controller.dropbox_set_up(self)
-    
-    def scatter_launch(self, old_frame, new_frame):
-        self.switch_screen(old_frame,new_frame)
-        self.controller.scatter_set_up(self)
-    
-    def centralized_launch(self, old_frame, new_frame):
-        self.switch_screen(old_frame,new_frame)
+
+    def launch_encryption(self,option,password):
+        folder = ""
+        while folder == "":
+            tk = Tk()
+            folder = filedialog.askdirectory(title="Select a folder to encrypt")
+            if folder == "":
+                print("Please select a valid directory")
+            if option == 0:
+                tk.destroy()
+                self.set_info_screen("Encryption Complete!")
+                th = Thread(target=self.controller.local_launch_auto,args=[self,password,folder])
+                th.start()
+                th.join()
+                self.set_info_screen("Encryption Complete!")
 
     def switch_screen(self, old_frame, new_frame):
         old_frame.pack_forget()
         new_frame.pack(fill="both",expand=True)
     
+    def set_info_screen(self,message):
+        info = self.info_screen(message)
+        info.pack(fill="both",expand=True)

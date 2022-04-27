@@ -104,7 +104,6 @@ class Encryption_utils:
     def outer_layer_encryption(self):
         #In principle P should be 'none' if the rest was ok
         self.fs.folder_aggregation(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
-        print("Encrypting last layer...")
         self.final_pass = self.pw.password_permutation(self.permuted_password)
         self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"], self.fs)
         self.vc.VC_Encryption(self.folderDict["volume_path"], self.final_pass, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"])
@@ -149,8 +148,8 @@ class Encryption_utils:
         self.vc.VC_Decryption(self.vol_path,self.permuted_password, self.folderDict["folder_path"])
         os.remove(self.backup)
     
-    def password_input(self):
-        self.base_password = ''
+    def password_input(self,pwd):
+        self.base_password = pwd
         while(self.base_password == ''):
             self.base_password = input ("Enter your password for encryption: ")
             if self.base_password == '':
@@ -160,10 +159,8 @@ class Encryption_utils:
         self.beta_base = self.pw.get_beta()
 
 
-    def user_input_encrypt(self, folderDict):
-        self.ux.print_config_menu()
-        option = self.ux.choice()
-        if option == '1':
+    def user_input_encrypt(self,option,folderDict):
+        if option == 1:
             self.automatic_configuration(folderDict)
         else:
             self.custom_settings(folderDict)

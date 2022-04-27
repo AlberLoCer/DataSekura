@@ -8,7 +8,7 @@ class Local_encryptor(Encryptor):
     def __init__(self,ctr):
         super().__init__(ctr)
 
-    def encrypt(self, folder):
+    def encrypt(self, folder,gui,password,):
         try:
             self.utils = Encryption_utils(folder,0)
         except Exception as e:
@@ -29,6 +29,27 @@ class Local_encryptor(Encryptor):
         self.utils.outer_layer_encryption()
         print("Encryption complete!")
         print("Good luck!")
+        shutil.rmtree(self.utils.backup)
+        t_end = time.time()
+        elapsed = t_end-t_start
+        print("ELAPSED: "+ elapsed.__str__())
+        return self.utils.folderDict
+    
+    def encrypt_auto(self, folder,gui,password):
+        try:
+            self.utils = Encryption_utils(folder,0)
+        except Exception as e:
+            return -1
+        self.utils.user_input_encrypt(1,self.utils.folderDict)
+        self.utils.password_input(password)
+        t_start = time.time()
+        if self.utils.deep_layer_encryption() == -1:
+            shutil.rmtree(self.utils.backup)
+            return -1
+        if self.utils.milestone_encryption() == -1:
+            shutil.rmtree(self.utils.backup)
+            return -1
+        self.utils.outer_layer_encryption()
         shutil.rmtree(self.utils.backup)
         t_end = time.time()
         elapsed = t_end-t_start
