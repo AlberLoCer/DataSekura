@@ -4,10 +4,12 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 from tkinter import Canvas
+from controller import Controller
 class DS_interface:
     def __init__(self):
         self.frame_dict = dict()
         # Create an instance of tkinter frame
+        self.controller = Controller(self)
         self.root= Tk()
         self.load_images()
         self.root.title("DataSekura")
@@ -33,9 +35,9 @@ class DS_interface:
         config_local = self.frame_dict["config"]
 
         home["frame"].pack(fill="both",expand=True)
-        home["local"].configure(command=lambda:(self.switch_screen(home["frame"],local["frame"])))
-        home["drive"].configure(command=lambda:(self.switch_screen(home["frame"],enc_dec_drive["frame"])))
-        home["dropbox"].configure(command=lambda:(self.switch_screen(home["frame"],enc_dec_dropbox["frame"])))
+        home["local"].configure(command=lambda:(self.local_launch(home["frame"],local["frame"])))
+        home["drive"].configure(command=lambda:(self.drive_launch(home["frame"],enc_dec_drive["frame"])))
+        home["dropbox"].configure(command=lambda:(self.dropbox_launch(home["frame"],enc_dec_dropbox["frame"])))
         
         local["back"].configure(command=lambda:(self.switch_screen(local["frame"],home["frame"])))
         local["scatter"].configure(command=lambda:(self.switch_screen(local["frame"],enc_dec_scatter["frame"])))
@@ -158,8 +160,27 @@ class DS_interface:
         btn.bind("<Enter>",on_enter_local)
         btn.bind("<Leave>",on_leave_local)
         return btn
-
+    
+    def local_launch(self, old_frame, new_frame):
+        self.switch_screen(old_frame,new_frame)
+        self.controller.local_set_up(self)
+    
+    def drive_launch(self, old_frame, new_frame):
+        self.switch_screen(old_frame,new_frame)
+        self.controller.gDrive_set_up(self)
+    
+    def dropbox_launch(self, old_frame, new_frame):
+        self.switch_screen(old_frame,new_frame)
+        self.controller.dropbox_set_up(self)
+    
+    def scatter_launch(self, old_frame, new_frame):
+        self.switch_screen(old_frame,new_frame)
+        self.controller.scatter_set_up(self)
+    
+    def centralized_launch(self, old_frame, new_frame):
+        self.switch_screen(old_frame,new_frame)
 
     def switch_screen(self, old_frame, new_frame):
         old_frame.pack_forget()
         new_frame.pack(fill="both",expand=True)
+    

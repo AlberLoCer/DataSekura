@@ -13,7 +13,8 @@ from file_dealing import File_alterator
 import os
 from googledrive_encryptor import GoogleDriveEncryptor
 class Controller:
-    def __init__(self):
+    def __init__(self,gui):
+        self.gui = gui
         self.dataSekura_setUp()
     
     def dataSekura_setUp(self):
@@ -42,7 +43,7 @@ class Controller:
             return -1
         return 0
     
-    def local_set_up(self):
+    def local_set_up(self,gui):
         self.ux.encrypt_decrypt_menu()
         _encryptor = Local_encryptor(self)
         encrypt_or_decrypt = self.ux.choice()
