@@ -25,8 +25,7 @@ class DS_interface:
         enc_dec_drive = self.enc_dec_screen()
         enc_dec_dropbox = self.enc_dec_screen()
 
-        pwd_screen_auto = self.password_screen(0)
-        pwd_screen_custom = self.password_screen(1)
+        pwd_screen_auto = self.password_screen(1,2,1)
 
         select_enc = self.encryption_screen()
 
@@ -126,7 +125,7 @@ class DS_interface:
         screen["back"] = back
         return screen
 
-    def password_screen(self,option):
+    def password_screen(self,enc,hash,fs):
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
         logo_lbl.pack()
@@ -139,7 +138,7 @@ class DS_interface:
         pwd_entry = Entry(widgets_frame)
         pwd_entry.grid(column=0,row=1,pady=10)
         pwd_entry.grid_columnconfigure(0,weight=1)
-        ok = Button(widgets_frame,text="OK",command=lambda:(self.launch_local_encryption(0,pwd_entry.get())))
+        ok = Button(widgets_frame,text="OK",command=lambda:(self.launch_local_encryption(pwd_entry.get(),enc,hash,fs)))
         ok.grid(column=0,row=2,pady=10)
         ok.grid_columnconfigure(0,weight=1)
         return frame
@@ -195,7 +194,7 @@ class DS_interface:
         def next_step():
             enc = selection.get()
             print(enc)
-            select_hash = self.hash_screen(selection)
+            select_hash = self.hash_screen(enc)
             self.switch_screen(frame,select_hash)
         ok = Button(frame,text="OK",command=lambda:(next_step()))
         ok.pack()
@@ -242,7 +241,11 @@ class DS_interface:
         fat.pack()
         ntfs = Radiobutton(widgets_frame,text="NTFS",variable=selection,value=2,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
         ntfs.pack()
-        ok = Button(frame,text="OK")
+        def next_step():
+            fs = selection.get()
+            pwd = self.password_screen(enc,hash,fs)
+            self.switch_screen(frame,pwd)
+        ok = Button(frame,text="OK",command=lambda:(next_step()))
         ok.pack()
         return frame
 
@@ -295,21 +298,21 @@ class DS_interface:
         btn.bind("<Leave>",on_leave_local)
         return btn
 
-    def launch_local_encryption(self,option,password):
+    def launch_local_encryption(self,password,enc,hash,fs):
         folder = ""
         while folder == "":
             tk = Tk()
             folder = filedialog.askdirectory(title="Select a folder to encrypt")
             if folder == "":
                 print("Please select a valid directory")
-        if option == 0:
             tk.destroy()
-            th = Thread(target=self.controller.local_launch_auto,args=[self,password,folder])
+            th = Thread(target=self.controller.local_launch,args=[self,password,folder,enc,hash,fs])
             th.start()
             th.join()
-            self.set_info_screen("Encryption Complete!")
-        else:
-            return
+            info = self.set_info_screen("Encryption Complete!")
+            exit = Button(info,text="Exit",command=lambda:(self.root.destroy()))
+            
+
 
     def switch_screen(self, old_frame, new_frame):
         old_frame.pack_forget()
@@ -318,3 +321,4 @@ class DS_interface:
     def set_info_screen(self,message):
         info = self.info_screen(message)
         info.pack(fill="both",expand=True)
+        return info

@@ -166,27 +166,10 @@ class Encryption_utils:
             self.custom_settings(folderDict)
 
 
-    def automatic_configuration(self, folderDict):
-        self.cmd_encryption = "aes"
-        self.cmd_hash = "sha512"
-        self.cmd_fs = "fat"
-        self.volume_size = self.fs.fetch_size(folderDict["folder_path"],self.cmd_fs)
-        
-
-
-    def custom_settings(self, folderDict):
-        self.ux.print_encryption_menu()
-        encryption = self.ux.choice()
+    def encryption_params(self, folderDict,encryption,hash,fs):
         self.cmd_encryption = self.ux.choose_encryption(encryption)
-
-        self.ux.print_hash_menu()
-        hash = self.ux.choice()
         self.cmd_hash = self.ux.choose_hash(hash)
-
-        self.ux.print_fs_menu()
-        fs = self.ux.choice()
         self.cmd_fs = self.ux.choose_fs(fs)
-
         self.volume_size = self.fs.fetch_size(folderDict["folder_path"], self.cmd_fs)
     
     def scatter_first_step(self,f):

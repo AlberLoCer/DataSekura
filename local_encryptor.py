@@ -8,7 +8,7 @@ class Local_encryptor(Encryptor):
     def __init__(self,ctr):
         super().__init__(ctr)
 
-    def encrypt(self, folder,gui,password,):
+    def encrypt(self, folder,gui,password):
         try:
             self.utils = Encryption_utils(folder,0)
         except Exception as e:
@@ -35,12 +35,13 @@ class Local_encryptor(Encryptor):
         print("ELAPSED: "+ elapsed.__str__())
         return self.utils.folderDict
     
-    def encrypt_auto(self, folder,gui,password):
+
+    def encrypt_gui(self,folder,gui,password,enc,hash,fs):
         try:
             self.utils = Encryption_utils(folder,0)
         except Exception as e:
             return -1
-        self.utils.user_input_encrypt(1,self.utils.folderDict)
+        self.utils.encryption_params(self.utils.folderDict,enc,hash,fs)
         self.utils.password_input(password)
         t_start = time.time()
         if self.utils.deep_layer_encryption() == -1:

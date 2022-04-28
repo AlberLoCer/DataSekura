@@ -119,11 +119,12 @@ class Controller:
                 quit()
 
     
-    def local_launch_auto(self,gui,password,folder):
-        encryptor = Local_encryptor(self)
 
-        encryptor.encrypt_auto(folder,gui,password)
+    def local_launch(self,gui,password,folder,enc,hash,fs):
+        encryptor = Local_encryptor(self)
+        encryptor.encrypt_gui(folder,gui,password,enc,hash,fs)
         return
+    
     
     def local_decrypt_launch(self,gui):
     
