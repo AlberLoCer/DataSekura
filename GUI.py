@@ -1,11 +1,12 @@
 from asyncio.windows_events import NULL
-import tkinter
+from tkinter import ttk
 from tkinter import *
 from tkinter import messagebox
 from tkinter import Canvas
 from tkinter import filedialog
 from threading import Thread
 from controller import Controller
+from tkinter import Radiobutton
 class DS_interface:
     def __init__(self):
         self.frame_dict = dict()
@@ -23,8 +24,11 @@ class DS_interface:
         enc_dec_scatter = self.enc_dec_screen()
         enc_dec_drive = self.enc_dec_screen()
         enc_dec_dropbox = self.enc_dec_screen()
+
         pwd_screen_auto = self.password_screen(0)
         pwd_screen_custom = self.password_screen(1)
+
+        select_enc = self.encryption_screen()
 
         config = self.config_screen()
 
@@ -45,6 +49,7 @@ class DS_interface:
         enc_dec_local["back"].configure(command=lambda:(self.switch_screen(enc_dec_local["frame"],local["frame"])))
 
         config["auto"].configure(command=lambda:(self.switch_screen(config["frame"],pwd_screen_auto)))
+        config["manual"].configure(command=lambda:(self.switch_screen(config["frame"],select_enc)))
         config["back"].configure(command=lambda:(self.switch_screen( config["frame"], enc_dec_local["frame"])))
         #Scatter operation
         enc_dec_scatter["back"].configure(command=lambda:(self.switch_screen(enc_dec_scatter["frame"],local["frame"])))
@@ -134,10 +139,90 @@ class DS_interface:
         pwd_entry = Entry(widgets_frame)
         pwd_entry.grid(column=0,row=1,pady=10)
         pwd_entry.grid_columnconfigure(0,weight=1)
-        ok = Button(widgets_frame,text="OK",command=lambda:(self.launch_encryption(0,pwd_entry.get())))
+        ok = Button(widgets_frame,text="OK",command=lambda:(self.launch_local_encryption(0,pwd_entry.get())))
         ok.grid(column=0,row=2,pady=10)
         ok.grid_columnconfigure(0,weight=1)
         return frame
+    
+    def encryption_screen(self):
+        frame = Frame(self.root,background="#232137")
+        logo_lbl = Label(frame,image=self.logo,bg="#232137")
+        logo_lbl.pack()
+        info = Label(frame,text="Select an encryption algorithm:",bg="#232137",fg="#FFFFFF")
+        info.configure(font=("Courier",16,"italic"))
+        info.pack()
+        widgets_frame = Frame(frame,background="#232137")
+        widgets_frame.pack()
+        encryptions = []
+        std_enc = Frame(widgets_frame,background="#232137")
+        std_enc.grid(column=0,row=0,pady=10)
+        std_enc.grid_columnconfigure(0,weight=1)
+        cascade_enc = Frame(widgets_frame,background="#232137")
+        cascade_enc.grid(column=1,row=0,pady=10)
+        cascade_enc.grid_columnconfigure(0,weight=1)
+        selection = IntVar()
+        aes = Radiobutton(std_enc,text="AES-256",variable=selection,value=1,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        aes.pack()
+        encryptions.append(aes)
+        serpent = Radiobutton(std_enc,text="Serpent",variable=selection,value=2,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        serpent.pack()
+        encryptions.append(serpent)
+        twofish = Radiobutton(std_enc,text="Twofish",variable=selection,value=3,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        twofish.pack()
+        encryptions.append(twofish)
+        camellia = Radiobutton(std_enc,text="Camellia",variable=selection,value=4,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        camellia.pack()
+        encryptions.append(camellia)
+        kuznyechik = Radiobutton(std_enc,text="Kuznyechik",variable=selection,value=5,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        kuznyechik.pack()
+        encryptions.append(kuznyechik)
+
+        two_aes = Radiobutton(cascade_enc,text="Twofish + AES-256",variable=selection,value=6,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        two_aes.pack()
+        encryptions.append(two_aes)
+        serpent_two_aes = Radiobutton(cascade_enc,text="Serpent + Twofish + AES-256",variable=selection,value=7,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        serpent_two_aes.pack()
+        encryptions.append(serpent_two_aes)
+        aes_serpent = Radiobutton(cascade_enc,text="AES-256 + Serpent",variable=selection,value=8,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        aes_serpent.pack()
+        encryptions.append(aes_serpent)
+        aes_two_serpent = Radiobutton(cascade_enc,text="AES-256 + Twofish + Serpent",variable=selection,value=9,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        aes_two_serpent.pack()
+        encryptions.append(aes_two_serpent)
+        serpent_two = Radiobutton(cascade_enc,text="Serpent + Twofish",variable=selection,value=10,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        serpent_two.pack()
+        encryptions.append(serpent_two)
+        def next_step():
+            enc = selection.get()
+            print(enc)
+            select_hash = self.hash_screen(selection)
+            self.switch_screen(frame,select_hash)
+        ok = Button(frame,text="OK",command=lambda:(next_step()))
+        ok.pack()
+        return frame
+
+    def hash_screen(self,enc):
+        frame = Frame(self.root,background="#232137")
+        logo_lbl = Label(frame,image=self.logo,bg="#232137")
+        logo_lbl.pack()
+        info = Label(frame,text="Select a hash algorithm:",bg="#232137",fg="#FFFFFF")
+        info.configure(font=("Courier",16,"italic"))
+        info.pack()
+        widgets_frame = Frame(frame,background="#232137")
+        widgets_frame.pack()
+        selection = 1
+        sha256 = Radiobutton(widgets_frame,text="SHA-256",variable=selection,value=1,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        sha256.pack()
+        sha512 = Radiobutton(widgets_frame,text="SHA-512",variable=selection,value=2,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        sha512.pack()
+        whirlpool = Radiobutton(widgets_frame,text="Whirlpool",variable=selection,value=2,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        whirlpool.pack()
+        ripemd = Radiobutton(widgets_frame,text="Ripemd160",variable=selection,value=2,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
+        ripemd.pack()
+        ok = Button(frame,text="OK")
+        ok.pack()
+        return frame
+
     
     def info_screen(self,message):
         frame = Frame(self.root,background="#232137")
@@ -187,20 +272,21 @@ class DS_interface:
         btn.bind("<Leave>",on_leave_local)
         return btn
 
-    def launch_encryption(self,option,password):
+    def launch_local_encryption(self,option,password):
         folder = ""
         while folder == "":
             tk = Tk()
             folder = filedialog.askdirectory(title="Select a folder to encrypt")
             if folder == "":
                 print("Please select a valid directory")
-            if option == 0:
-                tk.destroy()
-                self.set_info_screen("Encryption Complete!")
-                th = Thread(target=self.controller.local_launch_auto,args=[self,password,folder])
-                th.start()
-                th.join()
-                self.set_info_screen("Encryption Complete!")
+        if option == 0:
+            tk.destroy()
+            th = Thread(target=self.controller.local_launch_auto,args=[self,password,folder])
+            th.start()
+            th.join()
+            self.set_info_screen("Encryption Complete!")
+        else:
+            return
 
     def switch_screen(self, old_frame, new_frame):
         old_frame.pack_forget()
