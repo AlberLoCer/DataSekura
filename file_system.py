@@ -97,7 +97,7 @@ class File_System_Dealer:
       folderDict["folder_path_obj"] = Path(folder)
       folderDict["folder_parent"] = folderDict["folder_path_obj"].parent.absolute()
       folderDict["folder_name"] = os.path.basename(folder)
-      folderDict["volume_path"] = folderDict["folder_parent"].__str__()+os.sep+folderDict["folder_name"]+".bin"
+      folderDict["volume_path"] = self.remove_file_extension(folderDict["folder_parent"].__str__()+os.sep+folderDict["folder_name"])+".bin"
       return folderDict
    
    def delete_vol(self, path):
@@ -107,21 +107,6 @@ class File_System_Dealer:
    
    def removeFolder(self, path):
       os.rmdir(path)
-   
-   def remove_full_folder(self,path):
-      for filename in os.listdir(path):
-         file_path = os.path.join(path, filename)
-         try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                  os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                  sh.rmtree(file_path)
-         except Exception as e:
-            print(e.__str__())
-      try:
-         os.rmdir(path)
-      except Exception as e:
-         print(e.__str__())
          
    def input_folder_decrypt(self):
       folderDict = dict()
@@ -172,15 +157,6 @@ class File_System_Dealer:
                sh.move(os.path.abspath(file), destination_folder)
 
 
-   def remove_config(self, path):
-      conf_path = path + os.sep + "System Volume Information"
-      if os.path.isdir(conf_path):
-         for filename in os.listdir(conf_path):
-            file_path = os.path.join(conf_path, filename)
-            os.remove(file_path)
-
-         os.chdir(path)
-         os.rmdir(conf_path)
    
    def folder_aggregation(self,path,volname,file_number):
          os.chdir(path)

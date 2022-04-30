@@ -25,7 +25,8 @@ class DS_interface:
         enc_dec_drive = self.enc_dec_screen()
         enc_dec_dropbox = self.enc_dec_screen()
 
-        pwd_screen_auto = self.password_screen(1,2,1)
+        pwd_screen_auto = self.password_screen(1,2,1,0,NULL)
+        pwd_screen_decryption = self.password_screen(NULL,NULL,NULL,1,NULL)
 
         select_enc = self.encryption_screen()
 
@@ -45,6 +46,7 @@ class DS_interface:
 
         #Centralized operation
         enc_dec_local["encrypt"].configure(command=lambda:(self.switch_screen( enc_dec_local["frame"], config["frame"])))
+        enc_dec_local["decrypt"].configure(command=lambda:(self.launch_local_operation(NULL,NULL,NULL,NULL,1)))
         enc_dec_local["back"].configure(command=lambda:(self.switch_screen(enc_dec_local["frame"],local["frame"])))
 
         config["auto"].configure(command=lambda:(self.switch_screen(config["frame"],pwd_screen_auto)))
@@ -125,7 +127,7 @@ class DS_interface:
         screen["back"] = back
         return screen
 
-    def password_screen(self,enc,hash,fs):
+    def password_screen(self,enc,hash,fs,option,folder):
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
         logo_lbl.pack()
@@ -138,9 +140,14 @@ class DS_interface:
         pwd_entry = Entry(widgets_frame)
         pwd_entry.grid(column=0,row=1,pady=10)
         pwd_entry.grid_columnconfigure(0,weight=1)
-        ok = Button(widgets_frame,text="OK",command=lambda:(self.launch_local_encryption(pwd_entry.get(),enc,hash,fs)))
-        ok.grid(column=0,row=2,pady=10)
-        ok.grid_columnconfigure(0,weight=1)
+        if option == 0:
+            ok = Button(widgets_frame,text="OK",command=lambda:(self.launch_local_operation(pwd_entry.get(),enc,hash,fs,option)))
+            ok.grid(column=0,row=2,pady=10)
+            ok.grid_columnconfigure(0,weight=1)
+        else:
+            ok = Button(widgets_frame,text="OK",command=lambda:(self.controller.local_launch(self,pwd_entry.get(),folder,enc,hash,fs,1)))
+            ok.grid(column=0,row=2,pady=10)
+            ok.grid_columnconfigure(0,weight=1)
         return frame
     
     def encryption_screen(self):
@@ -243,7 +250,7 @@ class DS_interface:
         ntfs.pack()
         def next_step():
             fs = selection.get()
-            pwd = self.password_screen(enc,hash,fs)
+            pwd = self.password_screen(enc,hash,fs,0,NULL)
             self.switch_screen(frame,pwd)
         ok = Button(frame,text="OK",command=lambda:(next_step()))
         ok.pack()
@@ -298,25 +305,38 @@ class DS_interface:
         btn.bind("<Leave>",on_leave_local)
         return btn
 
-    def launch_local_encryption(self,password,enc,hash,fs):
-        folder = ""
-        while folder == "":
-            tk = Tk()
-            folder = filedialog.askdirectory(title="Select a folder to encrypt")
-            if folder == "":
-                print("Please select a valid directory")
+    def launch_local_operation(self,password,enc,hash,fs,option):
+        if option == 0:
+            folder = ""
+            while folder == "":
+                tk = Tk()
+                folder = filedialog.askdirectory(title="Select a folder to encrypt")
+                if folder == "":
+                    print("Please select a valid directory")
             tk.destroy()
-            th = Thread(target=self.controller.local_launch,args=[self,password,folder,enc,hash,fs])
+            th = Thread(target=self.controller.local_launch,args=[self,password,folder,enc,hash,fs,option])
             th.start()
             th.join()
             info = self.set_info_screen("Encryption Complete!")
             exit = Button(info,text="Exit",command=lambda:(self.root.destroy()))
+            exit.pack()
+        else:
+            volPath = ""
+            while volPath == "":
+                tk = Tk()
+                volPath = filedialog.askopenfilename()
+                if volPath == "":
+                    print("Please select a valid file")
+            tk.destroy()
+            pwd_screen = self.password_screen(NULL,NULL,NULL,1,volPath)
+            self.switch_screen(self.current_screen,pwd_screen)
             
 
 
     def switch_screen(self, old_frame, new_frame):
         old_frame.pack_forget()
         new_frame.pack(fill="both",expand=True)
+        self.current_screen = new_frame
     
     def set_info_screen(self,message):
         info = self.info_screen(message)

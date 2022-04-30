@@ -120,9 +120,12 @@ class Controller:
 
     
 
-    def local_launch(self,gui,password,folder,enc,hash,fs):
+    def local_launch(self,gui,password,folder,enc,hash,fs,option):
         encryptor = Local_encryptor(self)
-        encryptor.encrypt_gui(folder,gui,password,enc,hash,fs)
+        if option == 0:
+            encryptor.encrypt_gui(folder,gui,password,enc,hash,fs)
+        else:
+            encryptor.decrypt_gui(folder,gui,password)
         return
     
     

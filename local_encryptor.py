@@ -84,6 +84,32 @@ class Local_encryptor(Encryptor):
         elapsed = t_end-t_start
         print("ELAPSED: "+ elapsed.__str__())
         return self.utils.folderDict
+    
+    def decrypt_gui(self,folder, gui, password):
+        self.utils = Encryption_utils(folder, 1)
+        self.utils.password_input(password)
+        try:
+            self.utils.decryption_init()
+        except Exception as e:
+            print("Aborting operation...")
+            return -1
+        #If this fails it was an incorrect password
+        t_start = time.time()
+        if self.utils.outer_layer_decryption() == -1:
+            return -1
+        print("Outer layer successfully decrypted!")
+        print("Fetching milestone file parameters...")
+        #From here on, everything should go fine
+        self.utils.milestone_decryption()
+        print("Originial file successfully restored!")
+        print("Decrypting deep layer...")
+        self.utils.deep_layer_decryption()
+        print("Decryption Complete!")
+        print("Stay safe!")
+        t_end = time.time()
+        elapsed = t_end-t_start
+        print("ELAPSED: "+ elapsed.__str__())
+        return self.utils.folderDict
 
 
     
