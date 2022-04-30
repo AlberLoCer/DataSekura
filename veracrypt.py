@@ -37,6 +37,7 @@ class Veracrypt:
             os.chdir(self.VCpath)
             subprocess.call(["C:\Program Files\VeraCrypt\VeraCrypt.exe", "/dismount", "X", "/quit", "/force", "/silent"])
             self.fs.delete_vol(volPath)
+            os.chdir(parent)
             return 0
         else:
             return -1

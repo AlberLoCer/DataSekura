@@ -93,11 +93,11 @@ class File_System_Dealer:
 
    def create_dict(self, folder):
       folderDict = dict()
-      folderDict["folder_path"] = folder
-      folderDict["folder_path_obj"] = Path(folder)
+      folderDict["folder_path"] = self.remove_file_extension(folder)
+      folderDict["folder_path_obj"] = Path(folderDict["folder_path"])
       folderDict["folder_parent"] = folderDict["folder_path_obj"].parent.absolute()
-      folderDict["folder_name"] = os.path.basename(folder)
-      folderDict["volume_path"] = self.remove_file_extension(folderDict["folder_parent"].__str__()+os.sep+folderDict["folder_name"])+".bin"
+      folderDict["folder_name"] = os.path.basename(folderDict["folder_path"])
+      folderDict["volume_path"] = folderDict["folder_parent"].__str__()+os.sep+folderDict["folder_name"]+".bin"
       return folderDict
    
    def delete_vol(self, path):
@@ -132,7 +132,7 @@ class File_System_Dealer:
    def restore_files(self, path, name):
       name_noExt = self.remove_file_extension(name)
       os.mkdir(name_noExt)
-      self.move_files("X:"+os.sep, path)
+      self.move_files("X:", path)
             
 
    def fetch_size(self, path, fs):
@@ -147,14 +147,11 @@ class File_System_Dealer:
 
    def move_files(self, source_folder, destination_folder):
       os.chdir(source_folder)
-      for root, subdirectories, files in os.walk(source_folder):
-         for subdirectory in subdirectories:
-            if os.path.basename(subdirectory) != "System Volume Information":
-               sh.move(subdirectory, destination_folder)
-
-         for file in files:
-            if os.path.isfile(file) and (os.path.isfile(destination_folder.__str__()+os.sep+file) == False):
-               sh.move(os.path.abspath(file), destination_folder)
+      contents = os.listdir(source_folder)
+  
+      for f in contents:
+         if f != "System Volume Information":
+               sh.move(source_folder.__str__() + os.sep + f, destination_folder.__str__() + os.sep +  f)
 
 
    
