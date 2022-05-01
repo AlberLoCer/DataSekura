@@ -156,7 +156,7 @@ class DS_interface:
             ok.grid(column=0,row=2,pady=10)
             ok.grid_columnconfigure(0,weight=1)
         elif option == 2:
-            ok = Button(widgets_frame,text="OK",command=lambda:(self.controller.local_launch(self,pwd_entry.get(),folder,enc,hash,fs,1)))
+            ok = Button(widgets_frame,text="OK",command=lambda:(self.controller.drive_encryption(folder[0],folder[1],self,pwd_entry.get(),enc,hash,fs)))
             ok.grid(column=0,row=2,pady=10)
             ok.grid_columnconfigure(0,weight=1)
 
@@ -280,7 +280,11 @@ class DS_interface:
         ntfs.pack()
         def next_step():
             fs = selection.get()
-            pwd = self.password_screen(enc,hash,fs,0,folder)
+            if isinstance(folder,tuple):
+                option = 2
+            else: 
+                option = 0
+            pwd = self.password_screen(enc,hash,fs,option,folder)
             self.switch_screen(frame,pwd)
         ok = Button(frame,text="OK",command=lambda:(next_step()))
         ok.pack()
@@ -361,13 +365,13 @@ class DS_interface:
             
     def launch_drive_operation(self,folder,option):
         if option == 0:
-            file,folderpath = self.controller.drive_init(self,folder,option)
-            if file == 0:
+            f_tuple = self.controller.drive_init(self,folder,option)
+            if f_tuple == 0:
                 Thread(target=self.error_msg,args=["Folder not found","Drive folder could not be found..."]).start()
             else:
                 config = self.config_screen()
-                pwd_screen_auto = self.password_screen(1,2,1,0,folder) 
-                select_enc = self.encryption_screen(folder)
+                pwd_screen_auto = self.password_screen(1,2,1,2,f_tuple) 
+                select_enc = self.encryption_screen(f_tuple)
                 aux = self.current_screen
                 self.switch_screen(aux,config["frame"])
                 config["auto"].configure(command=lambda:(self.switch_screen(config["frame"],pwd_screen_auto)))

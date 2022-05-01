@@ -52,12 +52,7 @@ class Gd_object:
       print("Fetching drive directories...")
       self.list_folders(creds)
       file_output = self.check_folder_exists(creds,folder_str)
-      if file_output != -1:
-         while file_output == 0:
-            print("Folder could not be found... Try again.")
-            folder_str = input("Select a folder: ")
-            file_output = self.check_folder_exists(creds,folder_str)
-         return file_output #Drive filetype
+      return file_output
    
    def fetch_folders_in_folder(self, parent):
       creds = self.login()

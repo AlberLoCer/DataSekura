@@ -71,11 +71,11 @@ class GoogleDriveEncryptor(Encryptor):
         return
 
     
-    def encrypt_gui(self,file,folderpath):
+    def encrypt_gui(self,file,folderpath,gui,password,enc,hash,fs):
         creds = self.gd.login()
         parent_dict = self.gd.search_parent(file) #Probably will need to check this in the future
         print("Encrypting folder...")
-        self.folderDict = self.local.encrypt(folderpath)
+        self.folderDict = self.local.encrypt_gui(folderpath,gui,password,enc,hash,fs)
         if self.folderDict == -1:
             print("Failed to encrypt Google Drive Folder")
             self.gd.hard_reset(folderpath)

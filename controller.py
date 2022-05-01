@@ -136,13 +136,12 @@ class Controller:
         encryptor = GoogleDriveEncryptor(self)
         creds = encryptor.gd.login()
         if option == 0:
-            creds = encryptor.gd.login()
             file = encryptor.gd.fetch_folder(folder)
             if  file != 0:
                 folderpath = encryptor.gd.download_folder_launch(file)
-                return file,folderpath
+                return (file,folderpath)
             else:
-                return 0, 0
+                return 0
         if option == 1:
             files = encryptor.gd.fetch_bin_files()
             if folder in files:
@@ -150,7 +149,7 @@ class Controller:
             else:
                 gui.info_screen("Folder could not be found!")
     
-    def drive_encryption(self,file,folderpath):
+    def drive_encryption(self,file,folderpath,gui,password,enc,hash,fs):
         encryptor = GoogleDriveEncryptor(self)
-        encryptor.encrypt_gui(file,folderpath)
+        encryptor.encrypt_gui(file,folderpath,gui,password,enc,hash,fs)
                 
