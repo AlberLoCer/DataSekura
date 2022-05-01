@@ -142,7 +142,7 @@ class Gd_object:
       elif os.path.isfile(path):
          os.remove(path)
    
-   def fetch_bin_files(self):
+   def fetch_bin_files(self,file):
       output_list = []
       creds = self.login()
       query = "'me' in owners and visibility='limited' and trashed=false"
@@ -150,8 +150,11 @@ class Gd_object:
       for f in f_list:
          ext = os.path.splitext(f['title'])
          if ext[1] == ".bin":
-            output_list.append(f)
-      return output_list
+            if ext[0] == file:
+               output_list.append(f)
+      if output_list == []:
+         return 0
+      return output_list[0]
          
          
    

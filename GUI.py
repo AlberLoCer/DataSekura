@@ -159,6 +159,10 @@ class DS_interface:
             ok = Button(widgets_frame,text="OK",command=lambda:(self.controller.drive_encryption(folder[0],folder[1],self,pwd_entry.get(),enc,hash,fs)))
             ok.grid(column=0,row=2,pady=10)
             ok.grid_columnconfigure(0,weight=1)
+        elif option == 3:
+            ok = Button(widgets_frame,text="OK",command=lambda:(self.controller.drive_decryption(folder[0],folder[1],self,pwd_entry.get(),enc,hash,fs)))
+            ok.grid(column=0,row=2,pady=10)
+            ok.grid_columnconfigure(0,weight=1)
 
         return frame
     
@@ -377,6 +381,14 @@ class DS_interface:
                 config["auto"].configure(command=lambda:(self.switch_screen(config["frame"],pwd_screen_auto)))
                 config["manual"].configure(command=lambda:(self.switch_screen(config["frame"],select_enc)))
                 config["back"].configure(command=lambda:(self.switch_screen( config["frame"], aux)))
+        else:
+            out = self.controller.drive_init(self,folder,option)
+            if out == 0:
+                Thread(target=self.error_msg,args=["Folder not found","Drive folder could not be found..."]).start()
+            else:
+                pwd_screen = self.password_screen(NULL,NULL,NULL,3,out)
+                self.switch_screen(self.current_screen,pwd_screen)
+                return
         return
     
     def launch_dropbox_operation(self,folder,option):
