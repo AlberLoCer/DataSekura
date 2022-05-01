@@ -124,11 +124,33 @@ class Controller:
         encryptor = Local_encryptor(self)
         if option == 0:
             encryptor.encrypt_gui(folder,gui,password,enc,hash,fs)
+            gui.set_info_screen("Encryption complete!")
         else:
             encryptor.decrypt_gui(folder,gui,password)
+            gui.set_info_screen("Decryption complete!")
+        
         return
     
     
-    def local_decrypt_launch(self,gui):
+    def drive_init(self,gui,folder,option):
+        encryptor = GoogleDriveEncryptor(self)
+        creds = encryptor.gd.login()
+        if option == 0:
+            creds = encryptor.gd.login()
+            file = encryptor.gd.fetch_folder(folder)
+            if  file != 0:
+                folderpath = encryptor.gd.download_folder_launch(file)
+                return file,folderpath
+            else:
+                return 0, 0
+        if option == 1:
+            files = encryptor.gd.fetch_bin_files()
+            if folder in files:
+                return folder
+            else:
+                gui.info_screen("Folder could not be found!")
     
-        return
+    def drive_encryption(self,file,folderpath):
+        encryptor = GoogleDriveEncryptor(self)
+        encryptor.encrypt_gui(file,folderpath)
+                

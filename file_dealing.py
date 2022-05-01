@@ -33,8 +33,7 @@ class File_alterator:
             end_aux2 =  aux2[index:(length-1)]
             aux2 = init_aux2 + self.pwdperm.pwd_part_B(end_aux2)
             comb = self.pwdperm.merge(aux1,aux2)
-            if(comb[0] == aux1[0] or comb[0] == aux2[0]):
-                comb = comb[::-1]
+            comb = comb[::-1]
             self.pwdDict[i] = comb
         for i in self.pwdDict:
             print(repr(i) + ": "+ self.pwdDict[i])

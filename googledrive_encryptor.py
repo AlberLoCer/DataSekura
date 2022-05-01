@@ -69,3 +69,25 @@ class GoogleDriveEncryptor(Encryptor):
         self.gd.delete_file(file_to_decrypt)
         print("Google Drive Folder Successfully Decrypted!")
         return
+
+    
+    def encrypt_gui(self,file,folderpath):
+        creds = self.gd.login()
+        parent_dict = self.gd.search_parent(file) #Probably will need to check this in the future
+        print("Encrypting folder...")
+        self.folderDict = self.local.encrypt(folderpath)
+        if self.folderDict == -1:
+            print("Failed to encrypt Google Drive Folder")
+            self.gd.hard_reset(folderpath)
+            return 
+        try:
+            gfile = self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["volume_path"]), creds)
+            print("Cleaning up residual files...")
+        finally:
+            gfile.content.close()
+            if gfile.uploaded:
+                os.remove(self.folderDict["volume_path"])
+                self.gd.delete_file(file)
+        self.gd.hard_reset(folderpath)
+        print("Google Drive Folder Successfully Encrypted!")
+        return

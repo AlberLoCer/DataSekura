@@ -47,11 +47,10 @@ class Gd_object:
       file.GetContentFile(path)
       return path
    
-   def fetch_folder(self):
+   def fetch_folder(self,folder_str):
       creds = self.login()
       print("Fetching drive directories...")
       self.list_folders(creds)
-      folder_str = input("Select a folder: ")
       file_output = self.check_folder_exists(creds,folder_str)
       if file_output != -1:
          while file_output == 0:
