@@ -19,11 +19,9 @@ class Db_object:
         try:
             auth_result = self.auth_flow.finish(token)
         except Exception as e:
-            print('Error: %s' % (e,))
-            exit(1)
+            return -1
         self.dbx = dropbox.Dropbox(oauth2_refresh_token=auth_result.refresh_token, app_key=self.access_key)
-        acc = self.dbx.users_get_current_account()
-        print("Successfully set up client!")
+        return 0
     
     def list_folder_content(self,folder):
         folder_list = self.dbx.files_list_folder("/"+folder)

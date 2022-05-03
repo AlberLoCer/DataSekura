@@ -424,10 +424,17 @@ class DS_interface:
         self.controller.dropbox_init()
         
     def dropbox_setup(self,token):
-        self.controller.dropbox_client_setup(token)
+        auth = self.controller.dropbox_client_setup(token)
+        if auth == 0:
+            self.info_msg("Dropbox client ready", "Dropbox client successfully set up!")
+        else:
+            self.error_msg("Dropbox cilent error", "Dropbox client coulf not be set")
     
     def error_msg(self,title,msg):
         messagebox.showerror(title=title,message=msg)
+    
+    def info_msg(self,title,msg):
+        messagebox.showinfo(title=title,message=msg)
 
 
     def switch_screen(self, old_frame, new_frame):

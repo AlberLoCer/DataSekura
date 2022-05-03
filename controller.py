@@ -157,8 +157,11 @@ class Controller:
         self.dbauth = self.encryptor.db.init_db()
     
     def dropbox_client_setup(self,token):
-        self.encryptor.db.set_up_client(token)
-        return
+        auth_db = self.encryptor.db.set_up_client(token)
+        if auth_db == 0:
+            return 0
+        else:
+            return -1
     
     def drive_encryption(self,file,folderpath,gui,password,enc,hash,fs):
         encryptor = GoogleDriveEncryptor(self)
