@@ -153,10 +153,11 @@ class Controller:
     
     
     def dropbox_init(self):
-        encryptor = DB_encryptor(self)
-        self.dbauth = encryptor.db.init_db()
+        self.encryptor = DB_encryptor(self)
+        self.dbauth = self.encryptor.db.init_db()
     
     def dropbox_client_setup(self,token):
+        self.encryptor.db.set_up_client(token)
         return
     
     def drive_encryption(self,file,folderpath,gui,password,enc,hash,fs):

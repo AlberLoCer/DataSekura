@@ -207,7 +207,7 @@ class DS_interface:
         token_entry = Entry(widgets_frame)
         token_entry.grid(column=0,row=1,pady=10)
         token_entry.grid_columnconfigure(0,weight=1)
-        ok = Button(widgets_frame,text="OK",command=lambda:(self.launch_dropbox_operation(token_entry.get())))
+        ok = Button(widgets_frame,text="OK",command=lambda:(self.dropbox_setup(token_entry.get())))
         ok.grid(column=0,row=2,pady=10)
         ok.grid_columnconfigure(0,weight=1)
         return frame

@@ -11,14 +11,13 @@ class Db_object:
     def init_db(self):
         self.access_key = "rv4ri95l6577oih"
         self.secret_key = "9h77gzhcvi8hl1d"
-        auth_flow = dropbox.DropboxOAuth2FlowNoRedirect(self.access_key, use_pkce=True, token_access_type='offline')
-        url = auth_flow.start()
+        self.auth_flow = dropbox.DropboxOAuth2FlowNoRedirect(self.access_key, use_pkce=True, token_access_type='offline')
+        url = self.auth_flow.start()
         webbrowser.open(url)
-        return auth_flow
     
-    def set_up_client(self,auth_flow,token):
+    def set_up_client(self,token):
         try:
-            auth_result = auth_flow.finish(token)
+            auth_result = self.auth_flow.finish(token)
         except Exception as e:
             print('Error: %s' % (e,))
             exit(1)
