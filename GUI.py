@@ -18,7 +18,7 @@ class DS_interface:
         self.root.title("DataSekura")
         self.root.resizable(False,False)
         self.root.geometry("700x500")
-        home = self.home_screen()
+        self.home = self.home_screen()
         local = self.local_screen()
 
         enc_dec_local = self.enc_dec_screen()
@@ -38,15 +38,15 @@ class DS_interface:
 
 
         #Home Screen
-        home["frame"].pack(fill="both",expand=True)
-        home["local"].configure(command=lambda:(self.switch_screen(home["frame"],local["frame"])))
-        home["drive"].configure(command=lambda:(self.switch_screen(home["frame"],enc_dec_drive["frame"])))
-        home["dropbox"].configure(command=lambda:(self.launch_dropbox_operation(home["frame"],db_init)))
+        self.home["frame"].pack(fill="both",expand=True)
+        self.home["local"].configure(command=lambda:(self.switch_screen(self.home["frame"],local["frame"])))
+        self.home["drive"].configure(command=lambda:(self.switch_screen(self.home["frame"],enc_dec_drive["frame"])))
+        self.home["dropbox"].configure(command=lambda:(self.launch_dropbox_operation(self.home["frame"],db_init)))
         
         #Local File System
         local["scatter"].configure(command=lambda:(self.switch_screen(local["frame"],enc_dec_scatter["frame"])))
         local["centralized"].configure(command=lambda:(self.switch_screen(local["frame"],enc_dec_local["frame"])))
-        local["back"].configure(command=lambda:(self.switch_screen(local["frame"],home["frame"])))
+        local["back"].configure(command=lambda:(self.switch_screen(local["frame"],self.home["frame"])))
 
         #Google Drive
         enc_dec_drive["encrypt"].configure(command=lambda:(self.switch_screen(enc_dec_drive["frame"],input_screen_drive_enc)))
@@ -211,7 +211,7 @@ class DS_interface:
         ok.grid(column=0,row=2,pady=10)
         ok.grid_columnconfigure(0,weight=1)
         return frame
-    
+
     def encryption_screen(self,folder):
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
@@ -427,6 +427,9 @@ class DS_interface:
         auth = self.controller.dropbox_client_setup(token)
         if auth == 0:
             self.info_msg("Dropbox client ready", "Dropbox client successfully set up!")
+            encDec_screen_db = self.enc_dec_screen()
+            self.switch_screen(self.current_screen,encDec_screen_db["frame"])
+            encDec_screen_db["back"].configure(command=lambda:(self.switch_screen(encDec_screen_db["frame"],self.home["frame"])))
         else:
             self.error_msg("Dropbox cilent error", "Dropbox client coulf not be set")
     
