@@ -142,7 +142,7 @@ class Controller:
                 return (file,folderpath)
             else:
                 return 0
-        if option == 1:
+        else:
             out = encryptor.gd.fetch_bin_files(folder)
             if out != 0:
                 curr_path = os.getcwd()
@@ -151,6 +151,27 @@ class Controller:
             else:
                 return 0
     
+    def dropbox_init(self,gui,folder,option):
+        encryptor = DB_encryptor(self)
+        #Token
+        if option == 0:
+            found = encryptor.db.search_folder(folder)
+            if found != -1:
+                f_tuple = encryptor.db.download_folder_launch(found)
+                return f_tuple
+            else:
+                return 0
+        else:
+            names,paths = encryptor.db.list_bin_files()
+            f_tuple = encryptor.db.input_and_download_bin(names,paths,folder)
+            if f_tuple !=-1:
+                return f_tuple
+            else:
+                return 0
+    
+    def dropbox_token_gui(self):
+        encryptor = DB_encryptor(self)
+    
     def drive_encryption(self,file,folderpath,gui,password,enc,hash,fs):
         encryptor = GoogleDriveEncryptor(self)
         encryptor.encrypt_gui(file,folderpath,gui,password,enc,hash,fs)
@@ -158,3 +179,11 @@ class Controller:
     def drive_decryption(self,file,folderpath,gui,password,enc,hash,fs):
         encryptor = GoogleDriveEncryptor(self)
         encryptor.decrypt_gui(file,folderpath,gui,password)
+
+
+    def dropbox_encryption(self,file,folderpath,gui,password,enc,hash,fs):
+        return
+                
+    def dropbox_decryption(self,file,folderpath,gui,password,enc,hash,fs):
+        return
+

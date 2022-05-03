@@ -31,6 +31,9 @@ class DS_interface:
         input_screen_drive_enc = self.input_screen_drive(NULL,NULL,NULL,0,NULL)
         input_screen_drive_dec = self.input_screen_drive(NULL,NULL,NULL,1,NULL)
 
+        input_screen_dropbox_enc = self.input_screen_dropbox(NULL,NULL,NULL,0,NULL)
+        input_screen_dropbox_dec = self.input_screen_dropbox(NULL,NULL,NULL,1,NULL)
+
         select_enc = self.encryption_screen(NULL)
 
         config = self.config_screen()
@@ -51,6 +54,12 @@ class DS_interface:
         enc_dec_drive["encrypt"].configure(command=lambda:(self.switch_screen(enc_dec_drive["frame"],input_screen_drive_enc)))
         enc_dec_drive["decrypt"].configure(command=lambda:(self.switch_screen(enc_dec_drive["frame"],input_screen_drive_dec)))
         enc_dec_drive["back"].configure(command=lambda:(self.switch_screen(enc_dec_drive["frame"],local["frame"])))
+
+        #Dropbox
+        enc_dec_dropbox["encrypt"].configure(command=lambda:(self.switch_screen(enc_dec_dropbox["frame"],input_screen_dropbox_enc)))
+        enc_dec_dropbox["decrypt"].configure(command=lambda:(self.switch_screen(enc_dec_dropbox["frame"],input_screen_dropbox_dec)))
+        enc_dec_dropbox["back"].configure(command=lambda:(self.switch_screen(enc_dec_dropbox["frame"],local["frame"])))
+
         #Centralized operation
         enc_dec_local["encrypt"].configure(command=lambda:(self.switch_screen( enc_dec_local["frame"], config["frame"])))
         enc_dec_local["decrypt"].configure(command=lambda:(self.launch_local_operation(NULL,NULL,NULL,NULL,1)))
@@ -163,6 +172,14 @@ class DS_interface:
             ok = Button(widgets_frame,text="OK",command=lambda:(self.controller.drive_decryption(folder[0],folder[1],self,pwd_entry.get(),enc,hash,fs)))
             ok.grid(column=0,row=2,pady=10)
             ok.grid_columnconfigure(0,weight=1)
+        elif option == 4:
+            ok = Button(widgets_frame,text="OK",command=lambda:(self.controller.dropbox_encryption(folder[0],folder[1],self,pwd_entry.get(),enc,hash,fs)))
+            ok.grid(column=0,row=2,pady=10)
+            ok.grid_columnconfigure(0,weight=1)
+        else:
+            ok = Button(widgets_frame,text="OK",command=lambda:(self.controller.dropbox_decryption(folder[0],folder[1],self,pwd_entry.get(),enc,hash,fs)))
+            ok.grid(column=0,row=2,pady=10)
+            ok.grid_columnconfigure(0,weight=1)
 
         return frame
     
@@ -180,6 +197,24 @@ class DS_interface:
         folder_entry.grid(column=0,row=1,pady=10)
         folder_entry.grid_columnconfigure(0,weight=1)
         ok = Button(widgets_frame,text="OK",command=lambda:(self.launch_drive_operation(folder_entry.get(),option)))
+        ok.grid(column=0,row=2,pady=10)
+        ok.grid_columnconfigure(0,weight=1)
+        return frame
+
+    def input_screen_dropbox(self,enc,hash,fs,option,folder):
+        frame = Frame(self.root,background="#232137")
+        logo_lbl = Label(frame,image=self.logo,bg="#232137")
+        logo_lbl.pack()
+        widgets_frame = Frame(frame,background="#232137")
+        widgets_frame.pack()
+        folder_input = Label(widgets_frame,text="Enter a your access token:",bg="#232137",fg="#FFFFFF")
+        folder_input.configure(font=("Courier",16,"italic"))
+        folder_input.grid(column=0,row=0,pady=20)
+        folder_input.grid_columnconfigure(0,weight=1)
+        folder_entry = Entry(widgets_frame)
+        folder_entry.grid(column=0,row=1,pady=10)
+        folder_entry.grid_columnconfigure(0,weight=1)
+        ok = Button(widgets_frame,text="OK",command=lambda:(self.launch_dropbox_operation(folder_entry.get(),option)))
         ok.grid(column=0,row=2,pady=10)
         ok.grid_columnconfigure(0,weight=1)
         return frame
@@ -392,6 +427,27 @@ class DS_interface:
         return
     
     def launch_dropbox_operation(self,folder,option):
+        if option == 0:
+            f_tuple = self.controller.dropbox_init(self,folder,option)
+            if f_tuple == 0:
+                Thread(target=self.error_msg,args=["Folder not found","Dropbox folder could not be found..."]).start()
+            else:
+                config = self.config_screen()
+                pwd_screen_auto = self.password_screen(1,2,1,2,f_tuple) 
+                select_enc = self.encryption_screen(f_tuple)
+                aux = self.current_screen
+                self.switch_screen(aux,config["frame"])
+                config["auto"].configure(command=lambda:(self.switch_screen(config["frame"],pwd_screen_auto)))
+                config["manual"].configure(command=lambda:(self.switch_screen(config["frame"],select_enc)))
+                config["back"].configure(command=lambda:(self.switch_screen( config["frame"], aux)))
+        else:
+            out = self.controller.drive_init(self,folder,option)
+            if out == 0:
+                Thread(target=self.error_msg,args=["Folder not found","Drive folder could not be found..."]).start()
+            else:
+                pwd_screen = self.password_screen(NULL,NULL,NULL,3,out)
+                self.switch_screen(self.current_screen,pwd_screen)
+                return
         return
     
     def error_msg(self,title,msg):

@@ -30,7 +30,6 @@ class Gd_object:
       file_list = creds.ListFile({"q":"'me' in owners and visibility='limited' and trashed=false and mimeType='application/vnd.google-apps.folder'"}).GetList()
       file_list.sort(key=self.criteria)
       for f in file_list:
-         is_shared = f['shared']
          if f['shared'] == False:
             print("Name: " + f['title'])
          else:
@@ -53,12 +52,6 @@ class Gd_object:
       self.list_folders(creds)
       file_output = self.check_folder_exists(creds,folder_str)
       return file_output
-   
-   def fetch_folders_in_folder(self, parent):
-      creds = self.login()
-      folder_list = creds.ListFile({'q': "'"+parent['id']+"' in parents and trashed=false and mimeType='application/vnd.google-apps.folder'"}).GetList()
-      return folder_list
-
 
    def download_folder_launch(self, file_output):
       creds = self.login()

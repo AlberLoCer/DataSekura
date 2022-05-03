@@ -95,7 +95,7 @@ class File_alterator:
                 chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
                 if(os.path.isfile(chunk_file_name)):
                     passBytes = bytes(chunk_file_name,"ascii") 
-                    name = hashlib.sha256(passBytes).hexdigest()
+                    name = hashlib.sha512(passBytes).hexdigest()
                     os.rename(chunk_file_name,name)
                     file_list.append(name)
                 else:

@@ -37,34 +37,13 @@ class Db_object:
             print("No matches found")
             return -1
         else:
-            if len(found.matches) > 1:
-                for entry in found.matches:
-                    if isinstance(entry.metadata,dropbox.files.FolderMetadata):
-                        folder_list.append(entry)
-                        
-                if len(folder_list) == 0:
-                    print("No matching folders found!")
-                    return -1
-                else:
-                    print("Select a folder to encrypt:")
-                    index = 1
-                    for entry in folder_list:
-                        meta = entry.metadata
-                        print(repr(index) + ". "+ meta.path_display)
-                        index = index + 1 
-                    selection = input()
-                    selection_num = int(selection)
-                    selection_num = selection_num-1
-                    return folder_list[selection_num]
-
+            single_entry = found.matches[0]
+            if single_entry and isinstance(single_entry.metadata,dropbox.files.FolderMetadata):
+                print("Folder Found!")
+                return single_entry
             else:
-                single_entry = found.matches[0]
-                if single_entry and isinstance(single_entry.metadata,dropbox.files.FolderMetadata):
-                    print("Folder Found!")
-                    return single_entry
-                else:
-                    print("No matching folders found!")
-                    return -1
+                print("No matching folders found!")
+                return -1
     
     def download_folder_launch(self, folder):
         meta = folder.metadata 
@@ -82,7 +61,7 @@ class Db_object:
                 print("Processing folder: "+ entry.path_display)
                 self.download_folder_rec(entry)
                 os.chdir(path)
-        return path, meta
+        return (path, meta)
                 
     def download_folder_rec(self,meta):
         os.mkdir(meta.name)
@@ -187,9 +166,7 @@ class Db_object:
             matching_names = fnmatch.filter(file_names, pattern)
             matching_paths = fnmatch.filter(file_paths, pattern)
             if matching_names != []:
-                for entry in matching_names:
-                    print(entry)
-                return matching_names,matching_paths
+                return (matching_names,matching_paths)
             else:
                 print("No encrypted files were found!")
                 return -1
@@ -197,8 +174,7 @@ class Db_object:
             print("No files were found!")
             return -1
     
-    def input_and_download_bin(self, name_list, path_list):
-        file = input("Select the file to decrypt: ")
+    def input_and_download_bin(self, name_list, path_list,file):
         if file in name_list:
             index = name_list.index(file)
             path_to_download = path_list[index]
@@ -206,7 +182,7 @@ class Db_object:
                 metadata, res = self.dbx.files_download(path=path_to_download)
                 f.write(res.content)
             if os.path.isfile(name_list[index]):
-                return name_list[index], path_list[index]
+                return (name_list[index], path_list[index])
             else:
                 return -1
         else:
