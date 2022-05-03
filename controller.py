@@ -43,7 +43,7 @@ class Controller:
             return -1
         return 0
     
-    def local_set_up(self,gui):
+    def local_set_up(self):
         self.ux.encrypt_decrypt_menu()
         _encryptor = Local_encryptor(self)
         encrypt_or_decrypt = self.ux.choice()
@@ -120,61 +120,7 @@ class Controller:
 
     
 
-    def local_launch(self,gui,password,folder,enc,hash,fs,option):
-        encryptor = Local_encryptor(self)
-        if option == 0:
-            encryptor.encrypt_gui(folder,gui,password,enc,hash,fs)
-            gui.set_info_screen("Encryption complete!")
-        else:
-            encryptor.decrypt_gui(folder,gui,password)
-            gui.set_info_screen("Decryption complete!")
-        
-        return
+    def local_encryption(self,folder,password,enc,hash,fs):
+        self.encryptor = Local_encryptor(self)
+        self.encryptor.encrypt_gui(folder,password,enc,hash,fs)
     
-    
-    def drive_init(self,gui,folder,option):
-        encryptor = GoogleDriveEncryptor(self)
-        creds = encryptor.gd.login()
-        if option == 0:
-            file = encryptor.gd.fetch_folder(folder)
-            if  file != 0:
-                folderpath = encryptor.gd.download_folder_launch(file)
-                return (file,folderpath)
-            else:
-                return 0
-        else:
-            out = encryptor.gd.fetch_bin_files(folder)
-            if out != 0:
-                curr_path = os.getcwd()
-                folderpath = encryptor.gd.download_file(NULL,out['id'], curr_path)
-                return (out,folderpath)
-            else:
-                return 0
-    
-    
-    def dropbox_init(self):
-        self.encryptor = DB_encryptor(self)
-        self.dbauth = self.encryptor.db.init_db()
-    
-    def dropbox_client_setup(self,token):
-        auth_db = self.encryptor.db.set_up_client(token)
-        if auth_db == 0:
-            return 0
-        else:
-            return -1
-    
-    def drive_encryption(self,file,folderpath,gui,password,enc,hash,fs):
-        encryptor = GoogleDriveEncryptor(self)
-        encryptor.encrypt_gui(file,folderpath,gui,password,enc,hash,fs)
-                
-    def drive_decryption(self,file,folderpath,gui,password,enc,hash,fs):
-        encryptor = GoogleDriveEncryptor(self)
-        encryptor.decrypt_gui(file,folderpath,gui,password)
-
-
-    def dropbox_encryption(self,file,folderpath,gui,password,enc,hash,fs):
-        return
-                
-    def dropbox_decryption(self,file,folderpath,gui,password,enc,hash,fs):
-        return
-

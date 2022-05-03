@@ -150,10 +150,7 @@ class Encryption_utils:
     
     def password_input(self,pwd):
         self.base_password = pwd
-        while(self.base_password == ''):
-            self.base_password = input ("Enter your password for encryption: ")
-            if self.base_password == '':
-                print("Password can't be empty!")
+        print(pwd)
         self.permuted_password = self.pw.password_permutation(self.base_password)
         self.alpha_base = self.pw.get_alpha()
         self.beta_base = self.pw.get_beta()

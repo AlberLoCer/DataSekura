@@ -36,7 +36,7 @@ class Local_encryptor(Encryptor):
         return self.utils.folderDict
     
 
-    def encrypt_gui(self,folder,gui,password,enc,hash,fs):
+    def encrypt_gui(self,folder,password,enc,hash,fs):
         try:
             self.utils = Encryption_utils(folder,0)
         except Exception as e:
