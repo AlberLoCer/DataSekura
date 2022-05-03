@@ -5,17 +5,18 @@ import os
 import fnmatch
 class Db_object:
     def __init__(self):
-        self.set_up()
-        self.dbx._timeout = 900
+        self.init_db()
         return
 
-    def set_up(self):
+    def init_db(self):
         self.access_key = "rv4ri95l6577oih"
         self.secret_key = "9h77gzhcvi8hl1d"
         auth_flow = dropbox.DropboxOAuth2FlowNoRedirect(self.access_key, use_pkce=True, token_access_type='offline')
         url = auth_flow.start()
         webbrowser.open(url)
-        token = input("Insert the access token provided: ").strip()
+        return auth_flow
+    
+    def set_up_client(self,auth_flow,token):
         try:
             auth_result = auth_flow.finish(token)
         except Exception as e:
@@ -24,7 +25,6 @@ class Db_object:
         self.dbx = dropbox.Dropbox(oauth2_refresh_token=auth_result.refresh_token, app_key=self.access_key)
         acc = self.dbx.users_get_current_account()
         print("Successfully set up client!")
-        return
     
     def list_folder_content(self,folder):
         folder_list = self.dbx.files_list_folder("/"+folder)
