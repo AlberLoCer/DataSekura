@@ -27,8 +27,8 @@ class DS_interface:
 
         pwd_screen_auto = self.password_screen(1,2,1,0,NULL)
         
-        input_screen_drive_enc = self.input_screen_drive(NULL,NULL,NULL,0,NULL)
-        input_screen_drive_dec = self.input_screen_drive(NULL,NULL,NULL,1,NULL)
+        input_screen_drive_enc = self.operation_screen_drive(NULL,NULL,NULL,0,NULL)
+        input_screen_drive_dec = self.operation_screen_drive(NULL,NULL,NULL,1,NULL)
 
         db_init = self.input_screen_dropbox()
 
@@ -41,7 +41,7 @@ class DS_interface:
         self.home["frame"].pack(fill="both",expand=True)
         self.home["local"].configure(command=lambda:(self.switch_screen(self.home["frame"],local["frame"])))
         self.home["drive"].configure(command=lambda:(self.switch_screen(self.home["frame"],enc_dec_drive["frame"])))
-        self.home["dropbox"].configure(command=lambda:(self.launch_dropbox_operation(self.home["frame"],db_init)))
+        self.home["dropbox"].configure(command=lambda:(self.prepare_dropbox(self.home["frame"],db_init)))
         
         #Local File System
         local["scatter"].configure(command=lambda:(self.switch_screen(local["frame"],enc_dec_scatter["frame"])))
@@ -176,13 +176,13 @@ class DS_interface:
 
         return frame
     
-    def input_screen_drive(self,enc,hash,fs,option,folder):
+    def operation_screen_drive(self,enc,hash,fs,option,folder):
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
         logo_lbl.pack()
         widgets_frame = Frame(frame,background="#232137")
         widgets_frame.pack()
-        folder_input = Label(widgets_frame,text="Enter a folder to encrypt:",bg="#232137",fg="#FFFFFF")
+        folder_input = Label(widgets_frame,text="Enter a folder:",bg="#232137",fg="#FFFFFF")
         folder_input.configure(font=("Courier",16,"italic"))
         folder_input.grid(column=0,row=0,pady=20)
         folder_input.grid_columnconfigure(0,weight=1)
@@ -193,6 +193,25 @@ class DS_interface:
         ok.grid(column=0,row=2,pady=10)
         ok.grid_columnconfigure(0,weight=1)
         return frame
+
+    def operation_screen_dropbox(self,enc,hash,fs,option,folder):
+        frame = Frame(self.root,background="#232137")
+        logo_lbl = Label(frame,image=self.logo,bg="#232137")
+        logo_lbl.pack()
+        widgets_frame = Frame(frame,background="#232137")
+        widgets_frame.pack()
+        folder_input = Label(widgets_frame,text="Enter a folder:",bg="#232137",fg="#FFFFFF")
+        folder_input.configure(font=("Courier",16,"italic"))
+        folder_input.grid(column=0,row=0,pady=20)
+        folder_input.grid_columnconfigure(0,weight=1)
+        folder_entry = Entry(widgets_frame)
+        folder_entry.grid(column=0,row=1,pady=10)
+        folder_entry.grid_columnconfigure(0,weight=1)
+        ok = Button(widgets_frame,text="OK",command=lambda:(self.prepare_dropbox(folder_entry.get(),option)))
+        ok.grid(column=0,row=2,pady=10)
+        ok.grid_columnconfigure(0,weight=1)
+        return frame
+
 
     def input_screen_dropbox(self):
         frame = Frame(self.root,background="#232137")
@@ -419,7 +438,7 @@ class DS_interface:
                 return
         return
     
-    def launch_dropbox_operation(self,screen,db_init):
+    def prepare_dropbox(self,screen,db_init):
         self.switch_screen(screen,db_init)
         self.controller.dropbox_init()
         
@@ -433,12 +452,35 @@ class DS_interface:
         else:
             self.error_msg("Dropbox cilent error", "Dropbox client coulf not be set")
     
+    def launch_drive_operation(self,folder,option):
+        if option == 0:
+            f_tuple = self.controller.dropbox_encryption_init(self,folder,option)
+            if f_tuple == 0:
+                Thread(target=self.error_msg,args=["Folder not found","Drive folder could not be found..."]).start()
+            else:
+                config = self.config_screen()
+                #To be adapted
+                pwd_screen_auto = self.password_screen(1,2,1,2,f_tuple) 
+                select_enc = self.encryption_screen(f_tuple)
+                aux = self.current_screen
+                self.switch_screen(aux,config["frame"])
+                config["auto"].configure(command=lambda:(self.switch_screen(config["frame"],pwd_screen_auto)))
+                config["manual"].configure(command=lambda:(self.switch_screen(config["frame"],select_enc)))
+                config["back"].configure(command=lambda:(self.switch_screen( config["frame"], aux)))
+        else:
+            out = self.controller.drive_init(self,folder,option)
+            if out == 0:
+                Thread(target=self.error_msg,args=["Folder not found","Drive folder could not be found..."]).start()
+            else:
+                pwd_screen = self.password_screen(NULL,NULL,NULL,3,out)
+                self.switch_screen(self.current_screen,pwd_screen)
+                return
+        return
     def error_msg(self,title,msg):
         messagebox.showerror(title=title,message=msg)
     
     def info_msg(self,title,msg):
         messagebox.showinfo(title=title,message=msg)
-
 
     def switch_screen(self, old_frame, new_frame):
         old_frame.pack_forget()
