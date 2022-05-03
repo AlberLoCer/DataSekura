@@ -5,7 +5,6 @@ import os
 import fnmatch
 class Db_object:
     def __init__(self):
-        self.init_db()
         return
 
     def init_db(self):
