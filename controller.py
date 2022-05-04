@@ -120,7 +120,18 @@ class Controller:
 
     
 
-    def local_encryption(self,folder,password,enc,hash,fs):
+    def encryption(self,folder,password,enc,hash,fs,op):
         self.encryptor = Local_encryptor(self)
         self.encryptor.encrypt_gui(folder,password,enc,hash,fs)
+    
+    def decryption(self,folder,pwd,op):
+        self.encryptor = Local_encryptor(self)
+        self.encryptor.decrypt_gui(folder,pwd)
+    
+    def db_init(self):
+        self.encryptor = DB_encryptor(self)
+        self.encryptor.db.init_db()
+
+    def db_client_setup(self,token):
+        self.encryptor.db.set_up_client(token)
     

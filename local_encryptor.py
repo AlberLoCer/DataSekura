@@ -85,7 +85,7 @@ class Local_encryptor(Encryptor):
         print("ELAPSED: "+ elapsed.__str__())
         return self.utils.folderDict
     
-    def decrypt_gui(self,folder, gui, password):
+    def decrypt_gui(self,folder, password):
         self.utils = Encryption_utils(folder, 1)
         self.utils.password_input(password)
         try:

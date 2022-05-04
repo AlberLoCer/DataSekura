@@ -24,7 +24,7 @@ class DS_interface:
         self.home["frame"].pack(fill="both",expand=True)
         self.home["local"].configure(command=lambda:(self.local_operation()))
         self.home["drive"].configure(command=lambda:(self.drive_operation()))
-        self.home["dropbox"].configure(command=lambda:(self.dropbox_operation()))
+        self.home["dropbox"].configure(command=lambda:(self.dropbox_init()))
 
 
         def on_closing():
@@ -97,7 +97,7 @@ class DS_interface:
         screen["back"] = back
         return screen
 
-    def password_screen(self,enc,hash,fs,folder):
+    def password_screen(self,enc,hash,fs,folder,op,fun):
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
         logo_lbl.pack()
@@ -113,7 +113,10 @@ class DS_interface:
         ok = Button(widgets_frame,text="OK")
         ok.grid(column=0,row=2,pady=10)
         ok.grid_columnconfigure(0,weight=1)
-        ok.config(command=lambda:(self.controller.local_encryption(folder,pwd_entry.get(),enc,hash,fs)))
+        if op == 0:
+            ok.config(command=lambda:(self.controller.encryption(folder,pwd_entry.get(),enc,hash,fs)))
+        else:
+            ok.config(command=lambda:(self.controller.decryption(folder,pwd_entry.get())))
         return frame
 
     def encryption_screen(self,folder):
@@ -221,6 +224,25 @@ class DS_interface:
         ok = Button(frame,text="OK",command=lambda:(next_step()))
         ok.pack()
         return frame
+    def dropbox_token_screen(self):
+        frame = Frame(self.root,background="#232137")
+        logo_lbl = Label(frame,image=self.logo,bg="#232137")
+        logo_lbl.pack()
+        widgets_frame = Frame(frame,background="#232137")
+        widgets_frame.pack()
+        token_input = Label(widgets_frame,text="Enter your access token:",bg="#232137",fg="#FFFFFF")
+        token_input.configure(font=("Courier",16,"italic"))
+        token_input.grid(column=0,row=0,pady=20)
+        token_input.grid_columnconfigure(0,weight=1)
+        token_entry = Entry(widgets_frame)
+        token_entry.grid(column=0,row=1,pady=10)
+        token_entry.grid_columnconfigure(0,weight=1)
+        ok = Button(widgets_frame,text="OK")
+        ok.grid(column=0,row=2,pady=10)
+        ok.grid_columnconfigure(0,weight=1)
+        ok.config(command=lambda:(self.dropbox_operation(token_entry.get())))
+        return frame
+        
 
     
     def info_screen(self,message):
@@ -228,6 +250,7 @@ class DS_interface:
         pwd_input = Label(frame,text=message,bg="#232137",fg="#FFFFFF")
         pwd_input.pack()
         return frame
+
 
 
 
@@ -278,6 +301,7 @@ class DS_interface:
         local["centralized"].configure(command=lambda:(self.centralized_op()))
         local["back"].configure(command=lambda:(self.switch_screen(local["frame"],self.home)))
         return
+    
 
     def centralized_op(self):
         enc_dec = self.enc_dec_screen()
@@ -297,6 +321,13 @@ class DS_interface:
                 aux.destroy()
                 enc = self.encryption_screen(folder)
                 self.switch_screen(self.current_screen,enc)
+        def decrypt_op():
+            aux = Tk()
+            file = filedialog.askopenfilename()
+            if file != "":
+                aux.destroy()
+                pwd = self.password_screen(NULL,NULL,NULL,file,1)
+                self.switch_screen(self.current_screen,pwd)
 
         def encrypt_op():
             config = self.config_screen()
@@ -304,19 +335,30 @@ class DS_interface:
             config["auto"].configure(command=lambda:(auto_encryption()))
             config["manual"].configure(command=lambda:(manual_encryption()))
             return
-        
 
         enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
-        enc_dec["decrypt"]
+        enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
 
-
+    def scatter_op(self):
+        enc_dec = self.enc_dec_screen()
+        self.switch_screen(self.current_screen,enc_dec["frame"])
+        def auto_encryption():
+            return
+        def manual_encryption():
+            return
+        def decrypt_op():
+            return
+        def encrypt_op():
+            return
+        enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
+        enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
         
     def start_encryption(self,enc,hash,fs,password):
         res = filedialog.askdirectory(title="Select a folder to encrypt")
         self.give_params(enc,hash,fs,password,res)
         info = self.info_screen("Encryption in progress...")
         self.switch_screen(self.current_screen,info)
-        self.controller.local_encryption()
+        self.controller.encryption()
         info = self.info_screen("Encryption finished!")
 
     def scatter_op(self):
@@ -326,7 +368,6 @@ class DS_interface:
         enc_dec["encrypt"].configure(command=lambda:(self.switch_screen(enc_dec["frame"],config["frame"])))
     
     def drive_operation(self):
-        service = "drive"
         drive = self.enc_dec_screen()
         self.controller.drive_init()
         config = self.config_screen()
@@ -335,21 +376,60 @@ class DS_interface:
         drive["back"].configure(command=lambda:(self.switch_screen(drive["frame"],self.home)))
         return
     
-    def dropbox_operation(self):
-        service = "dropbox"
-        dropbox = self.enc_dec_screen()
-        config = self.config_screen()
-        dropbox["encrypt"].configure(command=lambda:(self.switch_screen(dropbox["frame"],self.home)))
-        dropbox["decrypt"].configure(command=lambda:(self.switch_screen(dropbox["frame"],self.home)))
-        dropbox["back"].configure(command=lambda:(self.switch_screen(dropbox["frame"],self.home)))
+    def dropbox_init(self):
+        self.controller.db_init()
+        token_screen = self.dropbox_token_screen()
+        self.switch_screen(self.current_screen,token_screen)
         return
-    
+
+    def dropbox_operation(self,token):
+        self.controller.db_client_setup(token)
+        enc_dec = self.enc_dec_screen()
+        self.switch_screen(self.current_screen,enc_dec["frame"])
+        def auto_encryption():
+            return
+        def manual_encryption():
+            return
+        def decrypt_op():
+            return
+        def encrypt_op():
+            return
+
+        enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
+        enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
+
+    def input_screen(self,input,service):
+        frame = Frame(self.root,background="#232137")
+        logo_lbl = Label(frame,image=self.logo,bg="#232137")
+        logo_lbl.pack()
+        widgets_frame = Frame(frame,background="#232137")
+        widgets_frame.pack()
+        input_lbl = Label(widgets_frame,text=input,bg="#232137",fg="#FFFFFF")
+        input_lbl.configure(font=("Courier",16,"italic"))
+        input_lbl.grid(column=0,row=0,pady=20)
+        input_lbl.grid_columnconfigure(0,weight=1)
+        input_entry = Entry(widgets_frame)
+        input_entry.grid(column=0,row=1,pady=10)
+        input_entry.grid_columnconfigure(0,weight=1)
+        ok = Button(widgets_frame,text="OK")
+        ok.grid(column=0,row=2,pady=10)
+        ok.grid_columnconfigure(0,weight=1)
+        if service == "dropbox":
+            ok.config(command=lambda:(self.dropbox_check(input_entry.get())))
+        elif service == "drive":
+            ok.config(command=lambda:(fun))
+        return frame
 
     def error_msg(self,title,msg):
         messagebox.showerror(title=title,message=msg)
     
     def info_msg(self,title,msg):
         messagebox.showinfo(title=title,message=msg)
+    
+    def dropbox_check(self,folder):
+        if self.controller.encryptor.db.search_folder(folder) == 0:
+            return
+            
 
     def switch_screen(self, old_frame, new_frame):
         old_frame.pack_forget()
