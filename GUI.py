@@ -522,7 +522,7 @@ class DS_interface:
                 pwd = self.password_screen()
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
-                info = self.info_screen("Drive encryption in progress...")
+                info = self.info_screen("Dropbox encryption in progress...")
                 t = Thread(target=self.switch_screen,args=[self.current_screen,info])
                 t.start()
                 t = Thread(target=self.controller.dropbox_encryption,args=[out,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
@@ -534,6 +534,20 @@ class DS_interface:
             input_screen.wait_variable(self.folder)
             names,paths = self.controller.encryptor.db.list_bin_files()
             out = self.controller.encryptor.db.input_and_download_bin(names,paths,self.folder.get())
+            if out == -1:
+                self.error_msg("File not found","No matching files found!")
+            else:
+                file = out[0]
+                path = out[1]
+                pwd = self.password_screen()
+                self.switch_screen(self.current_screen,pwd)
+                pwd.wait_variable(self.password)
+                info = self.info_screen("Dropbox decryption in progress...")
+                t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+                t.start()
+                t = Thread(target=self.controller.dropbox_decryption,args=[file,path,self.password.get()])
+                t.start()
+
             
         def encrypt_op():
             config = self.config_screen()
