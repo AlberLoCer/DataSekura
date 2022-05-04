@@ -73,5 +73,5 @@ class DB_encryptor(Encryptor):
         self.db.upload_folder(self.fs.remove_file_extension(path),file)
         print("Cleaning up residual files...")
         self.db.remove_bin(path)
-        shutil.rmtree(full_path)
+        shutil.rmtree(file_noext)
         print("Dropbox Folder Successfully Decrypted!")
