@@ -141,10 +141,7 @@ class Gd_object:
       query = "'me' in owners and visibility='limited' and trashed=false"
       f_list = creds.ListFile({"q":query}).GetList()
       for f in f_list:
-         ext = os.path.splitext(f['title'])
-         print(f["title"])
-         if ext[1] == ".bin":
-            if ext[0] == file:
+            if f["title"] == file:
                output_list.append(f)
       if output_list == []:
          return 0

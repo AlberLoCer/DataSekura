@@ -156,26 +156,14 @@ class Encryption_utils:
         self.beta_base = self.pw.get_beta()
 
 
-    def user_input_encrypt(self,option,folderDict):
-        if option == 1:
-            self.automatic_configuration(folderDict)
-        else:
-            self.custom_settings(folderDict)
-
-
     def encryption_params(self, folderDict,encryption,hash,fs):
         self.cmd_encryption = self.ux.choose_encryption(encryption)
         self.cmd_hash = self.ux.choose_hash(hash)
         self.cmd_fs = self.ux.choose_fs(fs)
         self.volume_size = self.fs.fetch_size(folderDict["folder_path"], self.cmd_fs)
     
-    def scatter_first_step(self,f):
-        f.write(self.folderDict['folder_parent'].__str__()+"|")
-        self.user_input_encrypt(self.folderDict)
-        self.password_input()
     
-    def perform_scatter(self,gd, f):
-        fname = input()
+    def perform_scatter(self,gd, f,fname):
         creds = gd.login()
         folder_fetched = gd.check_folder_exists(creds,fname)
         if folder_fetched == -1:

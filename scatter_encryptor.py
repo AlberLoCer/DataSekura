@@ -113,5 +113,47 @@ class Scatter_encryption(Encryptor):
             print("You do not seem to have anything encrypted as scatter...")
             return
 
-    def encrypt_gui(self):
-        return
+    def encrypt_gui(self,folder,password,enc,hash,fs,scatter_folder):
+        cwd = os.getcwd()
+        try:
+            self.utils = Encryption_utils(folder,0)
+        except Exception as e:
+            return -1
+        self.dstraces = cwd+os.sep+"ds_traces"
+        os.chdir(self.dstraces)
+        #If file already exists, it will be really messed up :)
+        if os.path.isfile(self.utils.folderDict["folder_name"]+".txt") == False:
+            with open(self.utils.folderDict["folder_name"]+".txt", "w") as f:
+                self.utils.encryption_params(self.utils.folderDict,enc,hash,fs)
+                self.utils.password_input(password)
+                print("Encrypting "+ self.utils.folderDict["folder_name"] + "...")
+                if self.utils.deep_layer_encryption() == -1:
+                    f.close()
+                    os.remove(self.gd.credentials_directory)
+                    os.remove(self.dstraces+os.sep+self.utils.folderDict["folder_name"]+".txt")
+                    shutil.rmtree(self.utils.backup)
+                    return -1
+                print("First layer of encryption successfully created!")
+                print("Splitting and permutating the volume...")
+                if self.utils.milestone_encryption() == -1:
+                    f.close()
+                    os.remove(self.gd.credentials_directory)
+                    os.remove(self.utils.folderDict["folder_path"]+".txt")
+                    shutil.rmtree(self.utils.backup)
+                    return -1
+                print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
+                self.utils.perform_scatter(self.gd,f,scatter_folder)
+                f.close()
+            print("Encrypting ds_traces...")
+            
+            os.chdir(self.utils.folderDict["folder_parent"])
+            os.chmod(self.utils.backup,0o777)
+            shutil.rmtree(self.utils.backup)
+            return
+        else:
+            print("There is already an encrypted file named like that!")
+            return
+    
+    def finalize_scatter(self,password,enc,hash,fs):
+        self.local.encrypt_gui(self.dstraces,password,enc,hash,fs)
+        os.remove(self.gd.credentials_directory)
