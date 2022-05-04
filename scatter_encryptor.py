@@ -149,6 +149,7 @@ class Scatter_encryption(Encryptor):
             os.chdir(self.utils.folderDict["folder_parent"])
             os.chmod(self.utils.backup,0o777)
             shutil.rmtree(self.utils.backup)
+            os.chdir(cwd)
             return
         else:
             print("There is already an encrypted file named like that!")
