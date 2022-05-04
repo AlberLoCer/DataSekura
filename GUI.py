@@ -481,20 +481,59 @@ class DS_interface:
         self.controller.db_client_setup(self.user_token.get())
         enc_dec = self.enc_dec_screen()
         self.switch_screen(self.current_screen,enc_dec["frame"])
+
         def auto_encryption():
             input_screen = self.folder_input_screen()
             self.switch_screen(self.current_screen,input_screen)
             input_screen.wait_variable(self.folder)
+            out = self.controller.encryptor.db.search_folder(self.folder.get())
+            if out == -1:
+                self.error_msg("Folder not found","No matching folders found!")
+            else:
+                self.enc = 1
+                self.hash = 2
+                self.fs = 1
+                pwd = self.password_screen()
+                self.switch_screen(self.current_screen,pwd)
+                pwd.wait_variable(self.password)
+                info = self.info_screen("Dropbox encryption in progress...")
+                t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+                t.start()
+                t = Thread(target=self.controller.dropbox_encryption,args=[out,self.password.get(),self.enc,self.hash,self.fs])
+                t.start()
         
         def manual_encryption():
             input_screen = self.folder_input_screen()
             self.switch_screen(self.current_screen,input_screen)
             input_screen.wait_variable(self.folder)
+            out = self.controller.encryptor.db.search_folder(self.folder.get())
+            if out == -1:
+                self.error_msg("Folder not found","No matching folders found!")
+            else:
+                enc = self.encryption_screen()
+                self.switch_screen(self.current_screen,enc)
+                enc.wait_variable(self.enc)
+                hash = self.hash_screen()
+                self.switch_screen(self.current_screen,hash)
+                hash.wait_variable(self.hash)
+                fs = self.fs_screen()
+                self.switch_screen(self.current_screen,fs)
+                fs.wait_variable(self.fs)
+                pwd = self.password_screen()
+                self.switch_screen(self.current_screen,pwd)
+                pwd.wait_variable(self.password)
+                info = self.info_screen("Drive encryption in progress...")
+                t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+                t.start()
+                t = Thread(target=self.controller.dropbox_encryption,args=[out,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
+                t.start()
 
         def decrypt_op():
             input_screen = self.folder_input_screen()
             self.switch_screen(self.current_screen,input_screen)
             input_screen.wait_variable(self.folder)
+            names,paths = self.controller.encryptor.db.list_bin_files()
+            out = self.controller.encryptor.db.input_and_download_bin(names,paths,self.folder.get())
             
         def encrypt_op():
             config = self.config_screen()

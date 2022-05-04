@@ -145,3 +145,9 @@ class Controller:
     def drive_decryption(self,file,pwd):
         self.encryptor.decrypt_gui(file,pwd)
     
+    def dropbox_encryption(self,folder,password,enc,hash,fs):
+        self.encryptor.encrypt_gui(folder,password,enc,hash,fs)
+    
+    def dropbox_decryption(self,file,path,pwd):
+        self.encryptor.decrypt_gui(file,path,pwd)
+    
