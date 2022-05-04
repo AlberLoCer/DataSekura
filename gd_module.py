@@ -142,6 +142,7 @@ class Gd_object:
       f_list = creds.ListFile({"q":query}).GetList()
       for f in f_list:
          ext = os.path.splitext(f['title'])
+         print(f["title"])
          if ext[1] == ".bin":
             if ext[0] == file:
                output_list.append(f)

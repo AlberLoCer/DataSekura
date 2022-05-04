@@ -19,11 +19,12 @@ class DS_interface:
         self.root.resizable(False,False)
         self.root.geometry("700x500")
         self.home = self.home_screen()
-
+        self.folder = ""
+        self.current_screen = self.home["frame"]
         #Home Screen
         self.home["frame"].pack(fill="both",expand=True)
         self.home["local"].configure(command=lambda:(self.local_operation()))
-        self.home["drive"].configure(command=lambda:(self.drive_operation()))
+        self.home["drive"].configure(command=lambda:(self.drive_op()))
         self.home["dropbox"].configure(command=lambda:(self.dropbox_init()))
 
 
@@ -97,12 +98,13 @@ class DS_interface:
         screen["back"] = back
         return screen
 
-    def password_screen(self,enc,hash,fs,folder,op,fun):
+    def password_screen(self):
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
         logo_lbl.pack()
         widgets_frame = Frame(frame,background="#232137")
         widgets_frame.pack()
+        self.password = StringVar()
         pwd_input = Label(widgets_frame,text="Enter your password:",bg="#232137",fg="#FFFFFF")
         pwd_input.configure(font=("Courier",16,"italic"))
         pwd_input.grid(column=0,row=0,pady=20)
@@ -113,13 +115,13 @@ class DS_interface:
         ok = Button(widgets_frame,text="OK")
         ok.grid(column=0,row=2,pady=10)
         ok.grid_columnconfigure(0,weight=1)
-        if op == 0:
-            ok.config(command=lambda:(self.controller.encryption(folder,pwd_entry.get(),enc,hash,fs)))
-        else:
-            ok.config(command=lambda:(self.controller.decryption(folder,pwd_entry.get())))
+        def apply():
+            self.password.set(pwd_entry.get())
+        ok.config(command=lambda:(apply()))
         return frame
 
-    def encryption_screen(self,folder):
+    def encryption_screen(self):
+        self.enc = IntVar()
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
         logo_lbl.pack()
@@ -168,15 +170,13 @@ class DS_interface:
         serpent_two.pack()
         encryptions.append(serpent_two)
         def next_step():
-            enc = selection.get()
-            print(enc)
-            select_hash = self.hash_screen(enc,folder)
-            self.switch_screen(frame,select_hash)
+            self.enc.set(selection.get())
         ok = Button(frame,text="OK",command=lambda:(next_step()))
         ok.pack()
         return frame
 
-    def hash_screen(self,enc,folder):
+    def hash_screen(self):
+        self.hash = IntVar()
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
         logo_lbl.pack()
@@ -195,15 +195,13 @@ class DS_interface:
         ripemd = Radiobutton(widgets_frame,text="Ripemd160",variable=selection,value=4,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
         ripemd.pack()
         def next_step():
-            hash = selection.get()
-            print(hash)
-            select_fs = self.fs_screen(enc,hash,folder)
-            self.switch_screen(frame,select_fs)
+            self.hash.set(selection.get())
         ok = Button(frame,text="OK",command=lambda:(next_step()))
         ok.pack()
         return frame
     
-    def fs_screen(self,enc,hash,folder):
+    def fs_screen(self):
+        self.fs = IntVar()
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
         logo_lbl.pack()
@@ -218,12 +216,11 @@ class DS_interface:
         ntfs = Radiobutton(widgets_frame,text="NTFS",variable=selection,value=2,activebackground="#232137",bg="#232137",activeforeground="white",fg="white",selectcolor="#232137")
         ntfs.pack()
         def next_step():
-            fs = selection.get()
-            pwd = self.password_screen(enc,hash,fs,folder)
-            self.switch_screen(frame,pwd)
+            self.fs.set(selection.get())
         ok = Button(frame,text="OK",command=lambda:(next_step()))
         ok.pack()
         return frame
+
     def dropbox_token_screen(self):
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
@@ -241,6 +238,28 @@ class DS_interface:
         ok.grid(column=0,row=2,pady=10)
         ok.grid_columnconfigure(0,weight=1)
         ok.config(command=lambda:(self.dropbox_operation(token_entry.get())))
+        return frame
+
+    def folder_input_screen(self):
+        self.folder = StringVar()
+        frame = Frame(self.root,background="#232137")
+        logo_lbl = Label(frame,image=self.logo,bg="#232137")
+        logo_lbl.pack()
+        widgets_frame = Frame(frame,background="#232137")
+        widgets_frame.pack()
+        input_lbl = Label(widgets_frame,text="Enter a folder:",bg="#232137",fg="#FFFFFF")
+        input_lbl.configure(font=("Courier",16,"italic"))
+        input_lbl.grid(column=0,row=0,pady=20)
+        input_lbl.grid_columnconfigure(0,weight=1)
+        input_entry = Entry(widgets_frame)
+        input_entry.grid(column=0,row=1,pady=10)
+        input_entry.grid_columnconfigure(0,weight=1)
+        def apply():
+            self.folder.set(input_entry.get())
+        ok = Button(widgets_frame,text="OK")
+        ok.grid(column=0,row=2,pady=10)
+        ok.grid_columnconfigure(0,weight=1)
+        ok.config(command=lambda:(apply()))
         return frame
         
 
@@ -307,27 +326,56 @@ class DS_interface:
         enc_dec = self.enc_dec_screen()
         self.switch_screen(self.current_screen,enc_dec["frame"])
         def auto_encryption():
+            self.enc = 1
+            self.hash = 2
+            self.fs = 1
             aux = Tk()
             folder = filedialog.askdirectory()
             if folder != "":
                 print(folder)
                 aux.destroy()
-                pwd = self.password_screen(1,2,1,folder)
+                pwd = self.password_screen()
                 self.switch_screen(self.current_screen,pwd)
+                pwd.wait_variable(self.password)
+                info = self.info_screen("Encryption in progress...")
+                t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+                t.start()
+                self.controller.encryption(folder,self.password.get(),self.enc,self.hash,self.fs)
+                
         def manual_encryption():
             aux = Tk()
             folder = filedialog.askdirectory()
             if folder != "":
                 aux.destroy()
-                enc = self.encryption_screen(folder)
+                enc = self.encryption_screen()
                 self.switch_screen(self.current_screen,enc)
+                enc.wait_variable(self.enc)
+                hash = self.hash_screen()
+                self.switch_screen(self.current_screen,hash)
+                hash.wait_variable(self.hash)
+                fs = self.fs_screen()
+                self.switch_screen(self.current_screen,fs)
+                fs.wait_variable(self.fs)
+                pwd = self.password_screen()
+                self.switch_screen(self.current_screen,pwd)
+                pwd.wait_variable(self.password)
+                info = self.info_screen("Encryption in progress...")
+                t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+                t.start()
+                t = Thread(target=self.controller.encryption,args=[folder,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
+                t.start()
         def decrypt_op():
             aux = Tk()
             file = filedialog.askopenfilename()
             if file != "":
                 aux.destroy()
-                pwd = self.password_screen(NULL,NULL,NULL,file,1)
+                pwd = self.password_screen()
                 self.switch_screen(self.current_screen,pwd)
+                pwd.wait_variable(self.password)
+                info = self.info_screen("Decryption in progress...")
+                t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+                t.start()
+                self.controller.decryption(file,self.password.get())
 
         def encrypt_op():
             config = self.config_screen()
@@ -339,19 +387,91 @@ class DS_interface:
         enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
         enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
 
-    def scatter_op(self):
+
+    def drive_op(self):
         enc_dec = self.enc_dec_screen()
+        self.controller.drive_init()
         self.switch_screen(self.current_screen,enc_dec["frame"])
         def auto_encryption():
-            return
+            input_screen = self.folder_input_screen()
+            self.switch_screen(self.current_screen,input_screen)
+            input_screen.wait_variable(self.folder)
+            file = self.controller.encryptor.gd.check_folder_exists(self.controller.creds,self.folder.get())
+            if file == 0:
+                self.error_msg("Folder not found", "Could not find Drive folder")
+            elif file == -1:
+                self.error_msg("Error", "Something wrong happend while trying to fetch drive folder")
+            else:
+                self.enc = 1
+                self.hash = 2
+                self.fs = 1
+                pwd = self.password_screen()
+                self.switch_screen(self.current_screen,pwd)
+                pwd.wait_variable(self.password)
+                info = self.info_screen("Drive encryption in progress...")
+                t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+                t.start()
+                t = Thread(target=self.controller.drive_encryption,args=[file,self.password.get(),self.enc,self.hash,self.fs])
+                t.start()
+
         def manual_encryption():
-            return
+            input_screen = self.folder_input_screen()
+            self.switch_screen(self.current_screen,input_screen)
+            input_screen.wait_variable(self.folder)
+            file = self.controller.encryptor.gd.check_folder_exists(self.controller.creds,self.folder.get())
+            if file == 0:
+                self.error_msg("File not found", "Could not find Drive file")
+            elif file == -1:
+                self.error_msg("Error", "Something wrong happend while trying to fetch drive file")
+            else:
+                enc = self.encryption_screen()
+                self.switch_screen(self.current_screen,enc)
+                enc.wait_variable(self.enc)
+                hash = self.hash_screen()
+                self.switch_screen(self.current_screen,hash)
+                hash.wait_variable(self.hash)
+                fs = self.fs_screen()
+                self.switch_screen(self.current_screen,fs)
+                fs.wait_variable(self.fs)
+                pwd = self.password_screen()
+                self.switch_screen(self.current_screen,pwd)
+                pwd.wait_variable(self.password)
+                info = self.info_screen("Drive encryption in progress...")
+                t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+                t.start()
+                t = Thread(target=self.controller.drive_encryption,args=[file,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
+                t.start()
+
         def decrypt_op():
-            return
+            input_screen = self.folder_input_screen()
+            self.switch_screen(self.current_screen,input_screen)
+            input_screen.wait_variable(self.folder)
+            file = self.controller.encryptor.gd.fetch_bin_files(self.folder.get())
+            if file == 0:
+                self.error_msg("File not found", "Could not find Drive file")
+            else:
+                pwd = self.password_screen()
+                self.switch_screen(self.current_screen,pwd)
+                pwd.wait_variable(self.password)
+                info = self.info_screen("Drive decryption in progress...")
+                t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+                t.start()
+                t = Thread(target=self.controller.drive_decryption,args=[file,self.password.get()])
+                t.start()
+
         def encrypt_op():
+            config = self.config_screen()
+            self.switch_screen(self.current_screen,config["frame"])
+            config["auto"].configure(command=lambda:(auto_encryption()))
+            config["manual"].configure(command=lambda:(manual_encryption()))
             return
+
         enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
         enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
+        return
+
+    def dropbox_op(self):
+        return
         
     def start_encryption(self,enc,hash,fs,password):
         res = filedialog.askdirectory(title="Select a folder to encrypt")
@@ -360,65 +480,6 @@ class DS_interface:
         self.switch_screen(self.current_screen,info)
         self.controller.encryption()
         info = self.info_screen("Encryption finished!")
-
-    def scatter_op(self):
-        enc_dec = self.enc_dec_screen()
-        config = self.config_screen()
-        self.switch_screen(self.current_screen,enc_dec["frame"])
-        enc_dec["encrypt"].configure(command=lambda:(self.switch_screen(enc_dec["frame"],config["frame"])))
-    
-    def drive_operation(self):
-        drive = self.enc_dec_screen()
-        self.controller.drive_init()
-        config = self.config_screen()
-        drive["encrypt"].configure(command=lambda:(self.switch_screen(drive["frame"],self.home)))
-        drive["decrypt"].configure(command=lambda:(self.switch_screen(drive["frame"],self.home)))
-        drive["back"].configure(command=lambda:(self.switch_screen(drive["frame"],self.home)))
-        return
-    
-    def dropbox_init(self):
-        self.controller.db_init()
-        token_screen = self.dropbox_token_screen()
-        self.switch_screen(self.current_screen,token_screen)
-        return
-
-    def dropbox_operation(self,token):
-        self.controller.db_client_setup(token)
-        enc_dec = self.enc_dec_screen()
-        self.switch_screen(self.current_screen,enc_dec["frame"])
-        def auto_encryption():
-            return
-        def manual_encryption():
-            return
-        def decrypt_op():
-            return
-        def encrypt_op():
-            return
-
-        enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
-        enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
-
-    def input_screen(self,input,service):
-        frame = Frame(self.root,background="#232137")
-        logo_lbl = Label(frame,image=self.logo,bg="#232137")
-        logo_lbl.pack()
-        widgets_frame = Frame(frame,background="#232137")
-        widgets_frame.pack()
-        input_lbl = Label(widgets_frame,text=input,bg="#232137",fg="#FFFFFF")
-        input_lbl.configure(font=("Courier",16,"italic"))
-        input_lbl.grid(column=0,row=0,pady=20)
-        input_lbl.grid_columnconfigure(0,weight=1)
-        input_entry = Entry(widgets_frame)
-        input_entry.grid(column=0,row=1,pady=10)
-        input_entry.grid_columnconfigure(0,weight=1)
-        ok = Button(widgets_frame,text="OK")
-        ok.grid(column=0,row=2,pady=10)
-        ok.grid_columnconfigure(0,weight=1)
-        if service == "dropbox":
-            ok.config(command=lambda:(self.dropbox_check(input_entry.get())))
-        elif service == "drive":
-            ok.config(command=lambda:(fun))
-        return frame
 
     def error_msg(self,title,msg):
         messagebox.showerror(title=title,message=msg)

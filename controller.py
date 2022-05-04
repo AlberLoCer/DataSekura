@@ -120,11 +120,11 @@ class Controller:
 
     
 
-    def encryption(self,folder,password,enc,hash,fs,op):
+    def encryption(self,folder,password,enc,hash,fs):
         self.encryptor = Local_encryptor(self)
         self.encryptor.encrypt_gui(folder,password,enc,hash,fs)
     
-    def decryption(self,folder,pwd,op):
+    def decryption(self,folder,pwd):
         self.encryptor = Local_encryptor(self)
         self.encryptor.decrypt_gui(folder,pwd)
     
@@ -134,4 +134,14 @@ class Controller:
 
     def db_client_setup(self,token):
         self.encryptor.db.set_up_client(token)
+    
+    def drive_init(self):
+        self.encryptor = GoogleDriveEncryptor(self)
+        self.creds = self.encryptor.gd.login()
+
+    def drive_encryption(self,file,password,enc,hash,fs):
+        self.encryptor.encrypt_gui(file,password,enc,hash,fs)
+    
+    def drive_decryption(self,file,pwd):
+        self.encryptor.decrypt_gui(file,pwd)
     
