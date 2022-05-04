@@ -112,3 +112,6 @@ class Scatter_encryption(Encryptor):
         else:
             print("You do not seem to have anything encrypted as scatter...")
             return
+
+    def encrypt_gui(self):
+        return

@@ -391,6 +391,38 @@ class DS_interface:
         enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
 
 
+    def scatter_op(self):
+        enc_dec = self.enc_dec_screen()
+        self.controller.drive_init()
+        self.switch_screen(self.current_screen,enc_dec["frame"])
+        traces_out = self.controller.scatter_set_up()
+        def auto_encryption():
+            return
+            
+        def manual_encryption():
+            return
+
+        def encrypt_op():
+            return
+        
+        def decrypt_op():
+            return
+        enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
+        enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
+        if traces_out == 1:
+            self.info_msg("Traces folder found", "ds_traces folder was found. Decrypting...")
+            pwd = self.password_screen()
+            self.switch_screen(self.current_screen,pwd)
+            pwd.wait_variable(self.password)
+            self.controller.decryption("ds_traces.bin",self.password.get())
+            return
+        else:
+            return
+        
+            
+
+        
+
     def drive_op(self):
         enc_dec = self.enc_dec_screen()
         self.controller.drive_init()

@@ -87,22 +87,19 @@ class Controller:
                 quit()
 
     def scatter_set_up(self):
-        local = Local_encryptor(self)
-        scatter = Scatter_encryption(self)
         os.chdir(self.base)
         if os.path.isfile("ds_traces.bin"):
             with open("ds_traces.bin") as bin:
                 bin.close()
             print("ds_traces found!")
             print("Decrypting ds_traces...")
-            if local.decrypt("ds_traces") != -1:
-                scatter.encrypt()
+            return 1
         else:
             if os.path.isdir("ds_traces") == False:
                 print("Folder with traces was not found...")
                 print("Creating folder...")
                 os.mkdir("ds_traces")
-            scatter.encrypt()
+            return 0
     
     def gDrive_set_up(self):
         self.ux.encrypt_decrypt_menu()
