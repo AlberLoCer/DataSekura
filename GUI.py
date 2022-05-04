@@ -25,7 +25,7 @@ class DS_interface:
         self.home["frame"].pack(fill="both",expand=True)
         self.home["local"].configure(command=lambda:(self.local_operation()))
         self.home["drive"].configure(command=lambda:(self.drive_op()))
-        self.home["dropbox"].configure(command=lambda:(self.dropbox_init()))
+        self.home["dropbox"].configure(command=lambda:(self.dropbox_op()))
 
 
         def on_closing():
@@ -222,6 +222,7 @@ class DS_interface:
         return frame
 
     def dropbox_token_screen(self):
+        self.user_token = StringVar()
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
         logo_lbl.pack()
@@ -237,7 +238,9 @@ class DS_interface:
         ok = Button(widgets_frame,text="OK")
         ok.grid(column=0,row=2,pady=10)
         ok.grid_columnconfigure(0,weight=1)
-        ok.config(command=lambda:(self.dropbox_operation(token_entry.get())))
+        def apply():
+            self.user_token.set(token_entry.get())
+        ok.config(command=lambda:(apply()))
         return frame
 
     def folder_input_screen(self):
@@ -471,15 +474,38 @@ class DS_interface:
         return
 
     def dropbox_op(self):
+        self.controller.db_init()
+        token_screen = self.dropbox_token_screen()
+        self.switch_screen(self.current_screen,token_screen)
+        token_screen.wait_variable(self.user_token)
+        self.controller.db_client_setup(self.user_token.get())
+        enc_dec = self.enc_dec_screen()
+        self.switch_screen(self.current_screen,enc_dec["frame"])
+        def auto_encryption():
+            input_screen = self.folder_input_screen()
+            self.switch_screen(self.current_screen,input_screen)
+            input_screen.wait_variable(self.folder)
+        
+        def manual_encryption():
+            input_screen = self.folder_input_screen()
+            self.switch_screen(self.current_screen,input_screen)
+            input_screen.wait_variable(self.folder)
+
+        def decrypt_op():
+            input_screen = self.folder_input_screen()
+            self.switch_screen(self.current_screen,input_screen)
+            input_screen.wait_variable(self.folder)
+            
+        def encrypt_op():
+            config = self.config_screen()
+            self.switch_screen(self.current_screen,config["frame"])
+            config["auto"].configure(command=lambda:(auto_encryption()))
+            config["manual"].configure(command=lambda:(manual_encryption()))
+
+        enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
+        enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
         return
         
-    def start_encryption(self,enc,hash,fs,password):
-        res = filedialog.askdirectory(title="Select a folder to encrypt")
-        self.give_params(enc,hash,fs,password,res)
-        info = self.info_screen("Encryption in progress...")
-        self.switch_screen(self.current_screen,info)
-        self.controller.encryption()
-        info = self.info_screen("Encryption finished!")
 
     def error_msg(self,title,msg):
         messagebox.showerror(title=title,message=msg)
