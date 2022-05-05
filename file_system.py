@@ -135,7 +135,7 @@ class File_System_Dealer:
       self.move_files("X:", path)
             
 
-   def fetch_size(self, path, fs):
+   def fetch_size(self, path):
       aux_size = self.get_folder_size(path) 
       size = math.ceil(((1.75 * aux_size)/1024)/1024)
       threshold = 20

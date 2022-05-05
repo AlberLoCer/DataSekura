@@ -500,9 +500,9 @@ class DS_interface:
             traces_enc = 1
             traces_hash = 1
             traces_fs = 1
-            pwd = self.password_screen()
-            self.switch_screen(self.current_screen,pwd)
-            pwd.wait_variable(self.password)
+            pwd_screen = self.password_screen()
+            self.switch_screen(self.current_screen,pwd_screen)
+            pwd_screen.wait_variable(self.password)
             info = self.info_screen("Performing encryption...")
             t = Thread(target=self.switch_screen,args=[self.current_screen,info])
             t.start()
@@ -519,9 +519,9 @@ class DS_interface:
             fs = self.fs_screen()
             self.switch_screen(self.current_screen,fs)
             fs.wait_variable(self.fs)
-            pwd = self.password_screen()
-            self.switch_screen(self.current_screen,pwd)
-            pwd.wait_variable(self.password)
+            pwd_screen = self.password_screen()
+            self.switch_screen(self.current_screen,pwd_screen)
+            pwd_screen.wait_variable(self.password)
             info = self.info_screen("Performing encryption...")
             t = Thread(target=self.switch_screen,args=[self.current_screen,info])
             t.start()

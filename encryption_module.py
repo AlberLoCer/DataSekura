@@ -105,7 +105,7 @@ class Encryption_utils:
         #In principle P should be 'none' if the rest was ok
         self.fs.folder_aggregation(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
         self.final_pass = self.pw.password_permutation(self.permuted_password)
-        self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"], self.fs)
+        self.volume_size = self.fs.fetch_size(self.folderDict["folder_path"])
         self.vc.VC_Encryption(self.folderDict["volume_path"], self.final_pass, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"])
     
     
@@ -158,9 +158,12 @@ class Encryption_utils:
 
     def encryption_params(self, folderDict,encryption,hash,fs):
         self.cmd_encryption = self.ux.choose_encryption(encryption)
+        print(self.cmd_encryption)
         self.cmd_hash = self.ux.choose_hash(hash)
+        print(self.cmd_hash)
         self.cmd_fs = self.ux.choose_fs(fs)
-        self.volume_size = self.fs.fetch_size(folderDict["folder_path"], self.cmd_fs)
+        print(self.cmd_fs)
+        self.volume_size = self.fs.fetch_size(folderDict["folder_path"])
     
     
     def perform_scatter(self,gd, f,fname):
