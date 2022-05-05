@@ -148,9 +148,10 @@ class Controller:
     def dropbox_decryption(self,file,path,pwd):
         self.encryptor.decrypt_gui(file,path,pwd)
     
-    def scatter_encryption(self,folder,password,enc,hash,fs,scatter_folder):
+    def scatter_encryption(self,folder,password,enc,hash,fs,scatter_folder,traces_pwd,traces_enc,traces_hash,traces_fs):
         self.encryptor = Scatter_encryption(self)
         self.encryptor.encrypt_gui(folder,password,enc,hash,fs,scatter_folder)
+        self.finalize_scatter(traces_pwd,traces_pwd,traces_enc,traces_hash,traces_fs)
         return
     
     def finalize_scatter(self,password,enc,hash,fs):
