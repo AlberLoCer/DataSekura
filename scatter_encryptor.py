@@ -25,6 +25,7 @@ class Scatter_encryption(Encryptor):
         #If file already exists, it will be really messed up :)
         if os.path.isfile(self.utils.folderDict["folder_name"]+".txt") == False:
             with open(self.utils.folderDict["folder_name"]+".txt", "w") as f:
+                f.write(self.utils.folderDict["folder_path"]+"|")
                 self.utils.encryption_params(self.utils.folderDict,enc,hash,fs)
                 self.utils.password_input(password)
                 print("Encrypting "+ self.utils.folderDict["folder_name"] + "...")
@@ -56,9 +57,10 @@ class Scatter_encryption(Encryptor):
             print("There is already an encrypted file named like that!")
             return
     
-    def decrypt_gui(self,file,password):
+    def decrypt_gui(self,filename,password):
         self.utils = Encryption_utils(NULL,2)
         cwd = os.getcwd()
+        file = cwd+os.sep+"ds_traces"+os.sep+filename
         if os.path.isfile(file):
             #Read file 
             with open(file) as f:

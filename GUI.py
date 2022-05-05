@@ -421,9 +421,9 @@ class DS_interface:
             self.switch_screen(self.current_screen,pwd)
             pwd.wait_variable(self.password)
             info = self.info_screen("Decryption in progress...")
-            t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+            self.switch_screen(self.current_screen,info)
+            t = Thread(target = self.controller.decryption,args=["ds_traces",self.password.get()])
             t.start()
-            self.controller.decryption("ds_traces",self.password.get())
         self.switch_screen(self.current_screen,enc_dec["frame"])
         
         #traces either exist (decrypted) or not
@@ -489,6 +489,7 @@ class DS_interface:
         def decrypt_op():
             input_screen = self.input_screen("Enter a scattered file to decrypt:")
             self.switch_screen(self.current_screen,input_screen)
+            input_screen.wait_variable(self.folder)
             pwd = self.password_screen()
             self.switch_screen(self.current_screen,pwd)
             pwd.wait_variable(self.password)
@@ -536,6 +537,9 @@ class DS_interface:
             t.start()
             t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
             t.start()
+        
+        config["auto"].configure(command=lambda:(auto_encryption()))
+        config["manual"].configure(command=lambda:(manual_encryption()))
         return
 
     def proceed_with_encryption(self,folder,pwd,enc,hash,fs,drive_folder):

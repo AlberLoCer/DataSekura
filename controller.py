@@ -75,6 +75,23 @@ class Controller:
     def dropbox_decryption(self,file,path,pwd):
         self.encryptor.decrypt_gui(file,path,pwd)
     
+
+    def scatter_set_up(self): 
+        os.chdir(self.base) 
+        if os.path.isfile("ds_traces.bin"): 
+            with open("ds_traces.bin") as bin: 
+                bin.close() 
+            print("ds_traces found!") 
+            print("Decrypting ds_traces...") 
+            return 1 
+        else: 
+            if os.path.isdir("ds_traces") == False: 
+                print("Folder with traces was not found...") 
+                print("Creating folder...") 
+                os.mkdir("ds_traces") 
+            return 0 
+     
+    
     def scatter_encryption(self,folder,password,enc,hash,fs,scatter_folder,traces_pwd,traces_enc,traces_hash,traces_fs):
         self.encryptor = Scatter_encryption(self)
         self.encryptor.encrypt_gui(folder,password,enc,hash,fs,scatter_folder)
@@ -83,6 +100,7 @@ class Controller:
     
     def scatter_decryption(self,folder,password,traces_pwd,traces_enc,traces_hash,traces_fs):
         self.encryptor = Scatter_encryption(self)
+        self.encryptor.decrypt_gui(folder,password)
         self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
         return
     
