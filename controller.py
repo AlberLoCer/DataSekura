@@ -154,6 +154,11 @@ class Controller:
         self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
         return
     
+    def scatter_decryption(self,folder,password,traces_pwd,traces_enc,traces_hash,traces_fs):
+        self.encryptor = Scatter_encryption(self)
+        self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
+        return
+    
     def finalize_scatter(self,password,enc,hash,fs):
         self.local = Local_encryptor(self)
         self.local.encrypt_gui(self.encryptor.dstraces,password,enc,hash,fs)

@@ -155,6 +155,43 @@ class Scatter_encryption(Encryptor):
             print("There is already an encrypted file named like that!")
             return
     
+    def decrypt_gui(self,file,password):
+        self.utils = Encryption_utils(NULL,2)
+        cwd = os.getcwd()
+        if os.path.isfile(file):
+            #Read file 
+            with open(file) as f:
+                self.utils.scatter_file_parse(f)
+                drive_list = self.utils.scatter_build_drive_list()
+                ref_list = self.utils.scatter_build_ref_list(file)
+                self.utils.scatter_files_translate(self.gd,drive_list,ref_list)
+                print("Decrypting " + self.utils.file_title + "...")
+                self.utils.password_input(password)
+                self.utils.fd.populateDict(self.utils.pw.get_alpha(),self.utils.pw.get_beta(), len(self.utils.permuted_password),self.utils.permuted_password)
+                print("Parameters fetched!")
+                print("Preparing decryption environment...")
+                if self.utils.fd.intermediate_decryption(self.utils.original_path, self.utils.file_title) == -1:
+                    f.close()
+                    os.chdir(cwd)
+                    shutil.rmtree(cwd+os.sep+"ds_traces")
+                    os.rename("ds_traces_auto.bin", "ds_traces.bin")
+                    os.remove(self.gd.credentials_directory)
+                    return -1
+                self.utils.fd.restore_file(self.utils.file_title)
+                base_vol = self.utils.original_path+os.sep+self.utils.file_title+".bin"
+                if self.utils.vc.VC_Decryption(base_vol,self.utils.permuted_password, self.utils.original_path+os.sep+self.utils.file_title) != -1:
+                    print("Decryption complete!")
+                    print("Final Step: Encrypting ds_traces...")
+                self.utils.delete_residual_traces(self.gd,drive_list)
+            f.close()
+        os.chdir(cwd)
+        if os.path.isfile("ds_traces_auto.bin"):
+            os.remove("ds_traces_auto.bin")
+        path_to_remove = "ds_traces" + os.sep + file
+        os.remove(path_to_remove)
+        os.remove(self.gd.credentials_directory)
+        return
+    
     def finalize_scatter(self,password,enc,hash,fs):
         self.local.encrypt_gui(self.dstraces,password,enc,hash,fs)
         os.remove(self.gd.credentials_directory)

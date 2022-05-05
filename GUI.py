@@ -487,11 +487,56 @@ class DS_interface:
             return
         
         def decrypt_op():
+            input_screen = self.input_screen("Enter a scattered file to decrypt:")
+            self.switch_screen(self.current_screen,input_screen)
+            pwd = self.password_screen()
+            self.switch_screen(self.current_screen,pwd)
+            pwd.wait_variable(self.password)
+            go_on = self.proceed_screen("Let's now configure the parameters for encrypting \nds_traces")
+            self.switch_screen(self.current_screen,go_on)
+            go_on.wait_variable(self.continue_ok)
+            t = Thread(target=self.proceed_with_decryption,args=[self.folder.get(),self.password.get()])
+            t.start()
             return
 
         enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
         enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
 
+    def proceed_with_decryption(self,file,pwd):
+        config = self.config_screen()
+        self.switch_screen(self.current_screen,config["frame"])
+        def auto_encryption():
+            traces_enc = 1
+            traces_hash = 1
+            traces_fs = 1
+            pwd_screen = self.password_screen()
+            self.switch_screen(self.current_screen,pwd_screen)
+            pwd_screen.wait_variable(self.password)
+            info = self.info_screen("Performing encryption...")
+            t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+            t.start()
+            t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),traces_enc,traces_hash,traces_fs])
+            t.start()
+            return
+        def manual_encryption():
+            enc = self.encryption_screen()
+            self.switch_screen(self.current_screen,enc)
+            enc.wait_variable(self.enc)
+            hash = self.hash_screen()
+            self.switch_screen(self.current_screen,hash)
+            hash.wait_variable(self.hash)
+            fs = self.fs_screen()
+            self.switch_screen(self.current_screen,fs)
+            fs.wait_variable(self.fs)
+            pwd_screen = self.password_screen()
+            self.switch_screen(self.current_screen,pwd_screen)
+            pwd_screen.wait_variable(self.password)
+            info = self.info_screen("Performing encryption...")
+            t = Thread(target=self.switch_screen,args=[self.current_screen,info])
+            t.start()
+            t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
+            t.start()
+        return
 
     def proceed_with_encryption(self,folder,pwd,enc,hash,fs,drive_folder):
         config = self.config_screen()
