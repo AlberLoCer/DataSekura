@@ -26,6 +26,7 @@ class DS_interface:
         self.home["local"].configure(command=lambda:(self.local_operation()))
         self.home["drive"].configure(command=lambda:(self.drive_op()))
         self.home["dropbox"].configure(command=lambda:(self.dropbox_op()))
+        self.completed = BooleanVar()
 
 
         def on_closing():
@@ -289,8 +290,25 @@ class DS_interface:
     
     def info_screen(self,message):
         frame = Frame(self.root,background="#232137")
-        pwd_input = Label(frame,text=message,bg="#232137",fg="#FFFFFF")
-        pwd_input.pack()
+        logo_lbl = Label(frame,image=self.logo,bg="#232137")
+        logo_lbl.pack()
+        info = Label(frame,text=message,bg="#232137",fg="#FFFFFF")
+        info.config(font=("Courier",15,"bold"))
+        info.pack()
+        return frame
+    
+    def completed_screen(self,message):
+        frame = Frame(self.root,background="#232137")
+        logo_lbl = Label(frame,image=self.logo,bg="#232137",pady=30)
+        logo_lbl.pack()
+        ok_lbl = Label(frame,image=self.ok_icon,bg="#232137")
+        ok_lbl.pack()
+        info = Label(frame,text=message,bg="#232137",fg="#FFFFFF")
+        info.config(font=("Courier",15,"bold"),pady=10)
+        info.pack()
+        ok = Button(frame,text="Close")
+        ok.pack()
+        ok.config(command=lambda:(self.root.destroy()))
         return frame
 
 
@@ -319,6 +337,7 @@ class DS_interface:
         self.auto_hover= PhotoImage(file='GUI/auto_act.png')
         self.manual = PhotoImage(file='GUI/manual.png')
         self.manual_hover = PhotoImage(file='GUI/manual_act.png')
+        self.ok_icon = PhotoImage(file='GUI/ok.png')
     
     def button_config(self,frame,def_img,act,idx,padding):
         btn = Button(frame,image=def_img,bg="#232137",borderwidth=0,activebackground="#232137")
@@ -363,7 +382,11 @@ class DS_interface:
                 info = self.info_screen("Encryption in progress...")
                 t = Thread(target=self.switch_screen,args=[self.current_screen,info])
                 t.start()
-                self.controller.encryption(folder,self.password.get(),self.enc,self.hash,self.fs)
+                t = Thread(target=self.controller.encryption,args=[folder,self.password.get(),self.enc,self.hash,self.fs])
+                t.start()
+                info.wait_variable(self.completed)
+                info = self.completed_screen("Encryption Complete!")
+                self.switch_screen(self.current_screen,info)
                 
         def manual_encryption():
             aux = Tk()
@@ -387,6 +410,9 @@ class DS_interface:
                 t.start()
                 t = Thread(target=self.controller.encryption,args=[folder,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
                 t.start()
+                info.wait_variable(self.completed)
+                info = self.completed_screen("Encryption Complete!")
+                self.switch_screen(self.current_screen,info)
         def decrypt_op():
             aux = Tk()
             file = filedialog.askopenfilename()
@@ -398,7 +424,11 @@ class DS_interface:
                 info = self.info_screen("Decryption in progress...")
                 t = Thread(target=self.switch_screen,args=[self.current_screen,info])
                 t.start()
-                self.controller.decryption(file,self.password.get())
+                t = Thread(target=self.controller.decryption,args=[file,self.password.get()])
+                t.start()
+                info.wait_variable(self.completed)
+                info = self.completed_screen("Decryption Complete!")
+                self.switch_screen(self.current_screen,info)
 
         def encrypt_op():
             config = self.config_screen()
@@ -517,6 +547,9 @@ class DS_interface:
             t.start()
             t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),traces_enc,traces_hash,traces_fs,traces_out,ds_traces_pwd])
             t.start()
+            info.wait_variable(self.completed)
+            info = self.completed_screen("Decryption Complete!")
+            self.switch_screen(self.current_screen,info)
             return
         def manual_encryption():
             enc = self.encryption_screen()
@@ -536,6 +569,9 @@ class DS_interface:
             t.start()
             t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get(),traces_out,ds_traces_pwd])
             t.start()
+            info.wait_variable(self.completed)
+            info = self.completed_screen("Decryption Complete!")
+            self.switch_screen(self.current_screen,info)
         
         config["auto"].configure(command=lambda:(auto_encryption()))
         config["manual"].configure(command=lambda:(manual_encryption()))
@@ -556,6 +592,9 @@ class DS_interface:
             t.start()
             t = Thread(target=self.controller.scatter_encryption,args=[folder,pwd,enc,hash,fs,drive_folder,self.password.get(),traces_enc,traces_hash,traces_fs,traces_out,ds_traces_pwd])
             t.start()
+            info.wait_variable(self.completed)
+            info = self.completed_screen("Encryption Complete!")
+            self.switch_screen(self.current_screen,info)
             return
         def manual_encryption():
             enc = self.encryption_screen()
@@ -575,6 +614,9 @@ class DS_interface:
             t.start()
             t = Thread(target=self.controller.scatter_encryption, args=[folder,pwd,enc,hash,fs,drive_folder,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get(),traces_out,ds_traces_pwd])
             t.start()
+            info.wait_variable(self.completed)
+            info = self.completed_screen("Encryption Complete!")
+            self.switch_screen(self.current_screen,info)
 
             return
 
@@ -608,6 +650,9 @@ class DS_interface:
                 t.start()
                 t = Thread(target=self.controller.drive_encryption,args=[file,self.password.get(),self.enc,self.hash,self.fs])
                 t.start()
+                info.wait_variable(self.completed)
+                info = self.completed_screen("Google Drive Encryption Complete!")
+                self.switch_screen(self.current_screen,info)
 
         def manual_encryption():
             input_screen = self.input_screen("Enter a Google Drive folder to encrypt:")
@@ -636,6 +681,10 @@ class DS_interface:
                 t.start()
                 t = Thread(target=self.controller.drive_encryption,args=[file,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
                 t.start()
+                info.wait_variable(self.completed)
+                info = self.completed_screen("Google Drive Encryption Complete!")
+                self.switch_screen(self.current_screen,info)
+
 
         def decrypt_op():
             input_screen = self.input_screen("Enter a file in Google Drive to decrypt:")
@@ -653,6 +702,9 @@ class DS_interface:
                 t.start()
                 t = Thread(target=self.controller.drive_decryption,args=[file,self.password.get()])
                 t.start()
+                info.wait_variable(self.completed)
+                info = self.completed_screen("Google Drive Decryption Complete!")
+                self.switch_screen(self.current_screen,info)
 
         def encrypt_op():
             config = self.config_screen()
@@ -693,6 +745,9 @@ class DS_interface:
                 t.start()
                 t = Thread(target=self.controller.dropbox_encryption,args=[out,self.password.get(),self.enc,self.hash,self.fs])
                 t.start()
+                info.wait_variable(self.completed)
+                info = self.completed_screen("Dropbox Encryption Complete!")
+                self.switch_screen(self.current_screen,info)
         
         def manual_encryption():
             input_screen = self.input_screen("Enter the Dropbox folder to encrypt:")
@@ -719,6 +774,9 @@ class DS_interface:
                 t.start()
                 t = Thread(target=self.controller.dropbox_encryption,args=[out,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
                 t.start()
+                info.wait_variable(self.completed)
+                info = self.completed_screen("Dropbox Encryption Complete!")
+                self.switch_screen(self.current_screen,info)
 
         def decrypt_op():
             input_screen = self.input_screen("Enter the Dropbox file to decrypt:")
@@ -739,6 +797,9 @@ class DS_interface:
                 t.start()
                 t = Thread(target=self.controller.dropbox_decryption,args=[file,path,self.password.get()])
                 t.start()
+                info.wait_variable(self.completed)
+                info = self.completed_screen("Dropbox Decryption Complete!")
+                self.switch_screen(self.current_screen,info)
 
             
         def encrypt_op():
@@ -762,12 +823,11 @@ class DS_interface:
         if self.controller.encryptor.db.search_folder(folder) == 0:
             return
             
-
     def switch_screen(self, old_frame, new_frame):
         old_frame.pack_forget()
         new_frame.pack(fill="both",expand=True)
         self.current_screen = new_frame
-    
-    def give_params(self,enc,hash,fs,password,folder):
-        self.controller.set_params(enc,hash,fs,password,folder)
-    
+
+    def operation_complete(self):
+        self.completed.set(True)
+

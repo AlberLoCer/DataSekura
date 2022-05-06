@@ -47,10 +47,12 @@ class Controller:
     def encryption(self,folder,password,enc,hash,fs):
         self.encryptor = Local_encryptor(self)
         self.encryptor.encrypt_gui(folder,password,enc,hash,fs)
+        self.gui.operation_complete()
     
     def decryption(self,folder,pwd):
         self.encryptor = Local_encryptor(self)
         self.encryptor.decrypt_gui(folder,pwd)
+        self.gui.operation_complete()
     
     def db_init(self):
         self.encryptor = DB_encryptor(self)
