@@ -67,15 +67,22 @@ class Controller:
 
     def drive_encryption(self,file,password,enc,hash,fs):
         self.encryptor.encrypt_gui(file,password,enc,hash,fs)
+        self.gui.operation_complete()
+    
     
     def drive_decryption(self,file,pwd):
         self.encryptor.decrypt_gui(file,pwd)
+        self.gui.operation_complete()
+    
     
     def dropbox_encryption(self,folder,password,enc,hash,fs):
         self.encryptor.encrypt_gui(folder,password,enc,hash,fs)
+        self.gui.operation_complete()
+    
     
     def dropbox_decryption(self,file,path,pwd):
         self.encryptor.decrypt_gui(file,path,pwd)
+        self.gui.operation_complete()
     
 
     def scatter_set_up(self): 
@@ -98,12 +105,15 @@ class Controller:
         self.encryptor = Scatter_encryption(self)
         self.encryptor.encrypt_gui(folder,password,enc,hash,fs,scatter_folder)
         self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
+        self.gui.operation_complete()
+    
         return
     
     def scatter_decryption(self,folder,password,traces_pwd,traces_enc,traces_hash,traces_fs):
         self.encryptor = Scatter_encryption(self)
         self.encryptor.decrypt_gui(folder,password)
         self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
+        self.gui.operation_complete()
         return
     
     def finalize_scatter(self,password,enc,hash,fs):

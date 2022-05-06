@@ -216,7 +216,7 @@ class Encryption_utils:
             self.file_title = self.fs.remove_file_extension(file)
             original_name = self.file_title+"_"+repr(i)+".bin.enc"
             passBytes = bytes(original_name,"ascii") 
-            masked_name = hashlib.sha256(passBytes).hexdigest()
+            masked_name = hashlib.sha512(passBytes).hexdigest()
             ref_dict = dict()
             ref_dict["name"] = original_name
             ref_dict["mask"] = masked_name

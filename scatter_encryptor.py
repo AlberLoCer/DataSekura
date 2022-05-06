@@ -60,7 +60,7 @@ class Scatter_encryption(Encryptor):
     def decrypt_gui(self,filename,password):
         self.utils = Encryption_utils(NULL,2)
         cwd = os.getcwd()
-        file = cwd+os.sep+"ds_traces"+os.sep+filename
+        file = cwd+os.sep+"ds_traces"+os.sep+filename + ".txt"
         if os.path.isfile(file):
             #Read file 
             with open(file) as f:

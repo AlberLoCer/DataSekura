@@ -442,7 +442,6 @@ class DS_interface:
         enc_dec = self.enc_dec_screen()
         self.controller.drive_init()
         traces_out = self.controller.scatter_set_up()
-        ds_traces_pwd = NULL
         #Decrypt traces out if exists
         if traces_out == 1:
             pwd = self.password_screen("Decrypting ds_traces...")
