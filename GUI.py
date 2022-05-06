@@ -412,10 +412,10 @@ class DS_interface:
 
 
     def scatter_op(self):
-        traces_ready = IntVar()
         enc_dec = self.enc_dec_screen()
         self.controller.drive_init()
         traces_out = self.controller.scatter_set_up()
+        ds_traces_pwd = NULL
         #Decrypt traces out if exists
         if traces_out == 1:
             pwd = self.password_screen("Enter your password for ds_traces: ")
@@ -424,11 +424,9 @@ class DS_interface:
             ds_traces_pwd = self.password.get()
 
         self.switch_screen(self.current_screen,enc_dec["frame"])
-        enc_dec["frame"].wait_variable(traces_ready)
 
         #traces either exist (decrypted) or not
         def auto_encryption():
-            traces_ready.set(1)
             enc_folder = 1
             hash_folder = 2
             fs_folder = 1
@@ -454,7 +452,6 @@ class DS_interface:
                 return
             
         def manual_encryption():
-            traces_ready.set(1)
             folder_to_encrypt = filedialog.askdirectory()
             if folder_to_encrypt != "":
                 enc = self.encryption_screen()
@@ -498,14 +495,14 @@ class DS_interface:
             go_on = self.proceed_screen("Let's now configure the parameters for encrypting \nds_traces")
             self.switch_screen(self.current_screen,go_on)
             go_on.wait_variable(self.continue_ok)
-            t = Thread(target=self.proceed_with_decryption,args=[self.folder.get(),self.password.get()])
+            t = Thread(target=self.proceed_with_decryption,args=[self.folder.get(),self.password.get(),traces_out,ds_traces_pwd])
             t.start()
             return
 
         enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
         enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
 
-    def proceed_with_decryption(self,file,pwd):
+    def proceed_with_decryption(self,file,pwd,traces_out,ds_traces_pwd):
         config = self.config_screen()
         self.switch_screen(self.current_screen,config["frame"])
         def auto_encryption():
@@ -518,7 +515,7 @@ class DS_interface:
             info = self.info_screen("Performing encryption...")
             t = Thread(target=self.switch_screen,args=[self.current_screen,info])
             t.start()
-            t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),traces_enc,traces_hash,traces_fs])
+            t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),traces_enc,traces_hash,traces_fs,traces_out,ds_traces_pwd])
             t.start()
             return
         def manual_encryption():
@@ -537,7 +534,7 @@ class DS_interface:
             info = self.info_screen("Performing encryption...")
             t = Thread(target=self.switch_screen,args=[self.current_screen,info])
             t.start()
-            t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
+            t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get(),traces_out,ds_traces_pwd])
             t.start()
         
         config["auto"].configure(command=lambda:(auto_encryption()))
