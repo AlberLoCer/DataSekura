@@ -94,19 +94,13 @@ class Controller:
             return 0 
      
     
-    def scatter_encryption(self,folder,password,enc,hash,fs,scatter_folder,traces_pwd,traces_enc,traces_hash,traces_fs,traces_out,traces_pwd_decrypt):
-        if traces_out == 1:
-            aux = Local_encryptor(self)
-            aux.decrypt_gui("ds_traces",traces_pwd_decrypt)
+    def scatter_encryption(self,folder,password,enc,hash,fs,scatter_folder,traces_pwd,traces_enc,traces_hash,traces_fs):
         self.encryptor = Scatter_encryption(self)
         self.encryptor.encrypt_gui(folder,password,enc,hash,fs,scatter_folder)
         self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
         return
     
-    def scatter_decryption(self,folder,password,traces_pwd,traces_enc,traces_hash,traces_fs,traces_out,traces_pwd_decrypt):
-        if traces_out == 1:
-            aux = Local_encryptor(self)
-            aux.decrypt_gui("ds_traces",traces_pwd_decrypt)
+    def scatter_decryption(self,folder,password,traces_pwd,traces_enc,traces_hash,traces_fs):
         self.encryptor = Scatter_encryption(self)
         self.encryptor.decrypt_gui(folder,password)
         self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
