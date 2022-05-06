@@ -92,7 +92,7 @@ class Controller:
             return 0 
      
     
-    def scatter_encryption(self,folder,password,enc,hash,fs,scatter_folder,traces_pwd,traces_enc,traces_hash,traces_fs):
+    def scatter_encryption(self,folder,password,enc,hash,fs,scatter_folder,traces_pwd,traces_enc,traces_hash,traces_fs,traces_out):
         self.encryptor = Scatter_encryption(self)
         self.encryptor.encrypt_gui(folder,password,enc,hash,fs,scatter_folder)
         self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
