@@ -98,14 +98,14 @@ class DS_interface:
         screen["back"] = back
         return screen
 
-    def password_screen(self):
+    def password_screen(self,msg):
         frame = Frame(self.root,background="#232137")
         logo_lbl = Label(frame,image=self.logo,bg="#232137")
         logo_lbl.pack()
         widgets_frame = Frame(frame,background="#232137")
         widgets_frame.pack()
         self.password = StringVar()
-        pwd_input = Label(widgets_frame,text="Enter your password:",bg="#232137",fg="#FFFFFF")
+        pwd_input = Label(widgets_frame,text=msg,bg="#232137",fg="#FFFFFF")
         pwd_input.configure(font=("Courier",16,"italic"))
         pwd_input.grid(column=0,row=0,pady=20)
         pwd_input.grid_columnconfigure(0,weight=1)
@@ -357,7 +357,7 @@ class DS_interface:
             if folder != "":
                 print(folder)
                 aux.destroy()
-                pwd = self.password_screen()
+                pwd = self.password_screen("Enter your password for encryption:")
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
                 info = self.info_screen("Encryption in progress...")
@@ -379,7 +379,7 @@ class DS_interface:
                 fs = self.fs_screen()
                 self.switch_screen(self.current_screen,fs)
                 fs.wait_variable(self.fs)
-                pwd = self.password_screen()
+                pwd = self.password_screen("Enter your password for encryption: ")
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
                 info = self.info_screen("Encryption in progress...")
@@ -392,7 +392,7 @@ class DS_interface:
             file = filedialog.askopenfilename()
             if file != "":
                 aux.destroy()
-                pwd = self.password_screen()
+                pwd = self.password_screen("Enter the password for decryption: ")
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
                 info = self.info_screen("Decryption in progress...")
@@ -412,22 +412,28 @@ class DS_interface:
 
 
     def scatter_op(self):
+        traces_ready = IntVar()
         enc_dec = self.enc_dec_screen()
         self.controller.drive_init()
         traces_out = self.controller.scatter_set_up()
         #Decrypt traces out if exists
         if traces_out == 1:
-            pwd = self.password_screen()
+            pwd = self.password_screen("Enter your password for ds_traces: ")
             self.switch_screen(self.current_screen,pwd)
             pwd.wait_variable(self.password)
             info = self.info_screen("Decryption in progress...")
-            self.switch_screen(self.current_screen,info)
+            t = Thread(target= self.switch_screen,args=[self.current_screen,info])
+            t.start()
             t = Thread(target = self.controller.decryption,args=["ds_traces",self.password.get()])
             t.start()
+
         self.switch_screen(self.current_screen,enc_dec["frame"])
+        enc_dec["frame"].wait_variable(traces_ready)
+
         
         #traces either exist (decrypted) or not
         def auto_encryption():
+            traces_ready.set(1)
             enc_folder = 1
             hash_folder = 2
             fs_folder = 1
@@ -435,7 +441,7 @@ class DS_interface:
             folder_to_encrypt = filedialog.askdirectory()
             if folder_to_encrypt != "":
                 aux.destroy()
-                pwd = self.password_screen()
+                pwd = self.password_screen("Enter your password for encryption: ")
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
                 drive_folder_screen = self.input_screen("Enter a Drive folder to save the scattered fragments \n (If it does not exist, it will be created)")
@@ -453,6 +459,7 @@ class DS_interface:
                 return
             
         def manual_encryption():
+            traces_ready.set(1)
             folder_to_encrypt = filedialog.askdirectory()
             if folder_to_encrypt != "":
                 enc = self.encryption_screen()
@@ -464,7 +471,7 @@ class DS_interface:
                 fs = self.fs_screen()
                 self.switch_screen(self.current_screen,fs)
                 fs.wait_variable(self.fs)
-                pwd = self.password_screen()
+                pwd = self.password_screen("Enter your password for encryption: ")
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
                 drive_folder_screen = self.input_screen("Enter a Drive folder to save the scattered fragments \n (If it does not exist, it will be created)")
@@ -490,7 +497,7 @@ class DS_interface:
             input_screen = self.input_screen("Enter a scattered file to decrypt:")
             self.switch_screen(self.current_screen,input_screen)
             input_screen.wait_variable(self.folder)
-            pwd = self.password_screen()
+            pwd = self.password_screen("Enter the password for decryption: ")
             self.switch_screen(self.current_screen,pwd)
             pwd.wait_variable(self.password)
             go_on = self.proceed_screen("Let's now configure the parameters for encrypting \nds_traces")
@@ -510,7 +517,7 @@ class DS_interface:
             traces_enc = 1
             traces_hash = 1
             traces_fs = 1
-            pwd_screen = self.password_screen()
+            pwd_screen = self.password_screen("Enter your password for encryption: ")
             self.switch_screen(self.current_screen,pwd_screen)
             pwd_screen.wait_variable(self.password)
             info = self.info_screen("Performing encryption...")
@@ -529,7 +536,7 @@ class DS_interface:
             fs = self.fs_screen()
             self.switch_screen(self.current_screen,fs)
             fs.wait_variable(self.fs)
-            pwd_screen = self.password_screen()
+            pwd_screen = self.password_screen("Enter your password for encryption: ")
             self.switch_screen(self.current_screen,pwd_screen)
             pwd_screen.wait_variable(self.password)
             info = self.info_screen("Performing encryption...")
@@ -549,7 +556,7 @@ class DS_interface:
             traces_enc = 1
             traces_hash = 1
             traces_fs = 1
-            pwd_screen = self.password_screen()
+            pwd_screen = self.password_screen("Enter your password for encryption: ")
             self.switch_screen(self.current_screen,pwd_screen)
             pwd_screen.wait_variable(self.password)
             info = self.info_screen("Performing encryption...")
@@ -568,7 +575,7 @@ class DS_interface:
             fs = self.fs_screen()
             self.switch_screen(self.current_screen,fs)
             fs.wait_variable(self.fs)
-            pwd_screen = self.password_screen()
+            pwd_screen = self.password_screen("Enter your password for encryption: ")
             self.switch_screen(self.current_screen,pwd_screen)
             pwd_screen.wait_variable(self.password)
             info = self.info_screen("Performing encryption...")
@@ -601,7 +608,7 @@ class DS_interface:
                 self.enc = 1
                 self.hash = 2
                 self.fs = 1
-                pwd = self.password_screen()
+                pwd = self.password_screen("Enter your password for encryption: ")
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
                 info = self.info_screen("Drive encryption in progress...")
@@ -629,7 +636,7 @@ class DS_interface:
                 fs = self.fs_screen()
                 self.switch_screen(self.current_screen,fs)
                 fs.wait_variable(self.fs)
-                pwd = self.password_screen()
+                pwd = self.password_screen("Enter your password for encryption: ")
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
                 info = self.info_screen("Drive encryption in progress...")
@@ -646,7 +653,7 @@ class DS_interface:
             if file == 0:
                 self.error_msg("File not found", "Could not find Drive file")
             else:
-                pwd = self.password_screen()
+                pwd = self.password_screen("Enter the password for decryption: ")
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
                 info = self.info_screen("Drive decryption in progress...")
@@ -686,7 +693,7 @@ class DS_interface:
                 self.enc = 1
                 self.hash = 2
                 self.fs = 1
-                pwd = self.password_screen()
+                pwd = self.password_screen("Enter your password for encryption: ")
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
                 info = self.info_screen("Dropbox encryption in progress...")
@@ -712,7 +719,7 @@ class DS_interface:
                 fs = self.fs_screen()
                 self.switch_screen(self.current_screen,fs)
                 fs.wait_variable(self.fs)
-                pwd = self.password_screen()
+                pwd = self.password_screen("Enter your password for encryption: ")
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
                 info = self.info_screen("Dropbox encryption in progress...")
@@ -732,7 +739,7 @@ class DS_interface:
             else:
                 file = out[0]
                 path = out[1]
-                pwd = self.password_screen()
+                pwd = self.password_screen("Enter the password for decryprion: ")
                 self.switch_screen(self.current_screen,pwd)
                 pwd.wait_variable(self.password)
                 info = self.info_screen("Dropbox decryption in progress...")

@@ -2,7 +2,6 @@ from dropbox_encryptor import DB_encryptor
 from asyncio.windows_events import NULL
 import subprocess
 import sys
-from encryption_module import Encryption_utils
 from file_system import File_System_Dealer
 from local_encryptor import Local_encryptor
 from password_permutator import Password_permutator
@@ -41,6 +40,7 @@ class Controller:
             print("VeraCrypt is an essential component in DataSekura.")
             print("Please visit https://www.veracrypt.fr/en/Downloads.html for downloading it.")
             return -1
+        self.encryptor = NULL
         return 0
     
 
