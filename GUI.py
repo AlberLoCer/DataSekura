@@ -354,10 +354,10 @@ class DS_interface:
 
     def local_operation(self):
         local = self.local_screen()
-        self.switch_screen(self.home["frame"],local["frame"])
+        self.switch_screen(self.current_screen,local["frame"])
         local["scatter"].configure(command=lambda:(self.scatter_op()))
         local["centralized"].configure(command=lambda:(self.centralized_op()))
-        local["back"].configure(command=lambda:(self.switch_screen(local["frame"],self.home)))
+        local["back"].configure(command=lambda:(self.switch_screen(local["frame"],self.home["frame"])))
         return
     
 
@@ -432,10 +432,12 @@ class DS_interface:
             self.switch_screen(self.current_screen,config["frame"])
             config["auto"].configure(command=lambda:(auto_encryption()))
             config["manual"].configure(command=lambda:(manual_encryption()))
+            config["back"].configure(command=lambda:(self.switch_screen(self.current_screen,enc_dec["frame"])))
             return
 
         enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
         enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
+        enc_dec["back"].configure(command=lambda:(self.local_operation()))
 
 
     def scatter_op(self):
@@ -512,6 +514,7 @@ class DS_interface:
             self.switch_screen(self.current_screen,config["frame"])
             config["auto"].configure(command=lambda:(auto_encryption()))
             config["manual"].configure(command=lambda:(manual_encryption()))
+            config["back"].configure(command=lambda:(self.switch_screen(self.current_screen,enc_dec["frame"])))
             return
         
         def decrypt_op():
@@ -530,6 +533,7 @@ class DS_interface:
 
         enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
         enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
+        enc_dec["back"].configure(command=lambda:(self.local_operation()))
 
     def proceed_with_decryption(self,file,pwd):
         config = self.config_screen()
@@ -574,6 +578,7 @@ class DS_interface:
         
         config["auto"].configure(command=lambda:(auto_encryption()))
         config["manual"].configure(command=lambda:(manual_encryption()))
+        config["back"].configure(command=lambda:(self.scatter_op()))
         return
 
     def proceed_with_encryption(self,folder,pwd,enc,hash,fs,drive_folder):
@@ -621,6 +626,7 @@ class DS_interface:
 
         config["auto"].configure(command=lambda:(auto_encryption()))
         config["manual"].configure(command=lambda:(manual_encryption()))
+        config["back"].configure(command=lambda:(self.scatter_op()))
 
         
 
@@ -710,10 +716,12 @@ class DS_interface:
             self.switch_screen(self.current_screen,config["frame"])
             config["auto"].configure(command=lambda:(auto_encryption()))
             config["manual"].configure(command=lambda:(manual_encryption()))
+            config["back"].configure(command=lambda:(self.switch_screen(self.current_screen,enc_dec["frame"])))
             return
 
         enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
         enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
+        enc_dec["back"].configure(command=lambda:(self.switch_screen(self.current_screen,self.home["frame"])))
         return
 
     def dropbox_op(self):
@@ -806,9 +814,11 @@ class DS_interface:
             self.switch_screen(self.current_screen,config["frame"])
             config["auto"].configure(command=lambda:(auto_encryption()))
             config["manual"].configure(command=lambda:(manual_encryption()))
+            config["back"].configure(command=lambda:(self.switch_screen(self.current_screen,enc_dec["frame"])))
 
         enc_dec["encrypt"].configure(command=lambda:(encrypt_op()))
         enc_dec["decrypt"].configure(command=lambda:(decrypt_op()))
+        enc_dec["back"].configure(command=lambda:(self.switch_screen(self.current_screen,self.home["frame"])))
         return
         
 
