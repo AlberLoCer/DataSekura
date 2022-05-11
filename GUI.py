@@ -1,6 +1,5 @@
 from asyncio.windows_events import NULL
-from email import message
-from tkinter import ttk
+import os
 from tkinter import *
 from tkinter import messagebox
 from tkinter import Canvas
@@ -384,6 +383,9 @@ class DS_interface:
                 info.wait_variable(self.completed)
                 info = self.completed_screen("Encryption Complete!")
                 self.switch_screen(self.current_screen,info)
+            else:
+                self.error_msg("Folder not selected", "Please select a folder to proceed")
+                self.switch_screen(self.current_screen,enc_dec["frame"])
                 
         def manual_encryption():
             aux = Tk()
@@ -410,6 +412,10 @@ class DS_interface:
                 info.wait_variable(self.completed)
                 info = self.completed_screen("Encryption Complete!")
                 self.switch_screen(self.current_screen,info)
+            else:
+                self.error_msg("Folder not selected", "Please select a folder to proceed")
+                self.switch_screen(self.current_screen,enc_dec["frame"])
+
         def decrypt_op():
             aux = Tk()
             file = filedialog.askopenfilename()
@@ -426,6 +432,9 @@ class DS_interface:
                 info.wait_variable(self.completed)
                 info = self.completed_screen("Decryption Complete!")
                 self.switch_screen(self.current_screen,info)
+            else:
+                self.error_msg("File not selected", "Please select an encrypted file (.bin format) to proceed")
+                self.switch_screen(self.current_screen,enc_dec["frame"])
 
         def encrypt_op():
             config = self.config_screen()
@@ -479,7 +488,10 @@ class DS_interface:
                 go_on.wait_variable(self.continue_ok)
                 t = Thread(target=self.proceed_with_encryption,args=[folder_to_encrypt,self.password.get(),enc_folder,hash_folder,fs_folder,drive_folder])
                 t.start()
-
+            else:
+                aux.destroy()
+                self.error_msg("Folder not selected", "Please select a folder to proceed")
+                self.switch_screen(self.current_screen,enc_dec["frame"])
                 return
             
         def manual_encryption():
@@ -507,6 +519,9 @@ class DS_interface:
                 go_on.wait_variable(self.continue_ok)
                 t = Thread(target=self.proceed_with_encryption,args=[folder_to_encrypt,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get(),drive_folder])
                 t.start()
+            else:
+                self.error_msg("Folder not selected", "Please select a folder to proceed")
+                self.switch_screen(self.current_screen,enc_dec["frame"])
             return
         
         def encrypt_op():
@@ -641,8 +656,11 @@ class DS_interface:
             file = self.controller.encryptor.gd.check_folder_exists(self.controller.creds,self.folder.get())
             if file == 0:
                 self.error_msg("Folder not found", "Could not find Drive folder")
+                self.switch_screen(self.current_screen,enc_dec["frame"])
             elif file == -1:
                 self.error_msg("Error", "Something wrong happend while trying to fetch drive folder")
+                self.root.destroy()
+                
             else:
                 self.enc = 1
                 self.hash = 2
@@ -666,8 +684,10 @@ class DS_interface:
             file = self.controller.encryptor.gd.check_folder_exists(self.controller.creds,self.folder.get())
             if file == 0:
                 self.error_msg("File not found", "Could not find Drive file")
+                self.switch_screen(self.current_screen,enc_dec["frame"])
             elif file == -1:
                 self.error_msg("Error", "Something wrong happend while trying to fetch drive file")
+                self.root.destroy()
             else:
                 enc = self.encryption_screen()
                 self.switch_screen(self.current_screen,enc)
@@ -698,6 +718,7 @@ class DS_interface:
             file = self.controller.encryptor.gd.fetch_bin_files(self.folder.get())
             if file == 0:
                 self.error_msg("File not found", "Could not find Drive file")
+                self.switch_screen(self.current_screen,enc_dec["frame"])
             else:
                 pwd = self.password_screen("Enter the password for decryption: ")
                 self.switch_screen(self.current_screen,pwd)
@@ -740,6 +761,7 @@ class DS_interface:
             out = self.controller.encryptor.db.search_folder(self.folder.get())
             if out == -1:
                 self.error_msg("Folder not found","No matching folders found!")
+                self.switch_screen(self.current_screen,enc_dec["frame"])
             else:
                 self.enc = 1
                 self.hash = 2
@@ -763,6 +785,7 @@ class DS_interface:
             out = self.controller.encryptor.db.search_folder(self.folder.get())
             if out == -1:
                 self.error_msg("Folder not found","No matching folders found!")
+                self.switch_screen(self.current_screen,enc_dec["frame"])
             else:
                 enc = self.encryption_screen()
                 self.switch_screen(self.current_screen,enc)
@@ -793,6 +816,7 @@ class DS_interface:
             out = self.controller.encryptor.db.input_and_download_bin(names,paths,self.folder.get())
             if out == -1:
                 self.error_msg("File not found","No matching files found!")
+                self.switch_screen(self.current_screen,enc_dec["frame"])
             else:
                 file = out[0]
                 path = out[1]
