@@ -545,7 +545,7 @@ class DS_interface:
             pwd_screen = self.password_screen("Enter your password for encryption: ")
             self.switch_screen(self.current_screen,pwd_screen)
             pwd_screen.wait_variable(self.password)
-            info = self.info_screen("Performing encryption...")
+            info = self.info_screen("Performing decryption...")
             t = Thread(target=self.switch_screen,args=[self.current_screen,info])
             t.start()
             t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),traces_enc,traces_hash,traces_fs])

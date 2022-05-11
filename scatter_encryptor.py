@@ -11,6 +11,8 @@ class Scatter_encryption(Encryptor):
     def __init__(self,ctr) -> None:
         self.local = Local_encryptor(ctr)
         self.gd = Gd_object()
+        cwd = os.getcwd()
+        self.dstraces = cwd+os.sep+"ds_traces"
         super().__init__(ctr)
 
 
@@ -20,7 +22,6 @@ class Scatter_encryption(Encryptor):
             self.utils = Encryption_utils(folder,0)
         except Exception as e:
             return -1
-        self.dstraces = cwd+os.sep+"ds_traces"
         os.chdir(self.dstraces)
         #If file already exists, it will be really messed up :)
         if os.path.isfile(self.utils.folderDict["folder_name"]+".txt") == False:
@@ -96,4 +97,3 @@ class Scatter_encryption(Encryptor):
     
     def finalize_scatter(self,password,enc,hash,fs):
         self.local.encrypt_gui(self.dstraces,password,enc,hash,fs)
-        os.remove(self.gd.credentials_directory)
