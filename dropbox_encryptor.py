@@ -10,11 +10,11 @@ class DB_encryptor(Encryptor):
         self.local = Local_encryptor(self.ctr)
     
 
-    def encrypt_gui(self,folder,pwd,enc,hash,fs):
+    def encrypt(self,folder,pwd,enc,hash,fs):
         cwd = os.getcwd()
         folder_path, folder_metadata = self.db.download_folder_launch(folder)
         os.chdir(cwd)
-        self.folderDict = self.local.encrypt_gui(folder_path,pwd,enc,hash,fs)
+        self.folderDict = self.local.encrypt(folder_path,pwd,enc,hash,fs)
         if self.folderDict == -1:
             shutil.rmtree(folder_path)
             return
@@ -24,12 +24,12 @@ class DB_encryptor(Encryptor):
         self.db.remove_folder(folder)
         print("Dropbox Folder Successfully Encrypted!")
     
-    def decrypt_gui(self,file,path,pwd):
+    def decrypt(self,file,path,pwd):
         cwd = os.getcwd()
         full_path = os.path.abspath(file)
         file_noext = self.fs.remove_file_extension(full_path)
         os.chdir(cwd)
-        self.folderDict = self.local.decrypt_gui(file_noext,pwd)
+        self.folderDict = self.local.decrypt(file_noext,pwd)
         if self.folderDict == -1:
             os.chdir(cwd)
             os.remove(file)

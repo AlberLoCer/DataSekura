@@ -46,12 +46,12 @@ class Controller:
 
     def encryption(self,folder,password,enc,hash,fs):
         self.encryptor = Local_encryptor(self)
-        self.encryptor.encrypt_gui(folder,password,enc,hash,fs)
+        self.encryptor.encrypt(folder,password,enc,hash,fs)
         self.gui.operation_complete()
     
     def decryption(self,folder,pwd):
         self.encryptor = Local_encryptor(self)
-        self.encryptor.decrypt_gui(folder,pwd)
+        self.encryptor.decrypt(folder,pwd)
         self.gui.operation_complete()
     
     def db_init(self):
@@ -66,22 +66,22 @@ class Controller:
         self.creds = self.encryptor.gd.login()
 
     def drive_encryption(self,file,password,enc,hash,fs):
-        self.encryptor.encrypt_gui(file,password,enc,hash,fs)
+        self.encryptor.encrypt(file,password,enc,hash,fs)
         self.gui.operation_complete()
     
     
     def drive_decryption(self,file,pwd):
-        self.encryptor.decrypt_gui(file,pwd)
+        self.encryptor.decrypt(file,pwd)
         self.gui.operation_complete()
     
     
     def dropbox_encryption(self,folder,password,enc,hash,fs):
-        self.encryptor.encrypt_gui(folder,password,enc,hash,fs)
+        self.encryptor.encrypt(folder,password,enc,hash,fs)
         self.gui.operation_complete()
     
     
     def dropbox_decryption(self,file,path,pwd):
-        self.encryptor.decrypt_gui(file,path,pwd)
+        self.encryptor.decrypt(file,path,pwd)
         self.gui.operation_complete()
     
 
@@ -103,7 +103,7 @@ class Controller:
     
     def scatter_encryption(self,folder,password,enc,hash,fs,scatter_folder,traces_pwd,traces_enc,traces_hash,traces_fs):
         self.encryptor = Scatter_encryption(self)
-        self.encryptor.encrypt_gui(folder,password,enc,hash,fs,scatter_folder)
+        self.encryptor.encrypt(folder,password,enc,hash,fs,scatter_folder)
         self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
         self.gui.operation_complete()
     
@@ -111,13 +111,13 @@ class Controller:
     
     def scatter_decryption(self,folder,password,traces_pwd,traces_enc,traces_hash,traces_fs):
         self.encryptor = Scatter_encryption(self)
-        self.encryptor.decrypt_gui(folder,password)
+        self.encryptor.decrypt(folder,password)
         self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
         self.gui.operation_complete()
         return
     
     def finalize_scatter(self,password,enc,hash,fs):
         self.local = Local_encryptor(self)
-        self.local.encrypt_gui(self.encryptor.dstraces,password,enc,hash,fs)
+        self.local.encrypt(self.encryptor.dstraces,password,enc,hash,fs)
         os.remove(self.encryptor.gd.credentials_directory)
     

@@ -16,7 +16,7 @@ class Scatter_encryption(Encryptor):
         super().__init__(ctr)
 
 
-    def encrypt_gui(self,folder,password,enc,hash,fs,scatter_folder):
+    def encrypt(self,folder,password,enc,hash,fs,scatter_folder):
         cwd = os.getcwd()
         try:
             self.utils = Encryption_utils(folder,0)
@@ -58,7 +58,7 @@ class Scatter_encryption(Encryptor):
             print("There is already an encrypted file named like that!")
             return
     
-    def decrypt_gui(self,filename,password):
+    def decrypt(self,filename,password):
         self.utils = Encryption_utils(NULL,2)
         cwd = os.getcwd()
         file = cwd+os.sep+"ds_traces"+os.sep+filename + ".txt"
@@ -96,4 +96,4 @@ class Scatter_encryption(Encryptor):
         return
     
     def finalize_scatter(self,password,enc,hash,fs):
-        self.local.encrypt_gui(self.dstraces,password,enc,hash,fs)
+        self.local.encrypt(self.dstraces,password,enc,hash,fs)
