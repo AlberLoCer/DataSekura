@@ -25,7 +25,7 @@ class Scatter_encryption(Encryptor):
         #If file already exists, it will be really messed up :)
         if os.path.isfile(self.utils.folderDict["folder_name"]+".txt") == False:
             with open(self.utils.folderDict["folder_name"]+".txt", "w") as f:
-                f.write(self.utils.folderDict["folder_path"]+"|")
+                f.write(self.utils.folderDict["folder_parent"].__str__()+"|")
                 self.utils.encryption_params(self.utils.folderDict,enc,hash,fs)
                 self.utils.password_input(password)
                 print("Encrypting "+ self.utils.folderDict["folder_name"] + "...")
@@ -90,8 +90,7 @@ class Scatter_encryption(Encryptor):
         os.chdir(cwd)
         if os.path.isfile("ds_traces_auto.bin"):
             os.remove("ds_traces_auto.bin")
-        path_to_remove = "ds_traces" + os.sep + file
-        os.remove(path_to_remove)
+        os.remove(file)
         os.remove(self.gd.credentials_directory)
         return
     

@@ -213,8 +213,9 @@ class Encryption_utils:
     def scatter_build_ref_list(self, file):
         ref_list = []
         for i in range(1,int(self.file_number)):
+            file = os.path.basename(file)
             self.file_title = self.fs.remove_file_extension(file)
-            original_name = self.file_title+"_"+repr(i)+".bin.enc"
+            original_name = self.original_path+ os.sep + self.file_title+"_"+repr(i)+".bin.enc"
             passBytes = bytes(original_name,"ascii") 
             masked_name = hashlib.sha512(passBytes).hexdigest()
             ref_dict = dict()
@@ -227,7 +228,7 @@ class Encryption_utils:
         creds = gd.login()
         for i in range(0,int(self.file_number)-1):
             new_path = gd.download_file(creds,drive_list[i]["id"],self.original_path)
-            os.rename(new_path, self.original_path+os.sep+ref_list[i]["name"])
+            os.rename(new_path, ref_list[i]["name"])
 
     def delete_residual_traces(self,gd, drive_list):
         creds = gd.login()
