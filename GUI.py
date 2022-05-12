@@ -712,8 +712,12 @@ class DS_interface:
                 t = Thread(target=self.controller.drive_encryption,args=[file,self.password.get(),self.enc,self.hash,self.fs])
                 t.start()
                 info.wait_variable(self.completed)
-                info = self.completed_screen("Google Drive Encryption Complete!")
-                self.switch_screen(self.current_screen,info)
+                if self.completed.get() == True:
+                    info = self.completed_screen("Encryption Complete!")
+                    self.switch_screen(self.current_screen,info)
+                else:
+                    self.root.destroy()
+                    return
 
         def manual_encryption():
             input_screen = self.input_screen("Enter a Google Drive folder to encrypt:")

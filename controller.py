@@ -76,10 +76,11 @@ class Controller:
             raise e
 
     def drive_encryption(self,file,password,enc,hash,fs):
-        out = self.encryptor.encrypt(file,password,enc,hash,fs)
-        self.gui.operation_complete()
-        if out != -1:
+        try:
+            self.encryptor.encrypt(file,password,enc,hash,fs)
             self.gui.operation_complete()
+        except Exception as e:
+            self.exception_handler()
     
     
     def drive_decryption(self,file,pwd):
