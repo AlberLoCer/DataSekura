@@ -2,6 +2,7 @@ import os
 import subprocess
 from pathlib import Path
 import shutil
+from dataSekura_exceptions import IncorrectPasswordException, VCencryptionException
 import file_system
 class Veracrypt:
     def __init__(self, path):
@@ -21,8 +22,7 @@ class Veracrypt:
                 subprocess.call(["VeraCrypt.exe", "/dismount", "X", "/quit", "/silent", "/force"])
                 self.fs.removeFolder(folderpath)
         else:
-            print("Impossible to encrypt... Try in another directory")
-            return -1
+            raise VCencryptionException()
 
 
     def VC_Decryption(self, volPath, password, folderpath):
@@ -40,6 +40,6 @@ class Veracrypt:
             os.chdir(parent)
             return 0
         else:
-            return -1
+            raise IncorrectPasswordException()
         
         

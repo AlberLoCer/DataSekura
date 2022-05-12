@@ -6,6 +6,7 @@ from password_permutator import Password_permutator
 from user_experience import User_experience
 from veracrypt import Veracrypt
 from file_dealing import File_alterator
+import dataSekura_exceptions
 
 class Encryption_utils:
     def __init__(self, folder, op):
@@ -19,12 +20,10 @@ class Encryption_utils:
         if op == 0:
             init = self.init_Enc(folder)
             if init == -1:
-                print("Permission denied while trying to encrypt this folder...")
-                print("Aborting operation")
-                raise Exception
+                raise dataSekura_exceptions.PermissionDeniedException()
             elif init == 0:
                 print("Could not create backup: Backup already exists!")
-                raise Exception
+                raise dataSekura_exceptions.ExistingBackupException()
         elif op == 1:
             self.init_Dec(folder)
         else:
@@ -40,7 +39,6 @@ class Encryption_utils:
             print("Checking permissions of folder...")
             self.checkPermissions(self.folderDict['folder_path'])
         except Exception as e:
-            print(e.__str__())
             return -1
 
         self.backup = self.fs.directory_backup_create(self.folderDict['folder_path'])
@@ -74,30 +72,24 @@ class Encryption_utils:
     
     def deep_layer_encryption(self):
         if os.path.isfile(self.folderDict["volume_path"]):
-            print("Encrypted volume already exists!")
-            return -1
+            raise dataSekura_exceptions.VolumeException()
         elif os.path.isdir("X:"+os.sep):
-            print("Drive X:// is already being used...")
-            return -1
+            raise dataSekura_exceptions.DriveXexception()
             
-        if self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"]) == -1:
-            return -1
+        try: self.vc.VC_Encryption(self.folderDict["volume_path"], self.permuted_password, self.cmd_hash, self.cmd_encryption, self.cmd_fs, self.volume_size, self.folderDict["folder_path"])
+        except Exception as e:
+            raise e
 
 
     def milestone_encryption(self):
-        if os.path.isfile(self.folderDict["volume_path"]):
-            if self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) != -1:
-                self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
-                print("Encrypting milestone files...")
-                if self.fd.intermediate_encryption() == -1:
-                    return -1
-            else:
-                return -1
-
-            print("Milestone encryption completed!")
-            return
+        if self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) != -1:
+            self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
+            try: self.fd.intermediate_encryption()
+            except Exception as e:
+                raise e
         else:
-            return -1
+            raise dataSekura_exceptions.SplitFileException()
+        return
             
         
     
@@ -110,29 +102,22 @@ class Encryption_utils:
     
     
     def decryption_init(self):
-        print("Preparing decryption environment...")
-        self.final_pass = self.pw.password_permutation(self.permuted_password)
-        print("Decrypting outer layer...")
-        os.chdir(self.folderDict["folder_parent"])
-        base_vol = os.path.basename(self.folderDict["volume_path"])
-        self.vol_path = self.folderDict["folder_parent"].__str__() + os.sep + base_vol
-        self.backup = self.fs.file_backup_creation(self.vol_path)
-        if self.backup == -1:
-            print("Permission denied while trying to decrypt the file...")
-            print("Try to relocate the encrypted file to a different location")
-            print("(e.g. Desktop) and try again...")
-            raise Exception
-        else:
-            return 0
+        try:
+            self.final_pass = self.pw.password_permutation(self.permuted_password)
+            os.chdir(self.folderDict["folder_parent"])
+            base_vol = os.path.basename(self.folderDict["volume_path"])
+            self.vol_path = self.folderDict["folder_parent"].__str__() + os.sep + base_vol
+            self.backup = self.fs.file_backup_creation(self.vol_path)
+        except Exception as e:
+            raise e
     
 
     def outer_layer_decryption(self):
-        if self.vc.VC_Decryption(self.vol_path,self.final_pass, self.folderDict["folder_path"]) == -1:
-            print("Incorrect password!")
+        try:
+            self.vc.VC_Decryption(self.vol_path,self.final_pass, self.folderDict["folder_path"]) == -1
+        except Exception as e:
             os.remove(self.backup)
-            return -1
-        else:
-            return 0
+            raise e
     
     def milestone_decryption(self):
         self.fd.file_number = self.fs.retake_file_number(self.fs.remove_file_extension(self.vol_path))

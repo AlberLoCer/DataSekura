@@ -5,6 +5,7 @@ import math
 import shutil
 import subprocess
 import hashlib
+import dataSekura_exceptions
 
 class File_alterator:
     def __init__(self, ctr):
@@ -52,8 +53,7 @@ class File_alterator:
                 os.remove(chunk_file_name)
                 print("File: "+ repr(i)+ " encrypted with pass: " + self.pwdDict[i])
             else:
-                print(chunk_file_name + " could not be found in your system!")
-                return -1
+                raise dataSekura_exceptions.MilestoneException()
         return 0
 
     def intermediate_decryption(self, parentPath, basename):

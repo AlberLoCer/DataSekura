@@ -1,7 +1,9 @@
+from dataSekura_exceptions import IncorrectPasswordException
 from dropbox_encryptor import DB_encryptor
 from asyncio.windows_events import NULL
 import subprocess
 import sys
+from user_experience import User_experience
 from file_system import File_System_Dealer
 from local_encryptor import Local_encryptor
 from password_permutator import Password_permutator
@@ -21,6 +23,7 @@ class Controller:
         subprocess.check_call([sys.executable, "-m", "pip", "install", "setuptools-rust"])
         self.fs = File_System_Dealer()
         self.pw = Password_permutator()
+        self.ux = User_experience()
         self.base = os.getcwd()
         self.VCpath = self.fs.check_VC_integrity()
         self.SSEpath = self.fs.check_SSFEnc_integrity()
@@ -41,15 +44,21 @@ class Controller:
 
     def encryption(self,folder,password,enc,hash,fs):
         self.encryptor = Local_encryptor(self)
-        out = self.encryptor.encrypt(folder,password,enc,hash,fs)
-        if out != -1:
+        try:
+            self.encryptor.encrypt(folder,password,enc,hash,fs)
             self.gui.operation_complete()
+        except Exception as e:
+            self.gui.destroy_window()
+            self.gui.error_msg("An error occurred",e.__str__())
     
     def decryption(self,folder,pwd):
         self.encryptor = Local_encryptor(self)
-        out = self.encryptor.decrypt(folder,pwd)
-        if out != -1:
+        try:
+            self.encryptor.decrypt(folder,pwd)
             self.gui.operation_complete()
+        except Exception as e:
+            self.gui.destroy_window()
+            self.gui.error_msg("An error occurred",e.__str__())
     
     def db_init(self):
         self.encryptor = DB_encryptor(self)

@@ -865,4 +865,7 @@ class DS_interface:
 
     def operation_complete(self):
         self.completed.set(True)
+    
+    def destroy_window(self):
+        self.root.destroy()
 

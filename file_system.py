@@ -4,6 +4,8 @@ import shutil as sh
 from pathlib import Path
 import math
 from tkinter import filedialog
+
+from dataSekura_exceptions import ExistingBackupException, PermissionDeniedException
 class File_System_Dealer:
    def __init__(self):
       return
@@ -34,11 +36,12 @@ class File_System_Dealer:
       dest = self.remove_file_extension(path)
       str_ext = "(AUX).bin"
       dest = dest + str_ext
+      if os.path.isfile(dest):
+         raise ExistingBackupException()
       try:
          sh.copyfile(path,dest)
       except Exception as e:
-         if isinstance(e,PermissionError):
-            return -1
+         raise PermissionDeniedException()
       return dest
 
    def get_folder_size(self, path):
