@@ -12,35 +12,14 @@ class File_System_Dealer:
       if os.path.isdir("C:/Program Files/VeraCrypt") and os.path.isfile("C:/Program Files/VeraCrypt/VeraCrypt Format.exe"):
          return "C:/Program Files/VeraCrypt"
       else:
-         print("VeraCrypt could not be found in your system.")
-         print("Please select the container folder of VeraCrypt in your system:")
-         self.root = Tk()
-         path = filedialog.askdirectory()
-         if os.path.isdir(path):
-               os.chdir(path)
-               if os.path.isfile("VeraCrypt Format.exe") and os.path.isfile("VeraCrypt.exe"):
-                  return path
-               else:
-                  return ''
-         else:
-               return ''
+         return ""
    
    def check_SSFEnc_integrity(self):
       #Now the checking is more exhaustive
       if os.path.isfile("ssefenc.jar"):
          return os.getcwd()
       else:
-         print("SSE could not be found in your system.")
-         print("Please select the folder where SSE is located:")
-         path = filedialog.askdirectory(title="Select SSE Containing Folder")
-         if os.path.isdir(path):
-            os.chdir(path)
-            if os.path.isfile("ssefenc.jar"):
-               return path
-            else:
-               return ''
-         else:
-               return ''
+         return ""
    
    def directory_backup_create(self,path):
       str_ext = "(AUX)"

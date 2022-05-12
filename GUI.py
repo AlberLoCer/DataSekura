@@ -12,6 +12,8 @@ class DS_interface:
         self.frame_dict = dict()
         # Create an instance of tkinter frame
         self.controller = Controller(self)
+        if (self.controller.SSEpath == "") or (self.controller.VCpath == ""):
+            return
         self.root= Tk()
         self.load_images()
         self.root.title("DataSekura")

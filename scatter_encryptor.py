@@ -53,6 +53,8 @@ class Scatter_encryption(Encryptor):
             os.chmod(self.utils.backup,0o777)
             shutil.rmtree(self.utils.backup)
             os.chdir(cwd)
+            if os.path.isfile(self.gd.credentials_directory):
+                os.remove(self.gd.credentials_directory)
             return
         else:
             print("There is already an encrypted file named like that!")

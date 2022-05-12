@@ -6,7 +6,6 @@ from file_system import File_System_Dealer
 from local_encryptor import Local_encryptor
 from password_permutator import Password_permutator
 from scatter_encryptor import Scatter_encryption
-from user_experience import User_experience
 from veracrypt import Veracrypt
 from file_dealing import File_alterator
 import os
@@ -22,7 +21,6 @@ class Controller:
         subprocess.check_call([sys.executable, "-m", "pip", "install", "setuptools-rust"])
         self.fs = File_System_Dealer()
         self.pw = Password_permutator()
-        self.ux = User_experience()
         self.base = os.getcwd()
         self.VCpath = self.fs.check_VC_integrity()
         self.SSEpath = self.fs.check_SSFEnc_integrity()
@@ -31,18 +29,15 @@ class Controller:
                 self.vc = Veracrypt(self.VCpath)
                 self.fd = File_alterator(self)            
             else:
-                print("SSE File Encryptor could not be found in the system!")
-                print("SSE File Encryptor is an essential component in DataSekura.")
-                print("Please visit https://paranoiaworks.mobi/download/ for downloading it.")
+                self.error_gui("S.S.E File Encryptor not found","SSE File Encryptor could not be found in the project folder.\nSSE File Encryptor is an essential component in DataSekura. \n Please visit https://paranoiaworks.mobi/download/ for downloading it.")
                 return -1
         else:
-            print("VeraCrypt could not be found in the system!")
-            print("VeraCrypt is an essential component in DataSekura.")
-            print("Please visit https://www.veracrypt.fr/en/Downloads.html for downloading it.")
+            self.error_gui("VeraCrypt not found", "VeraCrypt could not be found in Program Files. \nPlease visit https://www.veracrypt.fr/en/Downloads.html for downloading it.")
             return -1
         self.encryptor = NULL
         return 0
-    
+    def error_gui(self,title,msg):
+        self.gui.error_msg(title,msg)
 
     def encryption(self,folder,password,enc,hash,fs):
         self.encryptor = Local_encryptor(self)
