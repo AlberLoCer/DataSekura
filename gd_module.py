@@ -3,6 +3,8 @@ import shutil
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 import os
+
+from dataSekura_exceptions import DriveLoginException
 class Gd_object:
    def __init__(self):
       try:
@@ -24,8 +26,8 @@ class Gd_object:
          else:
             auth.Authorize()
          return GoogleDrive(auth)
-      except Exception as e:
-         raise e
+      except Exception:
+         raise DriveLoginException()
 
 
 

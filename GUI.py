@@ -463,7 +463,12 @@ class DS_interface:
 
     def scatter_op(self):
         enc_dec = self.enc_dec_screen()
-        self.controller.drive_init()
+        try:
+            self.controller.drive_init()
+        except Exception as e:
+            self.error_msg("Invalid login", e.__str__())
+            self.root.destroy()
+            return
         traces_out = self.controller.scatter_set_up()
         #Decrypt traces out if exists
         if traces_out == 1:

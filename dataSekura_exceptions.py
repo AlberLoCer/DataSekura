@@ -59,11 +59,11 @@ class DropboxTokenException(Exception):
         super().__init__(*args)
     
     def __str__(self) -> str:
-        return "Invalid access token introduced"
+        return "Invalid access token introduced."
 
 class DriveLoginException(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
     
     def __str__(self) -> str:
-        return "Invalid user authentication flow"
+        return "Invalid user authentication flow."
