@@ -112,13 +112,16 @@ class DS_interface:
         pwd_input.grid(column=0,row=0,pady=20)
         pwd_input.grid_columnconfigure(0,weight=1)
         pwd_entry = Entry(widgets_frame,show="*")
-        pwd_entry.grid(column=0,row=1,pady=10)
+        pwd_entry.grid(column=0,row=2)
         pwd_entry.grid_columnconfigure(0,weight=1)
         ok = Button(widgets_frame,text="OK")
-        ok.grid(column=0,row=2,pady=10)
+        ok.grid(column=0,row=3,pady=10)
         ok.grid_columnconfigure(0,weight=1)
         def apply():
-            self.password.set(pwd_entry.get())
+            if pwd_entry.get() == "":
+                self.info_msg("Empty Password", "Please introduce a valid password.")
+            else:
+                self.password.set(pwd_entry.get())
         ok.config(command=lambda:(apply()))
         return frame
 
