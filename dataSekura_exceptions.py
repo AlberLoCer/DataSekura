@@ -53,3 +53,17 @@ class IncorrectPasswordException(Exception):
     
     def __str__(self) -> str:
         return "Incorrect password!"
+
+class DropboxTokenException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "Invalid access token introduced"
+
+class DriveLoginException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "Invalid user authentication flow"

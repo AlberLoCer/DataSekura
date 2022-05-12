@@ -5,21 +5,28 @@ from pydrive2.drive import GoogleDrive
 import os
 class Gd_object:
    def __init__(self):
-      self.credentials_directory = os.getcwd()+os.sep+"credentials_module.json"
-      self.creds = self.login()
+      try:
+         self.credentials_directory = os.getcwd()+os.sep+"credentials_module.json"
+         self.creds = self.login()
+      except Exception as e:
+         raise e
       return
 
    def login(self):
-      auth = GoogleAuth()
-      auth.LoadCredentialsFile(self.credentials_directory)
-      if auth.credentials is None:
-         auth.LocalWebserverAuth()
-      if(auth.access_token_expired):
-         auth.Refresh()
-         auth.SaveCredentialsFile(self.credentials_directory)
-      else:
-         auth.Authorize()
-      return GoogleDrive(auth)
+      try:
+         auth = GoogleAuth()
+         auth.LoadCredentialsFile(self.credentials_directory)
+         if auth.credentials is None:
+            auth.LocalWebserverAuth()
+         if(auth.access_token_expired):
+            auth.Refresh()
+            auth.SaveCredentialsFile(self.credentials_directory)
+         else:
+            auth.Authorize()
+         return GoogleDrive(auth)
+      except Exception as e:
+         raise e
+
 
 
    def criteria(self,e):

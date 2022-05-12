@@ -1,3 +1,4 @@
+from tkinter import E
 from dataSekura_exceptions import IncorrectPasswordException
 from dropbox_encryptor import DB_encryptor
 from asyncio.windows_events import NULL
@@ -63,17 +64,16 @@ class Controller:
         self.encryptor.db.init_db()
 
     def db_client_setup(self,token):
-        out = self.encryptor.db.set_up_client(token)
-        if out == -1:
-            #ERROR
-            return
+        try:self.encryptor.db.set_up_client(token)
+        except Exception as e:
+            raise e
     
     def drive_init(self):
-        self.encryptor = GoogleDriveEncryptor(self)
-        out = self.creds = self.encryptor.gd.login()
-        if out == -1:
-            #ERROR
-            return
+        try:
+            self.encryptor = GoogleDriveEncryptor(self)
+            self.creds = self.encryptor.gd.login()
+        except Exception as e:
+            raise e
 
     def drive_encryption(self,file,password,enc,hash,fs):
         out = self.encryptor.encrypt(file,password,enc,hash,fs)
@@ -145,5 +145,6 @@ class Controller:
             return out
     
     def exception_handler(self,e):
-        self.gui.operation_complete(False)
         self.gui.error_msg("An error occurred",e.__str__())
+        self.gui.operation_complete(False)
+        

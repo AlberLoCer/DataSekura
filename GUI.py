@@ -419,7 +419,6 @@ class DS_interface:
                     info = self.completed_screen("Encryption Complete!")
                     self.switch_screen(self.current_screen,info)
                 else:
-                    self.password.set("")
                     self.switch_screen(self.current_screen,self.home["frame"])
             else:
                 self.error_msg("Folder not selected", "Please select a folder to proceed")
@@ -444,7 +443,7 @@ class DS_interface:
                     info = self.completed_screen("Decryption Complete!")
                     self.switch_screen(self.current_screen,info)
                 else:
-                    self.switch_screen(self.current_screen,self.home["frame"])
+                    self.root.destroy()
             else:
                 self.error_msg("File not selected", "Please select an encrypted file (.bin format) to proceed")
                 self.switch_screen(self.current_screen,enc_dec["frame"])
@@ -660,7 +659,12 @@ class DS_interface:
 
     def drive_op(self):
         enc_dec = self.enc_dec_screen()
-        self.controller.drive_init()
+        try:
+            self.controller.drive_init()
+        except Exception as e:
+            self.error_msg("Invalid login", e.__str__())
+            self.root.destroy()
+            return
         self.switch_screen(self.current_screen,enc_dec["frame"])
         def auto_encryption():
             input_screen = self.input_screen("Enter a Google Drive folder to encrypt:")
@@ -763,7 +767,12 @@ class DS_interface:
         token_screen = self.dropbox_token_screen()
         self.switch_screen(self.current_screen,token_screen)
         token_screen.wait_variable(self.user_token)
-        self.controller.db_client_setup(self.user_token.get())
+        try:
+            self.controller.db_client_setup(self.user_token.get())
+        except Exception as e:
+            self.error_msg("Invalid access token", e.__str__())
+            self.root.destroy()
+            return
         enc_dec = self.enc_dec_screen()
         self.switch_screen(self.current_screen,enc_dec["frame"])
 

@@ -3,6 +3,8 @@ import dropbox
 from pathlib import Path
 import os
 import fnmatch
+
+from dataSekura_exceptions import DropboxTokenException
 class Db_object:
     def __init__(self):
         return
@@ -18,7 +20,7 @@ class Db_object:
         try:
             auth_result = self.auth_flow.finish(token)
         except Exception as e:
-            return -1
+            raise DropboxTokenException()
         self.dbx = dropbox.Dropbox(oauth2_refresh_token=auth_result.refresh_token, app_key=self.access_key)
         return 0
     
