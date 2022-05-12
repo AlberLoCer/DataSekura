@@ -80,11 +80,26 @@ class DriveDownloadException(Exception):
         super().__init__(*args)
     
     def __str__(self) -> str:
-        return "Could not fetch requested Google Drive resource"
+        return "Could not fetch requested Google Drive resource."
 
 class DriveUploadException(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
     
     def __str__(self) -> str:
-        return "Could not upload file to Google Drive"
+        return "Could not upload file to Google Drive."
+
+class DropboxDownloadException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "Could not fetch requested Dropbox resource."
+
+class DropboxUploadException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "Could not upload file to Dropbox."
+

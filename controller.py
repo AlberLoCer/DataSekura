@@ -80,6 +80,8 @@ class Controller:
             self.encryptor.encrypt(file,password,enc,hash,fs)
             self.gui.operation_complete()
         except Exception as e:
+            if os.path.isfile(self.encryptor.gd.credentials_directory):
+                os.remove(self.encryptor.gd.credentials_directory)
             self.exception_handler(e)
     
     
@@ -88,19 +90,26 @@ class Controller:
             self.encryptor.decrypt(file,pwd)
             self.gui.operation_complete()
         except Exception as e:
+            if os.path.isfile(self.encryptor.gd.credentials_directory):
+                os.remove(self.encryptor.gd.credentials_directory)
             self.exception_handler(e)
     
     
     def dropbox_encryption(self,folder,password,enc,hash,fs):
-        out = self.encryptor.encrypt(folder,password,enc,hash,fs)
-        if out != -1:
+        try:
+            self.encryptor.encrypt(folder,password,enc,hash,fs)
             self.gui.operation_complete()
+        except Exception as e:
+            self.exception_handler(e)
+            
     
     
     def dropbox_decryption(self,file,path,pwd):
-        out = self.encryptor.decrypt(file,path,pwd)
-        if out != -1:
+        try:
+            self.encryptor.decrypt(file,path,pwd)
             self.gui.operation_complete()
+        except Exception as e:
+            self.exception_handler(e)
     
 
     def scatter_set_up(self): 
