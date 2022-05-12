@@ -74,3 +74,17 @@ class ExistingScatterException(Exception):
     
     def __str__(self) -> str:
         return "There is already a scattered file named like that!"
+
+class DriveDownloadException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "Could not fetch requested Google Drive resource"
+
+class DriveUploadException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "Could not upload file to Google Drive"

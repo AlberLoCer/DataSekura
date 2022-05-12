@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 import shutil
+from dataSekura_exceptions import DriveDownloadException, DriveUploadException
 from encryptor import Encryptor
 from gd_module import Gd_object
 from local_encryptor import Local_encryptor
@@ -15,38 +16,49 @@ class GoogleDriveEncryptor(Encryptor):
     
     def encrypt(self,file,password,enc,hash,fs):
         creds = self.gd.login()
-        folderpath = self.gd.download_folder_launch(file) 
+        try:
+            folderpath = self.gd.download_folder_launch(file) 
+        except Exception as e:
+            raise DriveDownloadException()
+
         parent_dict = self.gd.search_parent(file) #Probably will need to check this in the future
-        print("Encrypting folder...")
-        self.folderDict = self.local.encrypt(folderpath,password,enc,hash,fs)
-        if self.folderDict == -1:
-            print("Failed to encrypt Google Drive Folder")
+        try:
+            self.folderDict = self.local.encrypt(folderpath,password,enc,hash,fs)
+        except Exception as e:
             self.gd.hard_reset(folderpath)
-            return 
+            raise e
         try:
             gfile = self.gd.upload(self.folderDict["volume_path"], parent_dict['parent_id'], os.path.basename(self.folderDict["volume_path"]), creds)
-            print("Cleaning up residual files...")
+        except Exception as e:
+            raise DriveUploadException()
         finally:
             gfile.content.close()
             if gfile.uploaded:
                 os.remove(self.folderDict["volume_path"])
                 self.gd.delete_file(file)
-        self.gd.hard_reset(folderpath)
-        print("Google Drive Folder Successfully Encrypted!")
+        if os.path.isdir(folderpath):
+            self.gd.hard_reset(folderpath)
         return
     
     def decrypt(self,file,password):
         creds = self.gd.login()
-        folderpath = self.gd.download_file(creds,file["id"],os.getcwd())
+        try:
+            folderpath = self.gd.download_file(creds,file["id"],os.getcwd())
+        except Exception as e:
+            raise DriveDownloadException()
         parent_dict = self.gd.search_parent(file)
         print("Decrypting the file...")
-        self.folderDict = self.local.decrypt(folderpath,password)
-        if self.folderDict == -1:
-            print("Failed to decrypt Google Drive Folder")
+        try:
+            self.folderDict = self.local.decrypt(folderpath,password)
+        except Exception as e:
             self.gd.hard_reset(folderpath)
-            return
+            raise e
         print("Cleaning up residual files...")
-        self.gd.upload_folder(self.folderDict["folder_path"], parent_dict['parent_id'], self.folderDict["folder_name"])
-        self.gd.hard_reset(self.folderDict["folder_path"])
+        try:
+            self.gd.upload_folder(self.folderDict["folder_path"], parent_dict['parent_id'], self.folderDict["folder_name"])
+        except Exception as e:
+            raise DriveUploadException()
+        if os.path.isdir(self.folderDict["folder_path"]):
+            self.gd.hard_reset(self.folderDict["folder_path"])
         self.gd.delete_file(file)
         print("Google Drive Folder Successfully Decrypted!")

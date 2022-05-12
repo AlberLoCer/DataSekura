@@ -80,13 +80,15 @@ class Controller:
             self.encryptor.encrypt(file,password,enc,hash,fs)
             self.gui.operation_complete()
         except Exception as e:
-            self.exception_handler()
+            self.exception_handler(e)
     
     
     def drive_decryption(self,file,pwd):
-        out = self.encryptor.decrypt(file,pwd)
-        if out != -1:
+        try:
+            self.encryptor.decrypt(file,pwd)
             self.gui.operation_complete()
+        except Exception as e:
+            self.exception_handler(e)
     
     
     def dropbox_encryption(self,folder,password,enc,hash,fs):
