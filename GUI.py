@@ -383,8 +383,11 @@ class DS_interface:
                 t = Thread(target=self.controller.encryption,args=[folder,self.password.get(),self.enc,self.hash,self.fs])
                 t.start()
                 info.wait_variable(self.completed)
-                info = self.completed_screen("Encryption Complete!")
-                self.switch_screen(self.current_screen,info)
+                if self.completed.get() == True:
+                    info = self.completed_screen("Encryption Complete!")
+                    self.switch_screen(self.current_screen,info)
+                else:
+                    self.switch_screen(self.current_screen,self.home["frame"])
             else:
                 self.error_msg("Folder not selected", "Please select a folder to proceed")
                 self.switch_screen(self.current_screen,enc_dec["frame"])
@@ -412,11 +415,16 @@ class DS_interface:
                 t = Thread(target=self.controller.encryption,args=[folder,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
                 t.start()
                 info.wait_variable(self.completed)
-                info = self.completed_screen("Encryption Complete!")
-                self.switch_screen(self.current_screen,info)
+                if self.completed.get() == True:
+                    info = self.completed_screen("Encryption Complete!")
+                    self.switch_screen(self.current_screen,info)
+                else:
+                    self.password.set("")
+                    self.switch_screen(self.current_screen,self.home["frame"])
             else:
                 self.error_msg("Folder not selected", "Please select a folder to proceed")
                 self.switch_screen(self.current_screen,enc_dec["frame"])
+            
 
         def decrypt_op():
             aux = Tk()
@@ -432,8 +440,11 @@ class DS_interface:
                 t = Thread(target=self.controller.decryption,args=[file,self.password.get()])
                 t.start()
                 info.wait_variable(self.completed)
-                info = self.completed_screen("Decryption Complete!")
-                self.switch_screen(self.current_screen,info)
+                if self.completed.get() == True:
+                    info = self.completed_screen("Decryption Complete!")
+                    self.switch_screen(self.current_screen,info)
+                else:
+                    self.switch_screen(self.current_screen,self.home["frame"])
             else:
                 self.error_msg("File not selected", "Please select an encrypted file (.bin format) to proceed")
                 self.switch_screen(self.current_screen,enc_dec["frame"])
@@ -863,8 +874,8 @@ class DS_interface:
         new_frame.pack(fill="both",expand=True)
         self.current_screen = new_frame
 
-    def operation_complete(self):
-        self.completed.set(True)
+    def operation_complete(self,v):
+        self.completed.set(v)
     
     def destroy_window(self):
         self.root.destroy()

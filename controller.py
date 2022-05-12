@@ -46,19 +46,17 @@ class Controller:
         self.encryptor = Local_encryptor(self)
         try:
             self.encryptor.encrypt(folder,password,enc,hash,fs)
-            self.gui.operation_complete()
+            self.gui.operation_complete(True)
         except Exception as e:
-            self.gui.destroy_window()
-            self.gui.error_msg("An error occurred",e.__str__())
+            self.exception_handler(e)
     
     def decryption(self,folder,pwd):
         self.encryptor = Local_encryptor(self)
         try:
             self.encryptor.decrypt(folder,pwd)
-            self.gui.operation_complete()
+            self.gui.operation_complete(True)
         except Exception as e:
-            self.gui.destroy_window()
-            self.gui.error_msg("An error occurred",e.__str__())
+            self.exception_handler(e)
     
     def db_init(self):
         self.encryptor = DB_encryptor(self)
@@ -146,3 +144,6 @@ class Controller:
         else:
             return out
     
+    def exception_handler(self,e):
+        self.gui.operation_complete(False)
+        self.gui.error_msg("An error occurred",e.__str__())
