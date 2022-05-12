@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 import shutil
+from dataSekura_exceptions import ExistingScatterException
 from encryption_module import Encryption_utils
 from encryptor import Encryptor
 from local_encryptor import Local_encryptor
@@ -21,7 +22,7 @@ class Scatter_encryption(Encryptor):
         try:
             self.utils = Encryption_utils(folder,0)
         except Exception as e:
-            return -1
+            raise e
         os.chdir(self.dstraces)
         #If file already exists, it will be really messed up :)
         if os.path.isfile(self.utils.folderDict["folder_name"]+".txt") == False:
@@ -29,26 +30,28 @@ class Scatter_encryption(Encryptor):
                 f.write(self.utils.folderDict["folder_parent"].__str__()+"|")
                 self.utils.encryption_params(self.utils.folderDict,enc,hash,fs)
                 self.utils.password_input(password)
-                print("Encrypting "+ self.utils.folderDict["folder_name"] + "...")
-                if self.utils.deep_layer_encryption() == -1:
+                try:
+                    self.utils.deep_layer_encryption()
+                except Exception as e:
                     f.close()
                     os.remove(self.gd.credentials_directory)
                     os.remove(self.dstraces+os.sep+self.utils.folderDict["folder_name"]+".txt")
                     shutil.rmtree(self.utils.backup)
-                    return -1
-                print("First layer of encryption successfully created!")
-                print("Splitting and permutating the volume...")
-                if self.utils.milestone_encryption() == -1:
+                    raise e
+                try:
+                    self.utils.milestone_encryption()
+                except Exception as e:
                     f.close()
                     os.remove(self.gd.credentials_directory)
                     os.remove(self.utils.folderDict["folder_path"]+".txt")
                     shutil.rmtree(self.utils.backup)
-                    return -1
-                print("Introduce a Drive Folder (If folder does not exist, It will be created): ")
-                self.utils.perform_scatter(self.gd,f,scatter_folder)
-                f.close()
+                    raise e
+                try:
+                    self.utils.perform_scatter(self.gd,f,scatter_folder)
+                    f.close()
+                except Exception as e:
+                    raise e
             print("Encrypting ds_traces...")
-            
             os.chdir(self.utils.folderDict["folder_parent"])
             os.chmod(self.utils.backup,0o777)
             shutil.rmtree(self.utils.backup)
@@ -57,8 +60,7 @@ class Scatter_encryption(Encryptor):
                 os.remove(self.gd.credentials_directory)
             return
         else:
-            print("There is already an encrypted file named like that!")
-            return
+            raise ExistingScatterException()
     
     def decrypt(self,filename,password):
         self.utils = Encryption_utils(NULL,2)

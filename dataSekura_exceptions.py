@@ -67,3 +67,10 @@ class DriveLoginException(Exception):
     
     def __str__(self) -> str:
         return "Invalid user authentication flow."
+
+class ExistingScatterException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "There is already a scattered file named like that!"

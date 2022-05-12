@@ -118,12 +118,14 @@ class Controller:
     
     def scatter_encryption(self,folder,password,enc,hash,fs,scatter_folder,traces_pwd,traces_enc,traces_hash,traces_fs):
         self.encryptor = Scatter_encryption(self)
-        out = self.encryptor.encrypt(folder,password,enc,hash,fs,scatter_folder)
-        if out != -1:
-            out = self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
-            if out != -1:
-                self.gui.operation_complete()
-    
+        try:
+            self.encryptor.encrypt(folder,password,enc,hash,fs,scatter_folder)
+            self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
+            self.gui.operation_complete()
+        except Exception as e:
+            if os.path.isfile(self.encryptor.gd.credentials_directory):
+                os.remove(self.encryptor.gd.credentials_directory)
+            self.exception_handler(e)
         return
     
     def scatter_decryption(self,folder,password,traces_pwd,traces_enc,traces_hash,traces_fs):
@@ -137,12 +139,12 @@ class Controller:
     
     def finalize_scatter(self,password,enc,hash,fs):
         self.local = Local_encryptor(self)
-        out = self.local.encrypt(self.encryptor.dstraces,password,enc,hash,fs)
-        if out != -1:
+        try:
+            self.local.encrypt(self.encryptor.dstraces,password,enc,hash,fs)
             os.remove(self.encryptor.gd.credentials_directory)
-            return 0
-        else:
-            return out
+        except Exception as e:
+            raise e
+
     
     def exception_handler(self,e):
         self.gui.error_msg("An error occurred",e.__str__())
