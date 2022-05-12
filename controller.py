@@ -41,43 +41,56 @@ class Controller:
 
     def encryption(self,folder,password,enc,hash,fs):
         self.encryptor = Local_encryptor(self)
-        self.encryptor.encrypt(folder,password,enc,hash,fs)
-        self.gui.operation_complete()
+        out = self.encryptor.encrypt(folder,password,enc,hash,fs)
+        if out != -1:
+            self.gui.operation_complete()
     
     def decryption(self,folder,pwd):
         self.encryptor = Local_encryptor(self)
-        self.encryptor.decrypt(folder,pwd)
-        self.gui.operation_complete()
+        out = self.encryptor.decrypt(folder,pwd)
+        if out != -1:
+            self.gui.operation_complete()
     
     def db_init(self):
         self.encryptor = DB_encryptor(self)
         self.encryptor.db.init_db()
 
     def db_client_setup(self,token):
-        self.encryptor.db.set_up_client(token)
+        out = self.encryptor.db.set_up_client(token)
+        if out == -1:
+            #ERROR
+            return
     
     def drive_init(self):
         self.encryptor = GoogleDriveEncryptor(self)
-        self.creds = self.encryptor.gd.login()
+        out = self.creds = self.encryptor.gd.login()
+        if out == -1:
+            #ERROR
+            return
 
     def drive_encryption(self,file,password,enc,hash,fs):
-        self.encryptor.encrypt(file,password,enc,hash,fs)
+        out = self.encryptor.encrypt(file,password,enc,hash,fs)
         self.gui.operation_complete()
+        if out != -1:
+            self.gui.operation_complete()
     
     
     def drive_decryption(self,file,pwd):
-        self.encryptor.decrypt(file,pwd)
-        self.gui.operation_complete()
+        out = self.encryptor.decrypt(file,pwd)
+        if out != -1:
+            self.gui.operation_complete()
     
     
     def dropbox_encryption(self,folder,password,enc,hash,fs):
-        self.encryptor.encrypt(folder,password,enc,hash,fs)
-        self.gui.operation_complete()
+        out = self.encryptor.encrypt(folder,password,enc,hash,fs)
+        if out != -1:
+            self.gui.operation_complete()
     
     
     def dropbox_decryption(self,file,path,pwd):
-        self.encryptor.decrypt(file,path,pwd)
-        self.gui.operation_complete()
+        out = self.encryptor.decrypt(file,path,pwd)
+        if out != -1:
+            self.gui.operation_complete()
     
 
     def scatter_set_up(self): 
@@ -98,21 +111,29 @@ class Controller:
     
     def scatter_encryption(self,folder,password,enc,hash,fs,scatter_folder,traces_pwd,traces_enc,traces_hash,traces_fs):
         self.encryptor = Scatter_encryption(self)
-        self.encryptor.encrypt(folder,password,enc,hash,fs,scatter_folder)
-        self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
-        self.gui.operation_complete()
+        out = self.encryptor.encrypt(folder,password,enc,hash,fs,scatter_folder)
+        if out != -1:
+            out = self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
+            if out != -1:
+                self.gui.operation_complete()
     
         return
     
     def scatter_decryption(self,folder,password,traces_pwd,traces_enc,traces_hash,traces_fs):
         self.encryptor = Scatter_encryption(self)
-        self.encryptor.decrypt(folder,password)
-        self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
-        self.gui.operation_complete()
+        out = self.encryptor.decrypt(folder,password)
+        if out != -1:
+            out = self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
+            if out != -1:
+                self.gui.operation_complete()
         return
     
     def finalize_scatter(self,password,enc,hash,fs):
         self.local = Local_encryptor(self)
-        self.local.encrypt(self.encryptor.dstraces,password,enc,hash,fs)
-        os.remove(self.encryptor.gd.credentials_directory)
+        out = self.local.encrypt(self.encryptor.dstraces,password,enc,hash,fs)
+        if out != -1:
+            os.remove(self.encryptor.gd.credentials_directory)
+            return 0
+        else:
+            return out
     
