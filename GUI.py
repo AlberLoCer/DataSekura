@@ -592,8 +592,12 @@ class DS_interface:
             t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),traces_enc,traces_hash,traces_fs])
             t.start()
             info.wait_variable(self.completed)
-            info = self.completed_screen("Decryption Complete!")
-            self.switch_screen(self.current_screen,info)
+            if self.completed.get() == True:
+                info = self.completed_screen("Decryption Complete!")
+                self.switch_screen(self.current_screen,info)
+            else:
+                self.root.destroy()
+                return
             return
         def manual_encryption():
             enc = self.encryption_screen()
@@ -614,8 +618,13 @@ class DS_interface:
             t = Thread(target=self.controller.scatter_decryption,args=[file,pwd,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
             t.start()
             info.wait_variable(self.completed)
-            info = self.completed_screen("Decryption Complete!")
-            self.switch_screen(self.current_screen,info)
+            if self.completed.get() == True:
+                info = self.completed_screen("Decryption Complete!")
+                self.switch_screen(self.current_screen,info)
+            else:
+                self.root.destroy()
+                return
+            return
         
         config["auto"].configure(command=lambda:(auto_encryption()))
         config["manual"].configure(command=lambda:(manual_encryption()))
