@@ -599,6 +599,7 @@ class DS_interface:
                 info = self.completed_screen("Decryption Complete!")
                 self.switch_screen(self.current_screen,info)
             else:
+                self.controller.finalize_scatter(self.password.get(),traces_enc,traces_hash,traces_fs)
                 self.root.destroy()
                 return
             return
@@ -625,6 +626,7 @@ class DS_interface:
                 info = self.completed_screen("Decryption Complete!")
                 self.switch_screen(self.current_screen,info)
             else:
+                self.controller.finalize_scatter(self.password.get(),self.enc.get(),self.hash.get(),self.fs.get())
                 self.root.destroy()
                 return
             return
