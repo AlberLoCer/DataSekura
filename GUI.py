@@ -488,7 +488,8 @@ class DS_interface:
                 self.switch_screen(self.current_screen,enc_dec["frame"])
             else:
                 self.root.destroy()
-            
+        else:
+            self.switch_screen(self.current_screen,enc_dec["frame"])
         def auto_encryption():
             enc_folder = 1
             hash_folder = 2

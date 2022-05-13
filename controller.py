@@ -78,7 +78,7 @@ class Controller:
     def drive_encryption(self,file,password,enc,hash,fs):
         try:
             self.encryptor.encrypt(file,password,enc,hash,fs)
-            self.gui.operation_complete()
+            self.gui.operation_complete(True)
         except Exception as e:
             if os.path.isfile(self.encryptor.gd.credentials_directory):
                 os.remove(self.encryptor.gd.credentials_directory)
@@ -88,7 +88,7 @@ class Controller:
     def drive_decryption(self,file,pwd):
         try:
             self.encryptor.decrypt(file,pwd)
-            self.gui.operation_complete()
+            self.gui.operation_complete(True)
         except Exception as e:
             if os.path.isfile(self.encryptor.gd.credentials_directory):
                 os.remove(self.encryptor.gd.credentials_directory)
@@ -98,7 +98,7 @@ class Controller:
     def dropbox_encryption(self,folder,password,enc,hash,fs):
         try:
             self.encryptor.encrypt(folder,password,enc,hash,fs)
-            self.gui.operation_complete()
+            self.gui.operation_complete(True)
         except Exception as e:
             self.exception_handler(e)
             
@@ -107,7 +107,7 @@ class Controller:
     def dropbox_decryption(self,file,path,pwd):
         try:
             self.encryptor.decrypt(file,path,pwd)
-            self.gui.operation_complete()
+            self.gui.operation_complete(True)
         except Exception as e:
             self.exception_handler(e)
     
@@ -133,7 +133,7 @@ class Controller:
         try:
             self.encryptor.encrypt(folder,password,enc,hash,fs,scatter_folder)
             self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
-            self.gui.operation_complete()
+            self.gui.operation_complete(True)
         except Exception as e:
             if os.path.isfile(self.encryptor.gd.credentials_directory):
                 os.remove(self.encryptor.gd.credentials_directory)
@@ -145,7 +145,7 @@ class Controller:
             self.encryptor = Scatter_encryption(self)
             self.encryptor.decrypt(folder,password)
             self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
-            self.gui.operation_complete()
+            self.gui.operation_complete(True)
         except Exception as e:
             if os.path.isfile(self.encryptor.gd.credentials_directory):
                 os.remove(self.encryptor.gd.credentials_directory)
@@ -156,7 +156,8 @@ class Controller:
         self.local = Local_encryptor(self)
         try:
             self.local.encrypt(self.encryptor.dstraces,password,enc,hash,fs)
-            os.remove(self.encryptor.gd.credentials_directory)
+            if os.path.isfile(self.encryptor.gd.credentials_directory):
+                os.remove(self.encryptor.gd.credentials_directory)
         except Exception as e:
             raise e
 
