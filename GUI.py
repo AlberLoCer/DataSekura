@@ -32,6 +32,7 @@ class DS_interface:
 
         def on_closing():
             if messagebox.askokcancel("Quit", "Do you want to exit DataSekura?"):
+                self.controller.remove_creds()
                 self.root.destroy()
                 return -1
 

@@ -167,5 +167,7 @@ class Controller:
         self.gui.operation_complete(False)
     
     def remove_creds(self):
-        os.remove(self.base+os.sep+"credentials_module.json")
+        creds_path = self.base+os.sep+"credentials_module.json"
+        if os.path.isfile(creds_path):
+            os.remove(creds_path)
         
