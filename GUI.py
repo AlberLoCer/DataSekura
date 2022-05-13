@@ -713,7 +713,7 @@ class DS_interface:
                 t.start()
                 info.wait_variable(self.completed)
                 if self.completed.get() == True:
-                    info = self.completed_screen("Encryption Complete!")
+                    info = self.completed_screen("Drive Encryption Complete!")
                     self.switch_screen(self.current_screen,info)
                 else:
                     self.root.destroy()
@@ -750,7 +750,7 @@ class DS_interface:
                 t.start()
                 info.wait_variable(self.completed)
                 if self.completed.get() == True:
-                    info = self.completed_screen("Encryption Complete!")
+                    info = self.completed_screen("Drive Encryption Complete!")
                     self.switch_screen(self.current_screen,info)
                 else:
                     self.root.destroy()
@@ -776,7 +776,7 @@ class DS_interface:
                 t.start()
                 info.wait_variable(self.completed)
                 if self.completed.get() == True:
-                    info = self.completed_screen("Decryption Complete!")
+                    info = self.completed_screen("Drive Decryption Complete!")
                     self.switch_screen(self.current_screen,info)
                 else:
                     self.root.destroy()
@@ -830,8 +830,12 @@ class DS_interface:
                 t = Thread(target=self.controller.dropbox_encryption,args=[out,self.password.get(),self.enc,self.hash,self.fs])
                 t.start()
                 info.wait_variable(self.completed)
-                info = self.completed_screen("Dropbox Encryption Complete!")
-                self.switch_screen(self.current_screen,info)
+                if self.completed.get() == True:
+                    info = self.completed_screen("Dropbox Encryption Complete!")
+                    self.switch_screen(self.current_screen,info)
+                else:
+                    self.root.destroy()
+                    return
         
         def manual_encryption():
             input_screen = self.input_screen("Enter the Dropbox folder to encrypt:")
@@ -860,8 +864,12 @@ class DS_interface:
                 t = Thread(target=self.controller.dropbox_encryption,args=[out,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
                 t.start()
                 info.wait_variable(self.completed)
-                info = self.completed_screen("Dropbox Encryption Complete!")
-                self.switch_screen(self.current_screen,info)
+                if self.completed.get() == True:
+                    info = self.completed_screen("Dropbox Encryption Complete!")
+                    self.switch_screen(self.current_screen,info)
+                else:
+                    self.root.destroy()
+                    return
 
         def decrypt_op():
             input_screen = self.input_screen("Enter the Dropbox file to decrypt:")
@@ -884,8 +892,12 @@ class DS_interface:
                 t = Thread(target=self.controller.dropbox_decryption,args=[file,path,self.password.get()])
                 t.start()
                 info.wait_variable(self.completed)
-                info = self.completed_screen("Dropbox Decryption Complete!")
-                self.switch_screen(self.current_screen,info)
+                if self.completed.get() == True:
+                    info = self.completed_screen("Dropbox Decryption Complete!")
+                    self.switch_screen(self.current_screen,info)
+                else:
+                    self.root.destroy()
+                    return
 
             
         def encrypt_op():
