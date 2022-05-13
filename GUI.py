@@ -749,8 +749,12 @@ class DS_interface:
                 t = Thread(target=self.controller.drive_encryption,args=[file,self.password.get(),self.enc.get(),self.hash.get(),self.fs.get()])
                 t.start()
                 info.wait_variable(self.completed)
-                info = self.completed_screen("Google Drive Encryption Complete!")
-                self.switch_screen(self.current_screen,info)
+                if self.completed.get() == True:
+                    info = self.completed_screen("Encryption Complete!")
+                    self.switch_screen(self.current_screen,info)
+                else:
+                    self.root.destroy()
+                    return
 
 
         def decrypt_op():
@@ -771,8 +775,12 @@ class DS_interface:
                 t = Thread(target=self.controller.drive_decryption,args=[file,self.password.get()])
                 t.start()
                 info.wait_variable(self.completed)
-                info = self.completed_screen("Google Drive Decryption Complete!")
-                self.switch_screen(self.current_screen,info)
+                if self.completed.get() == True:
+                    info = self.completed_screen("Decryption Complete!")
+                    self.switch_screen(self.current_screen,info)
+                else:
+                    self.root.destroy()
+                    return
 
         def encrypt_op():
             config = self.config_screen()
