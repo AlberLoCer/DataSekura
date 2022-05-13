@@ -212,7 +212,10 @@ class Encryption_utils:
     def scatter_files_translate(self, gd, drive_list, ref_list):
         creds = gd.login()
         for i in range(0,int(self.file_number)-1):
-            new_path = gd.download_file(creds,drive_list[i]["id"],self.original_path)
+            try:
+                new_path = gd.download_file(creds,drive_list[i]["id"],self.original_path)
+            except Exception:
+                raise dataSekura_exceptions.DriveDownloadException()
             os.rename(new_path, ref_list[i]["name"])
 
     def delete_residual_traces(self,gd, drive_list):

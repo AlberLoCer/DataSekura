@@ -33,6 +33,13 @@ class MilestoneException(Exception):
     def __str__(self) -> str:
         return "Milestone file could not be found!"
 
+class MilestoneDecryptionException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "An error ocurred while decrypting milestone files!"
+
 class PermissionDeniedException(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
@@ -74,6 +81,13 @@ class ExistingScatterException(Exception):
     
     def __str__(self) -> str:
         return "There is already a scattered file named like that!"
+
+class NonExistingScatterFileException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "No matching scattered files found!"
 
 class DriveDownloadException(Exception):
     def __init__(self, *args: object) -> None:

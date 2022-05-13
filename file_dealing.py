@@ -82,9 +82,8 @@ class File_alterator:
                 else:
                     return -1
             return 0
-        except Exception as e:
-            print("An error occured while trying to decrypt the milestone files: " + e.__str__())
-            return -1
+        except Exception:
+            raise dataSekura_exceptions.MilestoneDecryptionException()
     
     def intermediate_masking(self, parentPath, basename):
         self.parentPath = parentPath
@@ -136,22 +135,19 @@ class File_alterator:
     
     
     def restore_file(self,basename):
-        try:
-            os.chdir(self.parentPath)
-            fname = basename + ".bin"
-            with open(fname, "wb") as myfile:
-                i = 1
-                while i < self.file_number:
-                    chunk_file_name = basename+"_"+repr(i)+".bin"
-                    file = open(chunk_file_name, "rb")
-                    myfile.write(file.read())
-                    file.close()
-                    os.remove(chunk_file_name)
-                    i = i +1
-            return 0
-        except Exception as e:
-            print("An error occurred while decrypting the deep layer: " + e.__str__())
-            return -1
+        os.chdir(self.parentPath)
+        fname = basename + ".bin"
+        with open(fname, "wb") as myfile:
+            i = 1
+            while i < self.file_number:
+                chunk_file_name = basename+"_"+repr(i)+".bin"
+                file = open(chunk_file_name, "rb")
+                myfile.write(file.read())
+                file.close()
+                os.remove(chunk_file_name)
+                i = i +1
+        myfile.close()
+
 
     def set_file_number(self, file_number):
         self.file_number = file_number

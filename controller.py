@@ -141,13 +141,16 @@ class Controller:
         return
     
     def scatter_decryption(self,folder,password,traces_pwd,traces_enc,traces_hash,traces_fs):
-        self.encryptor = Scatter_encryption(self)
-        out = self.encryptor.decrypt(folder,password)
-        if out != -1:
-            out = self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
-            if out != -1:
-                self.gui.operation_complete()
-        return
+        try:
+            self.encryptor = Scatter_encryption(self)
+            self.encryptor.decrypt(folder,password)
+            self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
+            self.gui.operation_complete()
+        except Exception as e:
+            if os.path.isfile(self.encryptor.gd.credentials_directory):
+                os.remove(self.encryptor.gd.credentials_directory)
+            self.exception_handler(e)
+
     
     def finalize_scatter(self,password,enc,hash,fs):
         self.local = Local_encryptor(self)
