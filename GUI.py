@@ -487,6 +487,7 @@ class DS_interface:
                 self.completed.set(False)
                 self.switch_screen(self.current_screen,enc_dec["frame"])
             else:
+                self.controller.remove_creds()
                 self.root.destroy()
         else:
             self.switch_screen(self.current_screen,enc_dec["frame"])

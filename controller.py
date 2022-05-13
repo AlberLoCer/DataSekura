@@ -165,4 +165,7 @@ class Controller:
     def exception_handler(self,e):
         self.gui.error_msg("An error occurred",e.__str__())
         self.gui.operation_complete(False)
+    
+    def remove_creds(self):
+        os.remove(self.base+os.sep+"credentials_module.json")
         
