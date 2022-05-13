@@ -61,16 +61,6 @@ class File_System_Dealer:
       for ele in os.scandir(path):
          elems+=1
       return elems
-
-   def input_folder_encrypt(self):
-      self.tk = Tk()
-      folder = ""
-      while folder == "":
-         folder = filedialog.askdirectory(title="Select a folder to encrypt")
-         if folder == "":
-            print("Please select a valid directory")
-      aux_dict = self.create_dict(folder)
-      return aux_dict
       
 
    def create_dict(self, folder):
@@ -88,25 +78,7 @@ class File_System_Dealer:
       os.remove(path)
    
    def removeFolder(self, path):
-      os.rmdir(path)
-         
-   def input_folder_decrypt(self):
-      folderDict = dict()
-      self.tk = Tk()
-      volPath = ""
-      while volPath == "":
-         volPath = filedialog.askopenfilename()
-         if volPath == "":
-            print("Please select a valid file")
-      folderDict["volume_path"] = volPath
-      path = Path(folderDict["volume_path"])
-      folderDict["folder_parent"] = path.parent.absolute()
-      os.chdir(folderDict["folder_parent"])
-      folderDict["folder_path"] = self.remove_file_extension(folderDict["volume_path"])
-      folderDict["folder_path_obj"] = Path(folderDict["folder_path"])
-      folderDict["folder_name"] = os.path.basename(folderDict["folder_path_obj"])
-      return folderDict
-      
+      os.rmdir(path)      
    
    def remove_file_extension(self, name):
       return os.path.splitext(name)[0]
