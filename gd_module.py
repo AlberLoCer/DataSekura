@@ -35,17 +35,6 @@ class Gd_object:
       return e['title']
 
 
-   def list_folders(self, creds):
-      file_list = creds.ListFile({"q":"'me' in owners and visibility='limited' and trashed=false and mimeType='application/vnd.google-apps.folder'"}).GetList()
-      file_list.sort(key=self.criteria)
-      for f in file_list:
-         if f['shared'] == False:
-            print("Name: " + f['title'])
-         else:
-            file_list.remove(f)
-      return file_list
-   
-
    def download_file(self, creds, id_file, download_path):
       if creds == NULL:
          creds = self.login()
@@ -54,11 +43,6 @@ class Gd_object:
       path = download_path+os.sep+filename
       file.GetContentFile(path)
       return path
-   
-   def fetch_folder(self,folder_str):
-      creds = self.login()
-      file_output = self.check_folder_exists(creds,folder_str)
-      return file_output
 
    def download_folder_launch(self, file_output):
       creds = self.login()

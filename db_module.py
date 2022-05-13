@@ -4,7 +4,7 @@ from pathlib import Path
 import os
 import fnmatch
 
-from dataSekura_exceptions import DropboxTokenException
+from dataSekura_exceptions import DropboxBinNotFoundException, DropboxNoBinException, DropboxTokenException
 class Db_object:
     def __init__(self):
         return
@@ -166,11 +166,9 @@ class Db_object:
             if matching_names != []:
                 return (matching_names,matching_paths)
             else:
-                print("No encrypted files were found!")
-                return -1
+                raise DropboxBinNotFoundException()
         else:
-            print("No files were found!")
-            return -1
+            raise DropboxNoBinException()
     
     def input_and_download_bin(self, name_list, path_list,file):
         if file in name_list:
@@ -179,12 +177,9 @@ class Db_object:
             with open(name_list[index], "wb") as f:
                 metadata, res = self.dbx.files_download(path=path_to_download)
                 f.write(res.content)
-            if os.path.isfile(name_list[index]):
                 return (name_list[index], path_list[index])
-            else:
-                return -1
         else:
-            return -1
+            raise DropboxBinNotFoundException()
     
     def remove_bin(self,path):
         self.dbx.files_delete(path)

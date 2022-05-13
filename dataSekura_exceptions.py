@@ -117,3 +117,23 @@ class DropboxUploadException(Exception):
     def __str__(self) -> str:
         return "Could not upload file to Dropbox."
 
+class DropboxBinNotFoundException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "No matching encrypted files found!"
+
+class DropboxNoBinException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "No binary files were found!"
+
+class DropboxFileNotFoundException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+    
+    def __str__(self) -> str:
+        return "No matching encrypted files found!"
