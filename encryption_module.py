@@ -31,25 +31,18 @@ class Encryption_utils:
         return
     
     def init_Enc(self,folder):
-        if folder == NULL:
-            self.folderDict = self.fs.input_folder_encrypt()
-        else:
-            self.folderDict = self.fs.create_dict(folder)       
+        self.folderDict = self.fs.create_dict(folder)       
         try:
             print("Checking permissions of folder...")
             self.checkPermissions(self.folderDict['folder_path'])
         except Exception as e:
             return -1
-
         self.backup = self.fs.directory_backup_create(self.folderDict['folder_path'])
         if self.backup == 0:
             return 0
 
     def init_Dec(self,folder):
-        if folder == NULL:
-            self.folderDict = self.fs.input_folder_decrypt()
-        else:
-            self.folderDict = self.fs.create_dict(folder)
+        self.folderDict = self.fs.create_dict(folder)
     
     def checkPermissions(self,source_folder):
         os.chdir(source_folder)
