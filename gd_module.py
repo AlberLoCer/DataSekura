@@ -57,8 +57,6 @@ class Gd_object:
    
    def fetch_folder(self,folder_str):
       creds = self.login()
-      print("Fetching drive directories...")
-      self.list_folders(creds)
       file_output = self.check_folder_exists(creds,folder_str)
       return file_output
 

@@ -109,7 +109,7 @@ class File_alterator:
         pathObj = pathlib.Path(path)
         self.parentPath = pathObj.parent.absolute()
         os.chdir(self.parentPath)
-        CHUNK_SIZE = int(math.floor(os.path.getsize(path)) / (self.pwdperm.beta)+4)
+        CHUNK_SIZE = int(math.floor(os.path.getsize(path) / (self.pwdperm.beta+4)))
         total, used, free = shutil.disk_usage(path)
         free_space_MB = free // (2**20)
         space_required = (os.path.getsize(path)/1024)/1024
