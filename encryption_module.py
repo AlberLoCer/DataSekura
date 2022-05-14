@@ -116,7 +116,7 @@ class Encryption_utils:
         self.fd.file_number = self.fs.retake_file_number(self.fs.remove_file_extension(self.vol_path))
         self.fd.populateDict(self.alpha_base,self.beta_base, len(self.permuted_password),self.permuted_password)
         print("Parameters fetched!")
-        self.fs.folder_decompossition(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
+        self.fs.folder_decomposition(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
         print("Decrypting milestone files...")
         self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"])
         self.fd.restore_file(self.folderDict["folder_name"])

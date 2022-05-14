@@ -121,7 +121,7 @@ class File_System_Dealer:
 
       
 
-   def folder_decompossition(self,path,volname,file_number):
+   def folder_decomposition(self,path,volname,file_number):
       try:
          name = path.__str__()+os.sep+volname
          os.chdir(name)
