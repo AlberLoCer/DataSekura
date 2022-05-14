@@ -3,7 +3,7 @@ import os
 import hashlib
 from file_system import File_System_Dealer
 from password_permutator import Password_permutator
-from user_experience import User_experience
+from user_experience import User_choices
 from veracrypt import Veracrypt
 from file_dealing import File_alterator
 import dataSekura_exceptions
@@ -12,7 +12,7 @@ class Encryption_utils:
     def __init__(self, folder, op):
         self.fs = File_System_Dealer()
         self.pw = Password_permutator()
-        self.ux = User_experience()
+        self.ux = User_choices()
         self.VCpath = self.fs.check_VC_integrity()
         self.SSEpath = self.fs.check_SSFEnc_integrity()
         self.vc = Veracrypt(self.VCpath)

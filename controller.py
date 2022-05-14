@@ -4,7 +4,7 @@ from dropbox_encryptor import DB_encryptor
 from asyncio.windows_events import NULL
 import subprocess
 import sys
-from user_experience import User_experience
+from user_experience import User_choices
 from file_system import File_System_Dealer
 from local_encryptor import Local_encryptor
 from password_permutator import Password_permutator
@@ -24,7 +24,7 @@ class Controller:
         subprocess.check_call([sys.executable, "-m", "pip", "install", "setuptools-rust"])
         self.fs = File_System_Dealer()
         self.pw = Password_permutator()
-        self.ux = User_experience()
+        self.ux = User_choices()
         self.base = os.getcwd()
         self.VCpath = self.fs.check_VC_integrity()
         self.SSEpath = self.fs.check_SSFEnc_integrity()
