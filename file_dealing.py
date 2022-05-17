@@ -59,31 +59,28 @@ class File_alterator:
     def intermediate_decryption(self, parentPath, basename):
         self.parentPath = parentPath
         self.base_file_name = basename
-        try:
-            for i in range(1,self.file_number):
-                decrypted_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin"
+        for i in range(1,self.file_number):
+            decrypted_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin"
+            if os.path.isfile(decrypted_name):
+                os.remove(decrypted_name)
+            chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
+            if(os.path.isfile(chunk_file_name)):
+                os.chdir(self.ssepath)
+                subprocess.call(['java', '-Xmx1g', '-jar', 'ssefenc.jar', chunk_file_name, self.pwdDict[i], 'aes'])
+                os.chdir(self.parentPath)
                 if os.path.isfile(decrypted_name):
-                    os.remove(decrypted_name)
-                chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
-                if(os.path.isfile(chunk_file_name)):
-                    os.chdir(self.ssepath)
-                    subprocess.call(['java', '-Xmx1g', '-jar', 'ssefenc.jar', chunk_file_name, self.pwdDict[i], 'aes'])
-                    os.chdir(self.parentPath)
-                    if os.path.isfile(decrypted_name):
-                        os.remove(chunk_file_name)
-                        print("File: "+ repr(i)+ " decrypted with pass: " + self.pwdDict[i])
-                    else:
-                        print("Incorrect password!")
-                        for i in range(1,self.file_number):
-                            chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
-                            if(os.path.isfile(chunk_file_name)):
-                                os.remove(chunk_file_name)
-                        return -1
+                    os.remove(chunk_file_name)
+                    print("File: "+ repr(i)+ " decrypted with pass: " + self.pwdDict[i])
                 else:
-                    return -1
-            return 0
-        except Exception:
-            raise dataSekura_exceptions.MilestoneDecryptionException()
+                    print("Incorrect password!")
+                    for i in range(1,self.file_number):
+                        chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
+                        if(os.path.isfile(chunk_file_name)):
+                            os.remove(chunk_file_name)
+                    raise dataSekura_exceptions.IncorrectPasswordException()
+            else:
+                raise dataSekura_exceptions.MilestoneDecryptionException()
+        return 0
     
     def intermediate_masking(self, parentPath, basename):
         self.parentPath = parentPath

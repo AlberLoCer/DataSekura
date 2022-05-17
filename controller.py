@@ -149,6 +149,8 @@ class Controller:
         except Exception as e:
             if os.path.isfile(self.encryptor.gd.credentials_directory):
                 os.remove(self.encryptor.gd.credentials_directory)
+            if os.path.isdir(self.encryptor.dstraces):
+                self.finalize_scatter(traces_pwd,traces_enc,traces_hash,traces_fs)
             self.exception_handler(e)
 
     

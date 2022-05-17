@@ -87,8 +87,6 @@ class Scatter_encryption(Encryptor):
                 except Exception as e:
                     f.close()
                     os.chdir(cwd)
-                    shutil.rmtree(cwd+os.sep+"ds_traces")
-                    os.rename("ds_traces_auto.bin", "ds_traces.bin")
                     os.remove(self.gd.credentials_directory)
                     raise e
                 self.utils.fd.restore_file(self.utils.file_title)
