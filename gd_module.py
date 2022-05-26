@@ -58,10 +58,8 @@ class Gd_object:
          if(folder_list != []):
             for f in folder_list:
                file_list.remove(f)
-               print("Processing folder: " + f['title'])
                self.download_folder_rec(creds,path+os.sep+f['title'],f)
          for f in file_list:
-            print("Processing file: " + f['title'])
             self.download_file(creds,f['id'],path)
       except Exception as e:
          if os.path.isdir(path):
@@ -102,7 +100,6 @@ class Gd_object:
                id = folder['id']
                try:
                   drive_file = self.upload(path + os.sep + file, id, os.path.basename(file), self.creds)
-                  print("File: "+os.path.basename(file)+" OK")
                finally:
                   drive_file.content.close()
                   if drive_file.uploaded:
@@ -112,7 +109,6 @@ class Gd_object:
             if os.path.isdir(path + os.sep + subdirectory):
                id = folder['id']
                self.upload_folder(path + os.sep + subdirectory, id, os.path.basename(subdirectory))
-               print("Folder: "+os.path.basename(subdirectory)+" OK")
                os.rmdir(path + os.sep + subdirectory) 
 
    def delete_file(self, file):
@@ -146,16 +142,11 @@ class Gd_object:
          query = "mimeType='application/vnd.google-apps.folder' and trashed=false and title="+ "'"+name+"'"
          f_list = creds.ListFile({"q":query}).GetList()
          if(f_list == []):
-            print("Folder does not exist!")
             return 0
          else:
-            print("Folder Found!")
-            if len(f_list) > 1:
-               print("Found more than one match.")
             file = f_list[0]
             return file
       except Exception as e:
-         print(e.__str__())
          return -1
 
    def search_parent(self,file):

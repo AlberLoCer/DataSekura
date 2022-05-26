@@ -1,4 +1,3 @@
-import chunk
 import os
 import pathlib
 import math
@@ -17,7 +16,6 @@ class File_alterator:
     
     def populateDict(self, alpha, beta, length,base):
         basePos = (alpha + (length*beta)) % length
-        print(self.file_number)
 
         self.pwdDict[1] = self.pwdperm.password_permutation(base)
         self.pwdDict[2] = self.pwdperm.password_permutation(base[::-1])
@@ -36,8 +34,6 @@ class File_alterator:
             comb = self.pwdperm.merge(aux1,aux2)
             comb = comb[::-1]
             self.pwdDict[i] = comb
-        for i in self.pwdDict:
-            print(repr(i) + ": "+ self.pwdDict[i])
     
     
     
@@ -51,7 +47,6 @@ class File_alterator:
                 subprocess.call(['java', '-Xmx1g', '-jar', 'ssefenc.jar', chunk_file_name, self.pwdDict[i], 'aes'])
                 os.chdir(self.parentPath)
                 os.remove(chunk_file_name)
-                print("File: "+ repr(i)+ " encrypted with pass: " + self.pwdDict[i])
             else:
                 raise dataSekura_exceptions.MilestoneException()
         return 0
@@ -70,9 +65,7 @@ class File_alterator:
                 os.chdir(self.parentPath)
                 if os.path.isfile(decrypted_name):
                     os.remove(chunk_file_name)
-                    print("File: "+ repr(i)+ " decrypted with pass: " + self.pwdDict[i])
                 else:
-                    print("Incorrect password!")
                     for i in range(1,self.file_number):
                         chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin.enc"
                         if(os.path.isfile(chunk_file_name)):
@@ -98,9 +91,7 @@ class File_alterator:
                     return -1
             return file_list
         except Exception as e:
-            print("An error occured while trying to decrypt the milestone files: " + e.__str__())
-            return -1
-    
+            raise e
 
     def split_file(self, path, volName):
         pathObj = pathlib.Path(path)
@@ -125,9 +116,6 @@ class File_alterator:
                     chunk = f.read(CHUNK_SIZE)
             f.close()
             os.remove(path)
-        else:
-            print("Not enough space in disk! At least " + space_required.__str__() + " MB are required...")
-            return -1
         
     
     

@@ -1,5 +1,3 @@
-import os
-from tkinter import Tk, filedialog
 class User_choices:
     def __init__(self):
         return

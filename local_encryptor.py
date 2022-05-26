@@ -27,7 +27,6 @@ class Local_encryptor(Encryptor):
         shutil.rmtree(self.utils.backup)
         t_end = time.time()
         elapsed = t_end-t_start
-        print("ELAPSED: "+ elapsed.__str__())
         return self.utils.folderDict
 
 
@@ -41,20 +40,12 @@ class Local_encryptor(Encryptor):
         t_start = time.time()
         try:
             self.utils.outer_layer_decryption()
-            print("Outer layer successfully decrypted!")
-            print("Fetching milestone file parameters...")
-            #From here on, everything should go fine
             self.utils.milestone_decryption()
-            print("Originial file successfully restored!")
-            print("Decrypting deep layer...")
             self.utils.deep_layer_decryption()
-            print("Decryption Complete!")
-            print("Stay safe!")
         except Exception as e:
             raise e
         t_end = time.time()
         elapsed = t_end-t_start
-        print("ELAPSED: "+ elapsed.__str__())
         return self.utils.folderDict
 
 

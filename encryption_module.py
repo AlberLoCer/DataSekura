@@ -22,7 +22,6 @@ class Encryption_utils:
             if init == -1:
                 raise dataSekura_exceptions.PermissionDeniedException()
             elif init == 0:
-                print("Could not create backup: Backup already exists!")
                 raise dataSekura_exceptions.ExistingBackupException()
         elif op == 1:
             self.init_Dec(folder)
@@ -33,7 +32,6 @@ class Encryption_utils:
     def init_Enc(self,folder):
         self.folderDict = self.fs.create_dict(folder)       
         try:
-            print("Checking permissions of folder...")
             self.checkPermissions(self.folderDict['folder_path'])
         except Exception as e:
             return -1
@@ -51,14 +49,12 @@ class Encryption_utils:
                 path = os.path.join(root, file)
                 os.chmod(path,0o777)
                 if os.access(path, os.X_OK | os.W_OK | os.R_OK) == False:
-                    print("Permission denied on file: " + os.path.basename(file))
                     raise Exception
 
             for subdirectory in subdirectories:
                 path = os.path.join(root, subdirectory)
                 os.chmod(path,0o777)
                 if os.access(path, os.X_OK | os.W_OK | os.R_OK) == False:
-                    print("Permission denied on folder: " + os.path.basename(subdirectory))
                     raise Exception
             
         return 0
@@ -115,12 +111,9 @@ class Encryption_utils:
     def milestone_decryption(self):
         self.fd.file_number = self.fs.retake_file_number(self.fs.remove_file_extension(self.vol_path))
         self.fd.populateDict(self.alpha_base,self.beta_base, len(self.permuted_password),self.permuted_password)
-        print("Parameters fetched!")
         self.fs.folder_decomposition(self.folderDict["folder_parent"], self.folderDict["folder_name"], self.fd.file_number)
-        print("Decrypting milestone files...")
         self.fd.intermediate_decryption(self.folderDict["folder_parent"], self.folderDict["folder_name"])
         self.fd.restore_file(self.folderDict["folder_name"])
-        print("Milestone files successfully decrypted!")
     
     def deep_layer_decryption(self):
         self.vc.VC_Decryption(self.vol_path,self.permuted_password, self.folderDict["folder_path"])
@@ -128,7 +121,6 @@ class Encryption_utils:
     
     def password_input(self,pwd):
         self.base_password = pwd
-        print(pwd)
         self.permuted_password = self.pw.password_permutation(self.base_password)
         self.alpha_base = self.pw.get_alpha()
         self.beta_base = self.pw.get_beta()
@@ -136,11 +128,8 @@ class Encryption_utils:
 
     def encryption_params(self, folderDict,encryption,hash,fs):
         self.cmd_encryption = self.ux.choose_encryption(encryption)
-        print(self.cmd_encryption)
         self.cmd_hash = self.ux.choose_hash(hash)
-        print(self.cmd_hash)
         self.cmd_fs = self.ux.choose_fs(fs)
-        print(self.cmd_fs)
         self.volume_size = self.fs.fetch_size(folderDict["folder_path"])
     
     

@@ -32,15 +32,12 @@ class Db_object:
         found = self.dbx.files_search('',"/"+folder)
         folder_list = []
         if len(found.matches) == 0:
-            print("No matches found")
             return -1
         else:
             single_entry = found.matches[0]
             if single_entry and isinstance(single_entry.metadata,dropbox.files.FolderMetadata):
-                print("Folder Found!")
                 return single_entry
             else:
-                print("No matching folders found!")
                 return -1
     
     def download_folder_launch(self, folder):
@@ -51,12 +48,10 @@ class Db_object:
         file_list = self.list_folder_content("/" + meta.name)
         for entry in file_list._entries_value:
             if isinstance(entry, dropbox.files.FileMetadata):
-                print("Processing file: "+ entry.path_display)
                 with open(entry.name, "wb") as f:
                     metadata, res = self.dbx.files_download(path=entry.path_display)
                     f.write(res.content)
             else:
-                print("Processing folder: "+ entry.path_display)
                 self.download_folder_rec(entry)
                 os.chdir(path)
         return (path, meta)
@@ -68,12 +63,10 @@ class Db_object:
         file_list = self.list_folder_content(meta.path_display)
         for entry in file_list._entries_value:#TODO Revise recursive folder download
             if isinstance(entry, dropbox.files.FileMetadata):
-                print("Processing file: "+ entry.path_display)
                 with open(entry.name, "wb") as f:
                     metadata, res = self.dbx.files_download(path=entry.path_display)
                     f.write(res.content)
             else:
-                print("Processing folder: "+ entry.path_display)
                 self.download_folder_rec(entry)
                 os.chdir(path)
     

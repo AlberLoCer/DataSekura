@@ -3,7 +3,6 @@ from tkinter import *
 import shutil as sh
 from pathlib import Path
 import math
-from tkinter import filedialog
 
 from dataSekura_exceptions import ExistingBackupException, PermissionDeniedException
 class File_System_Dealer:
@@ -133,7 +132,6 @@ class File_System_Dealer:
          os.rmdir(volname)
          return 0
       except Exception as e:
-         print("There was an error while decomposing the folder: " + e.__str__())
          return -1
 
 

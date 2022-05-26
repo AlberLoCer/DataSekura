@@ -1,7 +1,6 @@
 import os
 import subprocess
 from pathlib import Path
-import shutil
 from dataSekura_exceptions import IncorrectPasswordException, VCencryptionException
 import file_system
 class Veracrypt:

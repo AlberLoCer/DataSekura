@@ -1,5 +1,4 @@
 from asyncio.windows_events import NULL
-import os
 from tkinter import *
 from tkinter import messagebox
 from tkinter import Canvas
@@ -310,7 +309,7 @@ class DS_interface:
         info.pack()
         ok = Button(frame,text="Close")
         ok.pack()
-        ok.config(command=lambda:(self.root.destroy()))
+        ok.config(command=lambda:(self.destroy_window()))
         return frame
 
 
@@ -376,7 +375,6 @@ class DS_interface:
             aux = Tk()
             folder = filedialog.askdirectory()
             if folder != "":
-                print(folder)
                 aux.destroy()
                 pwd = self.password_screen("Enter your password for encryption:")
                 self.switch_screen(self.current_screen,pwd)
@@ -945,5 +943,6 @@ class DS_interface:
         self.completed.set(v)
     
     def destroy_window(self):
+        self.controller.remove_creds()
         self.root.destroy()
 

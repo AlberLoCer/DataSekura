@@ -1,5 +1,4 @@
 from asyncio.windows_events import NULL
-import shutil
 from dataSekura_exceptions import DriveDownloadException, DriveUploadException
 from encryptor import Encryptor
 from gd_module import Gd_object
@@ -47,13 +46,11 @@ class GoogleDriveEncryptor(Encryptor):
         except Exception as e:
             raise DriveDownloadException()
         parent_dict = self.gd.search_parent(file)
-        print("Decrypting the file...")
         try:
             self.folderDict = self.local.decrypt(folderpath,password)
         except Exception as e:
             self.gd.hard_reset(folderpath)
             raise e
-        print("Cleaning up residual files...")
         try:
             self.gd.upload_folder(self.folderDict["folder_path"], parent_dict['parent_id'], self.folderDict["folder_name"])
         except Exception as e:
@@ -61,4 +58,3 @@ class GoogleDriveEncryptor(Encryptor):
         if os.path.isdir(self.folderDict["folder_path"]):
             self.gd.hard_reset(self.folderDict["folder_path"])
         self.gd.delete_file(file)
-        print("Google Drive Folder Successfully Decrypted!")

@@ -5,7 +5,6 @@ from encryption_module import Encryption_utils
 from encryptor import Encryptor
 from local_encryptor import Local_encryptor
 from gd_module import Gd_object
-import hashlib
 import os
 
 class Scatter_encryption(Encryptor):
@@ -51,7 +50,6 @@ class Scatter_encryption(Encryptor):
                     f.close()
                 except Exception as e:
                     raise e
-            print("Encrypting ds_traces...")
             os.chdir(self.utils.folderDict["folder_parent"])
             os.chmod(self.utils.backup,0o777)
             shutil.rmtree(self.utils.backup)
@@ -80,8 +78,6 @@ class Scatter_encryption(Encryptor):
                     raise e
                 self.utils.password_input(password)
                 self.utils.fd.populateDict(self.utils.pw.get_alpha(),self.utils.pw.get_beta(), len(self.utils.permuted_password),self.utils.permuted_password)
-                print("Parameters fetched!")
-                print("Preparing decryption environment...")
                 try: 
                     self.utils.fd.intermediate_decryption(self.utils.original_path, self.utils.file_title)
                 except Exception as e:
