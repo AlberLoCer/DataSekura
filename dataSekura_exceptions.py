@@ -45,7 +45,7 @@ class PermissionDeniedException(Exception):
         super().__init__(*args)
     
     def __str__(self) -> str:
-        return "Permission denied! Try moving the file or folder\nto a different location..."
+        return "Permission denied or invalid/corrupted file!"
 
 class ExistingBackupException(Exception):
     def __init__(self, *args: object) -> None:
