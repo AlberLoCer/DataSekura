@@ -15,9 +15,12 @@ class GoogleDriveEncryptor(Encryptor):
     
     def encrypt(self,file,password,enc,hash,fs):
         creds = self.gd.login()
+        folderpath = NULL
         try:
             folderpath = self.gd.download_folder_launch(file) 
         except Exception as e:
+            if os.path.isdir(folderpath):
+                os.remove(folderpath)
             raise DriveDownloadException()
 
         parent_dict = self.gd.search_parent(file) #Probably will need to check this in the future
