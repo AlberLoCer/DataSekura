@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import hashlib
 import dataSekura_exceptions
+from file_system import File_System_Dealer as fsd
 
 class File_alterator:
     def __init__(self, ctr):
@@ -38,6 +39,8 @@ class File_alterator:
     
     
     def intermediate_encryption(self):
+        if self.ssepath == "":
+            self.ssepath = fsd.check_SSFEnc_integrity()
         for i in range(1,self.file_number):
             chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin"
             if os.path.isfile(chunk_file_name+".enc"):
