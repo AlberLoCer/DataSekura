@@ -391,6 +391,7 @@ class DS_interface:
                 else:
                     self.switch_screen(self.current_screen,self.home["frame"])
             else:
+                aux.destroy()
                 self.error_msg("Folder not selected", "Please select a folder to proceed")
                 self.switch_screen(self.current_screen,enc_dec["frame"])
                 
@@ -423,6 +424,7 @@ class DS_interface:
                 else:
                     self.switch_screen(self.current_screen,self.home["frame"])
             else:
+                aux.destroy()
                 self.error_msg("Folder not selected", "Please select a folder to proceed")
                 self.switch_screen(self.current_screen,enc_dec["frame"])
             
@@ -447,6 +449,7 @@ class DS_interface:
                 else:
                     self.root.destroy()
             else:
+                aux.destroy()
                 self.error_msg("File not selected", "Please select an encrypted file (.bin format) to proceed")
                 self.switch_screen(self.current_screen,enc_dec["frame"])
 
