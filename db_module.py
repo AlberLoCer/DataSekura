@@ -172,7 +172,7 @@ class Db_object:
                 f.write(res.content)
                 return (name_list[index], path_list[index])
         else:
-            raise DropboxBinNotFoundException()
+            return -1
     
     def remove_bin(self,path):
         self.dbx.files_delete(path)
