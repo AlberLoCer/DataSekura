@@ -70,10 +70,12 @@ class Encryption_utils:
             raise e
 
 
-    def milestone_encryption(self):
+    def milestone_encryption(self,ssepath):
+        if self.SSEpath == "":
+            self.SSEpath = ssepath
         if self.fd.split_file(self.folderDict["volume_path"], self.folderDict["folder_name"]) != -1:
             self.fd.populateDict(self.pw.get_alpha(),self.pw.get_beta(),len(self.permuted_password),self.permuted_password)
-            try: self.fd.intermediate_encryption()
+            try: self.fd.intermediate_encryption(ssepath)
             except Exception as e:
                 raise e
         else:

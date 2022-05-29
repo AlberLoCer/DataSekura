@@ -38,9 +38,9 @@ class File_alterator:
     
     
     
-    def intermediate_encryption(self):
+    def intermediate_encryption(self,ssepath):
         if self.ssepath == "":
-            self.ssepath = fsd.check_SSFEnc_integrity()
+            self.ssepath = ssepath
         for i in range(1,self.file_number):
             chunk_file_name = self.parentPath.__str__() + os.sep+ self.base_file_name+"_"+repr(i)+".bin"
             if os.path.isfile(chunk_file_name+".enc"):

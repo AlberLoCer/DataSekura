@@ -38,7 +38,7 @@ class Scatter_encryption(Encryptor):
                     shutil.rmtree(self.utils.backup)
                     raise e
                 try:
-                    self.utils.milestone_encryption()
+                    self.utils.milestone_encryption(self.utils.SSEpath)
                 except Exception as e:
                     f.close()
                     os.remove(self.gd.credentials_directory)
@@ -58,6 +58,8 @@ class Scatter_encryption(Encryptor):
                 os.remove(self.gd.credentials_directory)
             return
         else:
+            if os.path.isdir(self.utils.backup):
+                shutil.rmtree(self.utils.backup)
             raise ExistingScatterException()
     
     def decrypt(self,filename,password):

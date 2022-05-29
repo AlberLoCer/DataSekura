@@ -1,3 +1,4 @@
+import os
 from encryptor import Encryptor
 from asyncio.windows_events import NULL
 import shutil
@@ -19,12 +20,13 @@ class Local_encryptor(Encryptor):
         t_start = time.time()
         try:
             self.utils.deep_layer_encryption()
-            self.utils.milestone_encryption()
+            self.utils.milestone_encryption(self.ctr.SSEpath)
             self.utils.outer_layer_encryption()
         except Exception as e:
             shutil.rmtree(self.utils.backup)
             raise e
-        shutil.rmtree(self.utils.backup)
+        if os.path.isdir(self.utils.backup):
+            shutil.rmtree(self.utils.backup)
         t_end = time.time()
         elapsed = t_end-t_start
         return self.utils.folderDict
