@@ -739,7 +739,7 @@ class DS_interface:
             input_screen.wait_variable(self.folder)
             file = self.controller.encryptor.gd.check_folder_exists(self.controller.creds,self.folder.get())
             if file == 0:
-                self.error_msg("File not found", "Could not find Drive file")
+                self.error_msg("File not found", "Could not find Drive folder")
                 self.switch_screen(self.current_screen,enc_dec["frame"])
             elif file == -1:
                 self.error_msg("Error", "Something wrong happend while trying to fetch drive file")
